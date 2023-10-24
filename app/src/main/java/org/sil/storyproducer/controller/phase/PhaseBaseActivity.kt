@@ -3,14 +3,22 @@ package org.sil.storyproducer.controller.phase
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebView
-import android.widget.*
-import androidx.appcompat.app.ActionBarDrawerToggle
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.Spinner
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -25,10 +33,8 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.toJson
 import org.sil.storyproducer.service.SlideService
 import org.sil.storyproducer.tools.BitmapScaler
-import org.sil.storyproducer.tools.DrawerItemClickListener
 import org.sil.storyproducer.tools.PhaseGestureListener
 import org.sil.storyproducer.viewmodel.SlideViewModelBuilder
-import java.io.File
 import kotlin.math.max
 
 abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
@@ -36,10 +42,6 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
     lateinit var slideService: SlideService
 
     private var mDetector: GestureDetectorCompat? = null
-    private var mDrawerList: ListView? = null
-    private var mAdapter: ArrayAdapter<String>? = null
-    private var mDrawerToggle: ActionBarDrawerToggle? = null
-    private var mDrawerLayout: androidx.drawerlayout.widget.DrawerLayout? = null
 
     protected var phase: Phase = Workspace.activePhase
     protected var story: Story = Workspace.activeStory
@@ -57,8 +59,10 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
 
         mDetector = GestureDetectorCompat(this, PhaseGestureListener(this))
 
-        setupDrawer()
-        setupStatusBar()
+        if (mDrawerList == null) {
+            setupDrawer()
+            setupStatusBar()
+        }
     }
 
     override fun onPause(){
@@ -182,47 +186,6 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
             }
             else -> mDrawerToggle!!.onOptionsItemSelected(item)
         }
-    }
-
-    /**
-     * initializes the items that the drawer needs
-     */
-    private fun setupDrawer() {
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        supportActionBar!!.setHomeButtonEnabled(true)
-        mDrawerList = findViewById(R.id.navList)
-        mDrawerList!!.bringToFront()
-        mDrawerLayout = findViewById(R.id.drawer_layout)
-        //Lock from opening with left swipe
-        mDrawerLayout!!.setDrawerLockMode(androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-        addDrawerItems()
-        mDrawerList!!.onItemClickListener = DrawerItemClickListener(this)
-        mDrawerToggle = object : ActionBarDrawerToggle(this, mDrawerLayout,
-                R.string.nav_open, R.string.nav_close) {
-
-            /** Called when a drawer has settled in a completely open state.  */
-            override fun onDrawerOpened(drawerView: View) {
-                super.onDrawerOpened(drawerView)
-                invalidateOptionsMenu() // creates call to onPrepareOptionsMenu()
-            }
-
-            /** Called when a drawer has settled in a completely closed state.  */
-            override fun onDrawerClosed(view: View) {
-                super.onDrawerClosed(view)
-                invalidateOptionsMenu() // creates call to onPrepareOptionsMenu()
-            }
-        }
-        mDrawerToggle!!.isDrawerIndicatorEnabled = true
-        mDrawerLayout!!.addDrawerListener(mDrawerToggle!!)
-    }
-
-    /**
-     * adds the items to the drawer from the array resources
-     */
-    private fun addDrawerItems() {
-        val menuArray = resources.getStringArray(R.array.global_menu_array)
-        mAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, menuArray)
-        mDrawerList!!.adapter = mAdapter
     }
 
     fun jumpToPhase(newPhase: Phase) {

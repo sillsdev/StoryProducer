@@ -6,6 +6,8 @@ import android.widget.AdapterView
 import androidx.drawerlayout.widget.DrawerLayout
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
+import org.sil.storyproducer.controller.MainActivity
+import org.sil.storyproducer.controller.wordlink.WordLinksListActivity
 import org.sil.storyproducer.model.Workspace
 
 class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.OnItemClickListener {
@@ -25,7 +27,9 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
     private fun selectItem(position: Int) {
         when (position) {
             0 -> {
-                activity.finish()   // finish this activity to reveal main activity
+                if (activity !is MainActivity)
+                    activity.finish()   // if this is not the main activity then
+                                        // finish this activity to reveal main activity
             }
             1 -> {
                 // Showing registration on top of the MainActivity in the task stack
@@ -35,19 +39,20 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
             }
             2 -> {
                 activity.showBLDownloadDialog(BaseActivity.BLOOM_DL_TEMPLATES_ACTIVITY)
+                if (activity !is MainActivity)
+                    activity.finish()   // replace this activity with SP Bloom Template DL activity on top
+                                        // but only if the current activity is not the Main Activity
             }
             3 -> {
                 activity.showBLDownloadDialog(BaseActivity.BLOOM_DL_FEATURED_ACTIVITY)
+                if (activity !is MainActivity)
+                    activity.finish()   // replace this activity with Featured Bloom Book DL activity on top
+                                        // but only if the current activity is not the Main Activity
             }
-//            3 -> {
-//                // DKH - 01/23/2022 Issue #571: Add a menu item for accessing templates from Google Drive
-//                // A new menu item was added that opens a URL for the user to download templates.
-//                // If we get here, the user wants to browse for more templates, so,
-//                // open the URL in a new activity
-//                Workspace.startDownLoadMoreTemplatesActivity(activity)
-//            }
             4 -> {
-                activity.showWordLinksList()
+                if (activity !is WordLinksListActivity) {
+                    activity.showWordLinksList()
+                }
             }
             5 -> {
                 activity.showSelectTemplatesFolderDialog()

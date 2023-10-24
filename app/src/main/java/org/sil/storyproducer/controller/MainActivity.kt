@@ -41,7 +41,7 @@ class MainActivity : BaseActivity(), Serializable {
     companion object {
         var mainActivity : MainActivity ? = null
     }
-    private var mDrawerLayout: DrawerLayout? = null
+
     lateinit var storyPageViewPager : ViewPager2
     lateinit var storyPageTabLayout : TabLayout
 
@@ -66,8 +66,10 @@ class MainActivity : BaseActivity(), Serializable {
 
         setContentView(R.layout.activity_main)
 
-        setupDrawer()             // also added to onStart()
-        setupStoryListTabPages()  // ditto
+        if (mDrawerList == null) {
+            setupDrawer()             // also added to onStart()
+            setupStoryListTabPages()  // ditto
+        }
 
         if (!Workspace.isInitialized) {
             initWorkspace()
@@ -134,8 +136,10 @@ class MainActivity : BaseActivity(), Serializable {
 
         super.onStart()
 
-        setupDrawer()
-        setupStoryListTabPages()
+        if (mDrawerList == null) {
+            setupDrawer()
+            setupStoryListTabPages()
+        }
 
     }
 
@@ -157,7 +161,11 @@ class MainActivity : BaseActivity(), Serializable {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                mDrawerLayout!!.openDrawer(GravityCompat.START)
+                if(mDrawerLayout!!.isDrawerOpen(GravityCompat.START)){
+                    mDrawerLayout!!.closeDrawer(GravityCompat.START)
+                }else{
+                    mDrawerLayout!!.openDrawer(GravityCompat.START)
+                }
                 true
             }
             R.id.helpButton -> {
@@ -192,7 +200,7 @@ class MainActivity : BaseActivity(), Serializable {
         }
     }
 
-    private fun setupStoryListTabPages() {
+    override fun setupStoryListTabPages() {
         storyPageViewPager = findViewById(R.id.storyPageViewPager)
         storyPageViewPager.offscreenPageLimit = StoryPageTab.values().size
         storyPageTabLayout = findViewById(R.id.tabLayout)
@@ -206,81 +214,6 @@ class MainActivity : BaseActivity(), Serializable {
         TabLayoutMediator(storyPageTabLayout, storyPageViewPager) { tab, position ->
             tab.text = getString(StoryPageTab.values()[position].nameId)
         }.attach()
-    }
-
-    /**
-     * initializes the items that the drawer needs
-     */
-    private fun setupDrawer() {
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        val actionbar: ActionBar? = supportActionBar
-        actionbar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp)
-        }
-
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        supportActionBar!!.setHomeButtonEnabled(true)
-
-        mDrawerLayout = findViewById(R.id.drawer_layout)
-        //Lock from opening with left swipe
-        mDrawerLayout!!.setDrawerLockMode(androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-        val navigationView: NavigationView = findViewById(R.id.nav_view)
-        navigationView.setNavigationItemSelectedListener(::onNavigationItemSelected)
-    }
-
-    private fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
-        mDrawerLayout?.closeDrawers()
-
-        when (menuItem.itemId) {
-            R.id.nav_workspace -> {
-                showSelectTemplatesFolderDialog()
-            }
-            R.id.nav_demo -> {
-                Workspace.addDemoToWorkspace(this)
-
-                controller.updateStories()  // refresh list of stories
-
-            }
-            R.id.nav_word_link_list -> {
-                showWordLinksList()
-            }
-//            R.id.nav_more_templates -> {
-//                // DKH - 01/15/2022 Issue #571: Add a menu item for accessing templates from Google Drive
-//                // A new menu item was added that opens a URL for the user to download templates.
-//                // If we get here, the user wants to browse for more templates, so,
-//                // open the URL in a new activity
-//                Workspace.startDownLoadMoreTemplatesActivity(this)
-//            }
-            R.id.nav_stories -> {
-                // Current fragment
-            }
-            R.id.nav_registration -> {
-                // DKH - 05/10/2021 Issue 573: SP will hang/crash when submitting registration
-                // The MainActivity thread is responsible for displaying  story templates
-                // and allowing the user to select  a registration update via this menu option.
-                // So, when calling the RegistrationActivity from the MainActivity, specify that
-                // finish should not be called.  This is done by setting executeFinishActivity to false.
-                // After the RegistrationActivity is complete, MainActivity will then display
-                // the story template list
-                showRegistration(false)
-            }
-            R.id.nav_bloom_templates -> {
-                showBLDownloadDialog(BLOOM_DL_TEMPLATES_ACTIVITY);
-            }
-            R.id.nav_bloom_featured -> {
-                showBLDownloadDialog(BLOOM_DL_FEATURED_ACTIVITY);
-            }
-            R.id.nav_settings -> {
-                showSettings()
-            }
-            R.id.nav_about -> {
-                showAboutDialog()
-            }
-        }
-
-        return true
     }
 
     override fun onBackPressed() {
