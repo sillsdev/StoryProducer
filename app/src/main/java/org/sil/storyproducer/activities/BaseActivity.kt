@@ -18,15 +18,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import io.reactivex.disposables.CompositeDisposable
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.*
+import org.sil.storyproducer.controller.BaseController
+import org.sil.storyproducer.controller.MainActivity
+import org.sil.storyproducer.controller.RegistrationActivity
+import org.sil.storyproducer.controller.SelectTemplatesFolderController
 import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.SELECT_TEMPLATES_FOLDER_REQUEST_CODES
 import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.UPDATE_TEMPLATES_FOLDER
+import org.sil.storyproducer.controller.SettingsActivity
+import org.sil.storyproducer.controller.bldownload.BLDownloadActivity
 import org.sil.storyproducer.controller.wordlink.WordLinksListActivity
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.view.BaseActivityView
-import org.sil.storyproducer.controller.bldownload.BLDownloadActivity
 import org.sil.storyproducer.tools.DrawerItemClickListener
 import org.sil.storyproducer.tools.file.isUriStorageMounted
+import org.sil.storyproducer.view.BaseActivityView
 import timber.log.Timber
 
 open class BaseActivity : AppCompatActivity(), BaseActivityView {
@@ -122,10 +126,6 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     override fun showMain() {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
-    }
-
-    override fun setupStoryListTabPages() {
-        // nothing to implement
     }
 
     // DKH - 05/12/2021

@@ -29,8 +29,4 @@ class SplashScreenActivity : BaseActivity() {
 
     }
 
-    override fun setupStoryListTabPages() {
-        // nothing to implement
-    }
-
 }

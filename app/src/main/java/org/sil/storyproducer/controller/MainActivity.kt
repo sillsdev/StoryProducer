@@ -200,7 +200,7 @@ class MainActivity : BaseActivity(), Serializable {
         }
     }
 
-    override fun setupStoryListTabPages() {
+    fun setupStoryListTabPages() {
         storyPageViewPager = findViewById(R.id.storyPageViewPager)
         storyPageViewPager.offscreenPageLimit = StoryPageTab.values().size
         storyPageTabLayout = findViewById(R.id.tabLayout)
