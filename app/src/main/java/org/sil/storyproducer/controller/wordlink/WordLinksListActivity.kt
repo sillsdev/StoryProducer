@@ -29,7 +29,6 @@ import org.sil.storyproducer.model.Workspace.termToWordLinkMap
 class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
     private lateinit var recyclerView: RecyclerView
-    private var mDrawerLayout: DrawerLayout? = null
     private var mSnackBar: Snackbar? = null
 
     private fun checkNoDatabaseMsg() {
@@ -69,7 +68,9 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
         checkNoDatabaseMsg()
 
-        setupDrawer()
+        if (mDrawerList == null) {
+            setupDrawer()
+        }
 
         supportActionBar?.setTitle(R.string.title_activity_wordlink_list)
     }
@@ -86,7 +87,11 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                mDrawerLayout!!.openDrawer(GravityCompat.START)
+                if(mDrawerLayout!!.isDrawerOpen(GravityCompat.START)){
+                    mDrawerLayout!!.closeDrawer(GravityCompat.START)
+                }else{
+                    mDrawerLayout!!.openDrawer(GravityCompat.START)
+                }
                 true
             }
             R.id.helpButton -> {
@@ -128,83 +133,6 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
         recyclerView.scrollToPosition(0)
         return true
     }
-
-    /**
-     * initializes the items that the drawer needs
-     */
-    private fun setupDrawer() {
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        val actionbar: ActionBar? = supportActionBar
-        actionbar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp)
-        }
-
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        supportActionBar!!.setHomeButtonEnabled(true)
-
-        mDrawerLayout = findViewById(R.id.drawer_layout)
-        //Lock from opening with left swipe
-        mDrawerLayout!!.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-        val navigationView: NavigationView = findViewById(R.id.nav_view)
-        navigationView.setNavigationItemSelectedListener { menuItem ->
-            // set item as selected to persist highlight
-//            menuItem.isChecked = true
-            // close drawer when item is tapped
-            mDrawerLayout!!.closeDrawers()
-
-            // Add code here to update the UI based on the item selected
-            // For example, swap UI fragments here
-            val intent: Intent
-            when (menuItem.itemId) {
-                R.id.nav_workspace -> {
-                    showSelectTemplatesFolderDialog()
-                    dismissNoDatabaseMsg()
-                }
-                R.id.nav_demo -> {
-                    Workspace.addDemoToWorkspace(this)
-                    controller.updateStories()  // refresh list of stories
-                }
-                R.id.nav_word_link_list -> {
-                    // Current fragment
-                    checkNoDatabaseMsg()
-                }
-//                R.id.nav_more_templates -> {
-//                    // DKH - 01/15/2022 Issue #571: Add a menu item for accessing templates from Google Drive
-//                    // A new menu item was added that opens a URL for the user to download templates.
-//                    // If we get here, the user wants to browse for more templates, so,
-//                    // open the URL in a new activity
-//                    Workspace.startDownLoadMoreTemplatesActivity(this)
-//                    this.finish()
-//                }
-                R.id.nav_stories -> {
-                    finish()  // finish this activity to reveal main activity
-                }
-                R.id.nav_registration -> {
-                    showRegistration(true)
-                }
-                R.id.nav_bloom_templates -> {
-                    showBLDownloadDialog(BLOOM_DL_TEMPLATES_ACTIVITY);
-                    this.finish()
-                }
-                R.id.nav_bloom_featured -> {
-                    showBLDownloadDialog(BLOOM_DL_FEATURED_ACTIVITY);
-                    this.finish()
-                }
-                R.id.nav_settings -> {
-                    showSettings()
-                }
-                R.id.nav_about -> {
-                    showAboutDialog()
-                    dismissNoDatabaseMsg()
-                }
-            }
-
-            true
-        }
-    }
-
 }
 
 class WordLinkListAdapter(private val wordLinkTerms: Array<String>, private val context: Context) : RecyclerView.Adapter<WordLinkListAdapter.WordLinkListViewHolder>() {

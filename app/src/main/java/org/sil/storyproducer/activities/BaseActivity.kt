@@ -9,19 +9,28 @@ import android.text.Html
 import android.text.Spanned
 import android.view.View
 import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+import android.widget.ArrayAdapter
+import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import io.reactivex.disposables.CompositeDisposable
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.*
+import org.sil.storyproducer.controller.BaseController
+import org.sil.storyproducer.controller.MainActivity
+import org.sil.storyproducer.controller.RegistrationActivity
+import org.sil.storyproducer.controller.SelectTemplatesFolderController
 import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.SELECT_TEMPLATES_FOLDER_REQUEST_CODES
 import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.UPDATE_TEMPLATES_FOLDER
+import org.sil.storyproducer.controller.SettingsActivity
+import org.sil.storyproducer.controller.bldownload.BLDownloadActivity
 import org.sil.storyproducer.controller.wordlink.WordLinksListActivity
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.view.BaseActivityView
-import org.sil.storyproducer.controller.bldownload.BLDownloadActivity
+import org.sil.storyproducer.tools.DrawerItemClickListener
 import org.sil.storyproducer.tools.file.isUriStorageMounted
+import org.sil.storyproducer.view.BaseActivityView
 import timber.log.Timber
 
 open class BaseActivity : AppCompatActivity(), BaseActivityView {
@@ -30,7 +39,13 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
     private var readingTemplatesDialog: AlertDialog? = null
     private var cancellingReadingTemplatesDialog: AlertDialog? = null
+
     protected val subscriptions = CompositeDisposable()
+
+    protected var mDrawerList: ListView? = null
+    protected var mDrawerLayout: androidx.drawerlayout.widget.DrawerLayout? = null
+    protected var mDrawerToggle: ActionBarDrawerToggle? = null
+    protected var mAdapter: ArrayAdapter<String>? = null
 
     companion object {
         const val BLOOM_DL_TEMPLATES_ACTIVITY = 0
@@ -112,6 +127,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
+
     // DKH - 05/12/2021
     // Issue #573: SP will hang/crash when submitting registration
     //
@@ -168,8 +184,11 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     }
 
     override fun hideReadingTemplatesDialog() {
-        readingTemplatesDialog?.dismiss()
-        readingTemplatesDialog = null
+        if (readingTemplatesDialog != null ) {
+            if (readingTemplatesDialog?.isShowing!!)
+                readingTemplatesDialog?.dismiss()
+            readingTemplatesDialog = null
+        }
         cancellingReadingTemplatesDialog?.dismiss()
         cancellingReadingTemplatesDialog = null
     }
@@ -197,7 +216,8 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         return if (Build.VERSION.SDK_INT >= 24) {
             Html.fromHtml(message, 0)
         } else {
-            Html.fromHtml(message) }
+            Html.fromHtml(message)
+        }
     }
 
     fun showAboutDialog() {
@@ -228,5 +248,51 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         startActivity(bldlIntent)
     }
 
+    /**
+     * initializes the items that the drawer needs
+     */
+    protected fun setupDrawer() {
+
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar!!.setHomeButtonEnabled(true)
+
+        mDrawerList = findViewById(R.id.navList)
+        mDrawerList!!.bringToFront()
+        mDrawerLayout = findViewById(R.id.drawer_layout)
+        //Lock from opening with left swipe
+        mDrawerLayout!!.setDrawerLockMode(androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        addDrawerItems()
+        mDrawerList!!.onItemClickListener = DrawerItemClickListener(this)
+        mDrawerToggle = object : ActionBarDrawerToggle(this, mDrawerLayout,
+                R.string.nav_open, R.string.nav_close) {
+
+            /** Called when a drawer has settled in a completely open state.  */
+            override fun onDrawerOpened(drawerView: View) {
+                super.onDrawerOpened(drawerView)
+                invalidateOptionsMenu() // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely closed state.  */
+            override fun onDrawerClosed(view: View) {
+                super.onDrawerClosed(view)
+                invalidateOptionsMenu() // creates call to onPrepareOptionsMenu()
+            }
+        }
+        mDrawerToggle!!.isDrawerIndicatorEnabled = true
+        mDrawerLayout!!.addDrawerListener(mDrawerToggle!!)
+        mDrawerToggle!!.syncState()
+    }
+
+    /**
+     * adds the items to the drawer from the array resources
+     */
+    private fun addDrawerItems() {
+        val menuArray = resources.getStringArray(R.array.global_menu_array)
+        mAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, menuArray)
+        mDrawerList!!.adapter = mAdapter
+    }
 
 }

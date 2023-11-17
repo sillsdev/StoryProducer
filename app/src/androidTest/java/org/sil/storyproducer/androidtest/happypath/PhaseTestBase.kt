@@ -92,7 +92,7 @@ abstract class PhaseTestBase {
             Espresso.onView(ViewMatchers.withId(R.id.drawer_layout)).perform(DrawerActions.open(GravityCompat.START))
             Thread.sleep(500)
             // click on add demo story to list command
-            Espresso.onView(ViewMatchers.withId(R.id.nav_demo)).perform(ViewActions.click())
+            Espresso.onView(ViewMatchers.withSubstring(Constants.resources.getString(R.string.copy_demo))).perform(ViewActions.click())
             Thread.sleep(2000)  // give it time to reload all stories
         }
 
