@@ -301,6 +301,7 @@
     <string name="more_templates">Download More Templates</string>
     <string name="bloom_templates">Download Bible Story Templates</string>
     <string name="bloom_featured">Download Featured Bloom Books</string>
+    <string name="bloom_library">Download Bloom Books</string>
 
     <!-- Main Story Page -->
     <string name="all_stories_tab">All Stories</string>
@@ -416,6 +417,12 @@
     <string name="rec_toolbar_play_playlist_button">Play playlist</string>
     <string name="multi_record_up_button">Up recordings</string>
 
-
+    <!-- Strings from Bloom Library Reader Web Download pages  -->
+    <string name="read_now">Read Now</string>
+    <string name="downloads_are_complete">Book downloads are complete</string>
+    <string name="download_is_complete">Book download is complete</string>
+    <string name="view_books">View books</string>
+    <string name="downloading_file">Downloading %s</string>
+    <string name="downloading_books">Downloading books</string>
 
 </resources>

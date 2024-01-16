@@ -30,4 +30,12 @@
 
     <color name="story_list_in_progress">@color/primary</color>
     <color name="story_list_completed">@color/darkGray</color>
+
+    <color name="colorBloomRed">#D65649</color>
+    <color name="colorDownloadButtons">#4DF63E</color>
+
+    <!-- I _think_ this is the standard Android button color...otherwise uses colorAccent above,
+    which doesn't have enough contrast -->
+    <color name="alert_buttons">#009688</color>
+
 </resources>

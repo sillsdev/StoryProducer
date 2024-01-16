@@ -1,9 +1,11 @@
 package org.sil.storyproducer.tools
 
 import android.app.Activity
+import android.content.Intent
 import android.view.View
 import android.widget.AdapterView
 import androidx.drawerlayout.widget.DrawerLayout
+import org.sil.bloom.reader.BloomLibraryActivity
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
 import org.sil.storyproducer.controller.MainActivity
@@ -47,24 +49,29 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
                 activity.showBLDownloadDialog(BaseActivity.BLOOM_DL_FEATURED_ACTIVITY)
                 if (activity !is MainActivity)
                     activity.finish()   // replace this activity with Featured Bloom Book DL activity on top
-                                        // but only if the current activity is not the Main Activity
             }
             4 -> {
+                val intent = Intent(MainActivity.mainActivity, BloomLibraryActivity::class.java)
+                MainActivity.mainActivity?.startActivity(intent)
+                if (activity !is MainActivity)
+                    activity.finish()   // replace this activity with Featured Bloom Book DL activity on top
+            }
+            5 -> {
                 if (activity !is WordLinksListActivity) {
                     activity.showWordLinksList()
                 }
             }
-            5 -> {
+            6 -> {
                 activity.showSelectTemplatesFolderDialog()
             }
-            6 -> {
+            7 -> {
                 Workspace.addDemoToWorkspace(activity)
                 activity.controller.updateStories()  // refresh list of stories
             }
-            7 -> {
+            8 -> {
                 activity.showSettings()
             }
-            8 -> {
+            9 -> {
                 activity.showAboutDialog()
             }
         }

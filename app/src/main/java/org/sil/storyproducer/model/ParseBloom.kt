@@ -13,12 +13,14 @@ import org.jsoup.select.Elements
 import org.sil.storyproducer.App
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
-import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.file.copyFromFilesDir
+import org.sil.storyproducer.tools.file.copyToFilesDir
+import org.sil.storyproducer.tools.file.getDocumentText
+import org.sil.storyproducer.tools.file.getStoryParcelFileDescriptor
 import java.io.File
-import java.util.*
 
 
-fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
+fun parseBloomHTML(context: Context, storyPath: DocumentFile, defaultLang : String? = null): Story? {
     //See if there is a BLOOM html file there
     val childDocs = storyPath.listFiles()
     var html_name = ""
@@ -61,7 +63,11 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         slides.add(it)
     } ?: return null
 
-    val lang = frontCoverSlideBuilder.lang
+    // open the story using the story's default language unless one was specified in 'defaultLang'
+    var lang = frontCoverSlideBuilder.lang
+    if (defaultLang != null && defaultLang.isNotEmpty()) {
+        lang = defaultLang
+    }
     story.langCode = lang
 
     val isSPAuthored = frontCoverSlideBuilder.isSPAuthored

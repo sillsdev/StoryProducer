@@ -35,7 +35,7 @@ public class BloomLibraryActivity extends AppCompatActivity implements MessageRe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mBloomActivity = this;
+        mBloomActivity = this;  // allow this activity to be accessed from the rest of SP
 
         // Adds back button
         ActionBar actionBar = getSupportActionBar();
@@ -109,6 +109,7 @@ public class BloomLibraryActivity extends AppCompatActivity implements MessageRe
 
             // We start the browser showing this specialized page in BloomLibrary.
 //            mBrowser.loadUrl(host + "/app-hosted-v1/langs");
+            // This specialized page in SP now allows for .bloomSource template downloads
             mBrowser.loadUrl(host + "/app-hosted-v1/langs?formats=bloomSource");
 
         } catch (Exception e) {

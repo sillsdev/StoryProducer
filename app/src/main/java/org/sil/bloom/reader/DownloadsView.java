@@ -351,7 +351,9 @@ public class DownloadsView extends LinearLayout {
                     ex.printStackTrace();
                     // Apart from logging, if it's not a parseable URI we'll just hope it's not one of ours.
                 }
-                // check to see if this is one of our Bloom downloaded files
+                // check to see if this is one of our (SP) Bloom downloaded files
+                // TODO: do we need to do more than check the file extension as the SP templates folder could be almost anywhere
+                // WAS: if (path == null || !path.contains("/" + BL_DOWNLOADS + "/")) {
                 String strExt = getFileExtensionFromUri(path);
                 if (!strExt.equals(".bloompub") && !strExt.equals(".bloomSource")) {
                     continue; // some unrelated download
@@ -543,39 +545,23 @@ public class DownloadsView extends LinearLayout {
             return;
         }
 
-       // String fileName = DownloadsView.getFileNameFromUriPath(downloadDestPath);
-
-
-//        File dest = new File(BookCollection.getLocalBooksDirectory(), fileName + ".bloompub");
-//        IOUtilities.copyFile(source.getPath(), dest.getPath());
-
-//        ReportDownloadAnalytics(downloadDescription, dest);
-//
-//        source.delete();
-//        // We need to copy the file before we tell the download manager to remove it, or the DM
-//        // will not just forget about it, but also delete the file!
-//        // See above for why we want to remove it.
-//        mDownloadManager.remove(downloadId);
-////        MainActivity.noteNewBookInPrivateDirectory(dest.getPath());
-//        // It's possible that during the download, we moved away from the activity that contains
-//        // the instance that initiated the download, but it still gets the notification.
-//        // We want to see the BookReadyView in whatever instance is actually visible.
-//        for (DownloadsView v: sInstances) {
-//            v.updateUiForNewInstance(dest.getPath());
-//        }
+        // The download has completed so make the app-hosted webview downloads page go back
+        // to the initial starting view, ready for the next webview download command
 
         while (mBloomActivity.mBrowser.canGoBack()) {
             mBloomActivity.mBrowser.goBack();
         }
 
+        // initiate the SP UpdateStories() method to process the downloaded story template
         if (MainActivity.Companion.getMainActivity() != null) {
-            MainActivity.Companion.getMainActivity().controller.updateStories(false); // process the downloaded templates
+            MainActivity.Companion.getMainActivity().controller.updateStories(false); // process all the downloaded templates
         }
 
-        mBloomActivity.onBackPressed();
+        mBloomActivity.onBackPressed(); // go back to main SP activity
 
     }
 
+// TODO: Is the equivalent needed in SP?
 //    private void ReportDownloadAnalytics(String downloadDescription, File dest) {
 //        String bookDbId = "";
 //        String lang = "";
@@ -629,18 +615,5 @@ public class DownloadsView extends LinearLayout {
         }
     }
 
-//    private void updateUiForNewInstance(String bookPath) {
-//        if (mDownloadsInProgress.size() > 0) {
-//            return; // still downloading, keep the progress bar.
-//        }
-//        if (getChildCount() > 0) {
-//            removeViewAt(0); // previous progress view
-//        }
-//
-//        BookReadyView brb = new BookReadyView(getContext(), this);
-//        brb.setBook(mRecentMultipleDownloads ? "" : bookPath);
-//        addView(brb, 0);
-//        updateLayoutForChangedChildList();
-//    }
 }
 
