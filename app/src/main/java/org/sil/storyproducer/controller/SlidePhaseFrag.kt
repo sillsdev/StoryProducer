@@ -42,7 +42,7 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
-            slideNum = this.arguments!!.getInt(SLIDE_NUM)
+            slideNum = this.requireArguments().getInt(SLIDE_NUM)
             viewModel = SlideViewModelBuilder(Workspace.activeStory.slides[slideNum]).build()
             slide = Workspace.activeStory.slides[slideNum]
         } catch (ex: Exception) {

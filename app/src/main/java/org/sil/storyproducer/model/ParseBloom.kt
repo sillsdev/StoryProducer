@@ -58,7 +58,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile, defaultLang : Stri
     }
 
     //add the title slide
-    val frontCoverSlideBuilder = BloomFrontCoverSlideBuilder()
+    val frontCoverSlideBuilder = BloomFrontCoverSlideBuilder(defaultLang.orEmpty())
     frontCoverSlideBuilder.build(context, storyPath, storyAudioPath, storyAudioMap, soup)?.also {
         slides.add(it)
     } ?: return null
@@ -69,6 +69,8 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile, defaultLang : Stri
         lang = defaultLang
     }
     story.langCode = lang
+
+    story.localTitle = frontCoverSlideBuilder.localTitle
 
     val isSPAuthored = frontCoverSlideBuilder.isSPAuthored
 

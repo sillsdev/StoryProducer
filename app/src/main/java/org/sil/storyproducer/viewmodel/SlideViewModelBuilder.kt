@@ -6,8 +6,6 @@ import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.media.graphics.TextOverlay
-import java.text.SimpleDateFormat
-import java.util.*
 
 class SlideViewModelBuilder(
         val slide: Slide
@@ -75,7 +73,7 @@ class SlideViewModelBuilder(
                 .filterNot { it.isEmpty() }
                 .elementAtOrNull(1).orEmpty().trim()                    // The 'first title idea' is the text we want to show.
                 .let { "\\[[^\\]]*\\]?".toRegex().replace(it, "") }     // Drop any content within square brackets.
-                .let { "[\\.\\!\\?].*".toRegex().replace(it, "") }      // remove everything after a .!? if there is one
+                .let { "[\\.\\!\\?].*".toRegex().replace(it) { matchResult -> matchResult.value.first().toString() } } // remove everything after a .!? if there is one (now keeping the first punctuation)
                 .let { "\\s+".toRegex().replace(it, " ") }              // Make all double spaces one space.
     }
 

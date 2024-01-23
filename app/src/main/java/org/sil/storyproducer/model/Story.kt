@@ -3,7 +3,6 @@ package org.sil.storyproducer.model
 
 import com.squareup.moshi.JsonClass
 import org.sil.storyproducer.model.logging.LogEntry
-import java.util.*
 
 
 internal const val PROJECT_DIR = "project"
@@ -46,6 +45,14 @@ class Story(var title: String, var slides: List<Slide>){
     var importAppVersion = ""
     var localCredits = ""
     var langCode = ""   // the language code used when parsing the Bloom html
+    var localTitle: String = ""
+        get() {
+        return if (field.isNotEmpty())
+                return field    // the localized story title for user display (no longer the sub-folder)
+
+            else
+                return title
+    }
 
     val inProgress: Boolean get() {
         for(slide in slides){

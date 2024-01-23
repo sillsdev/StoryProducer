@@ -8,13 +8,17 @@ import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import org.sil.storyproducer.tools.file.storyRelPathExists
 
-class BloomFrontCoverSlideBuilder : SlideBuilder() {
+class BloomFrontCoverSlideBuilder(defaultLang: String) : SlideBuilder() {
 
     lateinit var context: Context
 
     var lang = "*"
 
     var isSPAuthored = false    // set to true if found to be a SP authored book
+
+    val defaultLang = defaultLang
+
+    var localTitle = ""
 
     fun build(context: Context, storyPath: DocumentFile, storyAudioPath: DocumentFile, storyAudioMap: MutableMap<String, DocumentFile>, html: Document): Slide? {
         this.context = context
@@ -27,8 +31,14 @@ class BloomFrontCoverSlideBuilder : SlideBuilder() {
         val slideSubtitle = buildSubtitle(outsideFrontCover).orEmpty()
         val slideContent = buildContent(html)
         lang = getContentLanguage(html)
+        if (defaultLang.isNotEmpty())
+            lang = defaultLang;
+        localTitle = getContentLocalizedTitle(html, lang)
+        var contentTile = localTitle
+        if (contentTile.isEmpty())
+            contentTile = storyPath.name.orEmpty();
         isSPAuthored = getSPAuthored(html)
-        val frontCoverContent = FrontCoverContent(slideContent, storyPath.name.orEmpty(), slideSubtitle, lang)
+        val frontCoverContent = FrontCoverContent(slideContent, contentTile, slideSubtitle, lang)
 
         return Slide().apply {
             slideType = SlideType.FRONTCOVER
@@ -82,6 +92,18 @@ class BloomFrontCoverSlideBuilder : SlideBuilder() {
                 ?.trim()
                 ?: lang
     }
+
+    internal fun getContentLocalizedTitle(html: Document, lang: String): String {
+
+        return bloomDataDiv(html)
+            ?.children()
+            ?.select("div[data-book=bookTitle]")
+            ?.find { it.attr("lang") == lang }
+            ?.wholeText()
+            ?.trim()
+            ?: ""
+    }
+
 
     internal fun getSPAuthored(html: Document): Boolean {
 

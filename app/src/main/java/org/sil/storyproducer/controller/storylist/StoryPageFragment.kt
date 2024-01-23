@@ -173,10 +173,10 @@ class ListAdapter(context: Context,
             // Espresso test will have to reflect this new naming convention for stories in
             //     each tab.
             when (storyPageTab){
-                StoryPageTab.ALL_STORIES-> holder.txtTitle.text = story.title  // leave unchanged
-                StoryPageTab.IN_PROGRESS-> holder.txtTitle.text = story.title + " " // add 1 space for uniqueness
-                StoryPageTab.COMPLETED-> holder.txtTitle.text = story.title + "  " // add 2 spaces for uniqueness
-                else -> holder.txtTitle.text = story.title + "   "  // add 3 spaces for uniqueness
+                StoryPageTab.ALL_STORIES-> holder.txtTitle.text = story.localTitle  // leave unchanged
+                StoryPageTab.IN_PROGRESS-> holder.txtTitle.text = story.localTitle + " " // add 1 space for uniqueness
+                StoryPageTab.COMPLETED-> holder.txtTitle.text = story.localTitle + "  " // add 2 spaces for uniqueness
+                else -> holder.txtTitle.text = story.localTitle + "   "  // add 3 spaces for uniqueness
             }
 
             //TODO put th number 8 in some configuration.  What if the images are different sizes?
