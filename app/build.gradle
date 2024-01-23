@@ -81,30 +81,8 @@ android {
         }
     }
 
-
-    flavorDimensions "default" // To satisfy stupid new requirement in AS3.0.1
-
     productFlavors {
-        alpha {
-//            applicationIdSuffix ".alpha"
-//            versionNameSuffix "-alpha"
-//            signingConfig signingConfigs.release
-            dimension 'default'
-        }
-        beta {
-//            applicationIdSuffix ".beta"
-//            versionNameSuffix "-beta"
-//            signingConfig signingConfigs.release
-            dimension 'default'
-        }
-        production {
-            // no id or version name suffix; this is the main product.
-            signingConfig signingConfigs.release
-            dimension 'default'
-        }
     }
-
-
 
     packagingOptions {
         pickFirst("META-INF/atomicfu.kotlin_module")
