@@ -8,7 +8,11 @@ import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.ListView
+import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
@@ -33,7 +37,7 @@ class StoryListFrag : androidx.fragment.app.Fragment() {
 
         val lfview = inflater.inflate(R.layout.activity_list_view, container, false)
 
-        adapter = ListAdapter(context!!, R.layout.story_list_item, Workspace.Stories)
+        adapter = ListAdapter(requireContext(), R.layout.story_list_item, Workspace.Stories)
 
         val listView = lfview.findViewById<ListView>(R.id.story_list_view)
         // Assign adapter to ListView

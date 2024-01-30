@@ -22,7 +22,7 @@ class CommunityWorkFrag : MultiRecordFrag() {
 
         setPic(rootView!!.findViewById(R.id.fragment_image_view))
         setToolbar()
-        dispList = RecordingsListAdapter.RecordingsListModal(context!!, recordingToolbar)
+        dispList = RecordingsListAdapter.RecordingsListModal(requireContext(), recordingToolbar)
         dispList?.embedList(rootView!! as ViewGroup)
         dispList?.setSlideNum(slideNum)
         //This enables the "onStartedToolbarMedia" to be invoked.

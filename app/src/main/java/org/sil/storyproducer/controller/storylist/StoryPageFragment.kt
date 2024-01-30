@@ -85,7 +85,7 @@ class StoryPageFragment : Fragment() {
         val lfview = inflater.inflate(R.layout.story_list_container, container, false)
 
         // Apply the Stories to the Story List View
-        adapter = ListAdapter(context!!, R.layout.story_list_item, storyPageTab.getStoryList(), storyPageTab)
+        adapter = ListAdapter(requireContext(), R.layout.story_list_item, storyPageTab.getStoryList(), storyPageTab)
 
         listView = lfview.findViewById(R.id.story_list_view)
 
@@ -118,7 +118,7 @@ class StoryPageFragment : Fragment() {
         // Update CurrentStoryList so that when a click is made on a story, we know which
         // story is selected
         CurrentStoryList = storyList
-        adapter = ListAdapter(context!!, R.layout.story_list_item, storyList, storyPageTab)
+        adapter = ListAdapter(requireContext(), R.layout.story_list_item, storyList, storyPageTab)
         listView.adapter = adapter
         adapter.notifyDataSetChanged()
     }
