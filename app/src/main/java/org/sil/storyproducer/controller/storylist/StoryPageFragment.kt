@@ -8,7 +8,11 @@ import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.ListView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import org.sil.storyproducer.R
@@ -181,7 +185,7 @@ class ListAdapter(context: Context,
 
             //TODO put th number 8 in some configuration.  What if the images are different sizes?
             //Use the "second" image, because the first is just for the title screen.
-            holder.imgIcon.setImageBitmap(SlideService(context).getImage(1, 8, story))
+            holder.imgIcon.setImageBitmap(SlideService(context).getFirstImage(story))
             holder.txtSubTitle.text = story.slides[0].subtitle
             holder.txtLangCode.text = story.langCode
 
