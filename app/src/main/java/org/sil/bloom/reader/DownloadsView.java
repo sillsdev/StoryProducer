@@ -1,6 +1,7 @@
 package org.sil.bloom.reader;
 
 import static org.sil.bloom.reader.BloomLibraryActivity.mBloomActivity;
+import static org.sil.storyproducer.tools.file.FileIO.workspaceRelPathExists;
 
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -435,6 +436,13 @@ public class DownloadsView extends LinearLayout {
         if (lang != null && !lang.isEmpty())
             fileName = fileName + ".lang_" + lang;
         File downloadDest = new File(getDownloadDir(), fileName + strExt);
+        boolean isInWorkspace = workspaceRelPathExists(getContext(), fileName);
+        if (downloadDest.exists() || isInWorkspace) {
+            String message = String.format(getContext().getString(R.string.book_already_downloaded), lang);
+            Toast toast = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
+            toast.show();
+            return;
+        }
         Uri target = Uri.fromFile(downloadDest);
         request.setDestinationUri(target);
         request.setDescription(sourceUrl);

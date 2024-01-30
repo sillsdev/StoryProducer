@@ -408,11 +408,11 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<D
     var unzippedOk = false  // only delete file if it can be unzipped (installed) ok
     var storyName = file.name!!.substringBeforeLast(".","")
 
-    // remove any language extension embedded in the story name
-    val pattern = Regex("\\.lang_[a-z]+$")
-    val match = pattern.find(storyName)
-    if (match != null)
-        storyName = storyName.substring(0, storyName.length - match?.value.length)
+    // remove any language extension embedded in the story name [no longer needed]
+//    val pattern = Regex("\\.lang_[a-z]+$")
+//    val match = pattern.find(storyName)
+//    if (match != null)
+//        storyName = storyName.substring(0, storyName.length - match?.value.length)
 
     val internalFile = File("${context.filesDir}/${file.name!!}")
     var dlFileStr = bloomSourceAutoDLDir() + "/" + file.name

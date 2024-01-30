@@ -47,7 +47,9 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile, defaultLang : Stri
     // Here we generate additional parameters to the Bloom HTML parsing methods.
     // This is so that DocumentFile.listFiles() and DocumentFile.findFile() methods
     // are called the minimum number of times as they are quite slow to use:
-    var storyAudioPath = storyPath.findFile("audio") ?: return null
+    var storyAudioPath = storyPath.findFile("audio") ?: storyPath.createDirectory("audio") // create an 'audio' folder if necessary
+    if (storyAudioPath == null)
+        return null;    // could not create 'audio' folder
     var storyAudioFiles = storyAudioPath.listFiles()
 
     // In addition storyAudioMap enables a faster access to individual

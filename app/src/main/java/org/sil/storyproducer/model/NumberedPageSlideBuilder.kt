@@ -20,8 +20,10 @@ class NumberedPageSlideBuilder : SlideBuilder() {
 
         slide.prevPageImageFile = prevPageImage
         if (!parsePage(context, false, page, slide, storyPath, storyAudioPath, storyAudioMap, lang)) {
-            prevPageImage = slide.imageFile // no audio in this page but maybe an image file for next page
-            return null
+            if (isSPAuthored) {
+                prevPageImage = slide.imageFile // no audio in this page but maybe an image file for next page
+                return null;    // SP authored templates should contain audio
+            }
         }
         prevPageImage = ""  // this pages image was used so not available to next page
 
@@ -53,7 +55,10 @@ class NumberedPageSlideBuilder : SlideBuilder() {
             }
         }
 
-        return slide
+        if (!slide.prevPageImageFile.isNullOrEmpty() || !slide.imageFile.isNullOrEmpty() || !slide.content.trim().isNullOrEmpty())
+            return slide
+        else
+            return null // no matching image or text for this slide (test on SP authored templates)!!!!!
     }
 
     private fun textOf(bloomEditable: Element?): String {

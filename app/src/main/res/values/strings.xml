@@ -424,5 +424,6 @@
     <string name="view_books">View books</string>
     <string name="downloading_file">Downloading %s</string>
     <string name="downloading_books">Downloading books</string>
+    <string name="book_already_downloaded">The book has already been downloaded for language \'%s\'.</string>
 
 </resources>
