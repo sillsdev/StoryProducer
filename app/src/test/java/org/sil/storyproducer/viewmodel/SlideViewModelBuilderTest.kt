@@ -22,7 +22,7 @@ class SlideViewModelBuilderTest {
         }
 
         val viewModel = SlideViewModelBuilder(slide)
-        assertEquals("Jesus honored a poor widow", viewModel.getFrontCoverTitle())
+        assertEquals("Jesus honored a poor widow.", viewModel.getFrontCoverTitle())
     }
 
     @Test
