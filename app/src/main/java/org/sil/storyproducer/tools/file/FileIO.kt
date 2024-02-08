@@ -395,7 +395,7 @@ fun getChildInputStream(context: Context, relPath: String) : InputStream? {
 
 fun deleteUriFile(context: Context, uri: Uri) : Boolean {
     return if (isUriAutomaticallyCreated(uri))
-        File(uri.path!!).delete()
+        File(uri.path!!).deleteRecursively()
     else
         DocumentsContract.deleteDocument(context.contentResolver, uri)
 }

@@ -425,5 +425,7 @@
     <string name="downloading_file">Downloading %s</string>
     <string name="downloading_books">Downloading books</string>
     <string name="book_already_downloaded">The book has already been downloaded for language \'%s\'.</string>
+    <string name="del_story_title">Story Deletion</string>
+    <string name="del_story_message">Do you want to delete the story \"%1$s\" from your device? Deleting this story will delete any audio recordings you have made in this story.</string>
 
 </resources>

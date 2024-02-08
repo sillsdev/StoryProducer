@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentTransaction
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.model.Story
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.service.SlideService
 
 /**
@@ -159,6 +160,15 @@ class ListAdapter(context: Context,
 
         if(position <= stories.size){
             val story = stories[position]
+
+            holder.imgIcon.setOnLongClickListener {
+                MainActivity.mainActivity?.deleteStory(Workspace.Stories[position]);
+                true;
+            }
+
+            holder.imgIcon.setOnClickListener {
+                MainActivity.mainActivity?.switchToStory(Workspace.Stories[position])
+            }
 
             // 09/11/2021 - DKH: Update for Testing Abstraction #566
             // ALL_STORIES, IN_PROGRESS, COMPLETED are the tabs in the "Story Templates" view.

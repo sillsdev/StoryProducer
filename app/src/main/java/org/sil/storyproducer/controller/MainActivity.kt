@@ -29,6 +29,7 @@ import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.ConnectivityStatus
 import org.sil.storyproducer.tools.Network.VolleySingleton
+import org.sil.storyproducer.tools.file.deleteWorkspaceFile
 import java.io.Serializable
 import kotlin.system.exitProcess
 
@@ -156,6 +157,18 @@ class MainActivity : BaseActivity(), Serializable {
         val intent = Intent(this.applicationContext, Workspace.activePhase.getTheClass())
         startActivity(intent)
 //        finish()  // removed to keep back button working on MainActivity
+    }
+    fun deleteStory(story: Story) {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.del_story_title)
+            .setMessage(getString(R.string.del_story_message, story.localTitle))
+            .setPositiveButton(R.string.yes) { _, _ ->
+                deleteWorkspaceFile(this.applicationContext, story.title)
+                controller.updateStories()  // refresh list of stories
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .create()
+            .show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
