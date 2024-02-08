@@ -65,6 +65,8 @@ class MainActivity : BaseActivity(), Serializable {
         if (mDrawerList == null) {
             setupDrawer()             // also added to onStart()
             setupStoryListTabPages()  // ditto
+        } else {
+            setupStoryListTabPages()    // Updates any 'in-progress' story markers
         }
 
         if (!Workspace.isInitialized) {
@@ -135,6 +137,8 @@ class MainActivity : BaseActivity(), Serializable {
         if (mDrawerList == null) {
             setupDrawer()
             setupStoryListTabPages()
+        } else {
+            setupStoryListTabPages()    // Updates any 'in-progress' story markers
         }
 
     }
