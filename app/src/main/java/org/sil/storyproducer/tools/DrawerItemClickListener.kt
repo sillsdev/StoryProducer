@@ -45,33 +45,33 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
                     activity.finish()   // replace this activity with SP Bloom Template DL activity on top
                                         // but only if the current activity is not the Main Activity
             }
+//            3 -> {
+//                activity.showBLDownloadDialog(BaseActivity.BLOOM_DL_FEATURED_ACTIVITY)
+//                if (activity !is MainActivity)
+//                    activity.finish()   // replace this activity with Featured Bloom Book DL activity on top
+//            }
             3 -> {
-                activity.showBLDownloadDialog(BaseActivity.BLOOM_DL_FEATURED_ACTIVITY)
-                if (activity !is MainActivity)
-                    activity.finish()   // replace this activity with Featured Bloom Book DL activity on top
-            }
-            4 -> {
                 val intent = Intent(MainActivity.mainActivity, BloomLibraryActivity::class.java)
                 MainActivity.mainActivity?.startActivity(intent)
                 if (activity !is MainActivity)
                     activity.finish()   // replace this activity with Featured Bloom Book DL activity on top
             }
-            5 -> {
+            4 -> {
                 if (activity !is WordLinksListActivity) {
                     activity.showWordLinksList()
                 }
             }
-            6 -> {
+            5 -> {
                 activity.showSelectTemplatesFolderDialog()
             }
-            7 -> {
+            6 -> {
                 Workspace.addDemoToWorkspace(activity)
                 activity.controller.updateStories()  // refresh list of stories
             }
-            8 -> {
+            7 -> {
                 activity.showSettings()
             }
-            9 -> {
+            8 -> {
                 activity.showAboutDialog()
             }
         }

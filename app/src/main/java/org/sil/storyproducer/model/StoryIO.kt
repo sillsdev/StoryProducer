@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 
 fun Story.toJson(context: Context){
@@ -245,7 +246,8 @@ fun bloomSourceZipExt() : String {return ".bloomSource"}
 
 fun isZipped(fileName: String?): Boolean {
     return fileName?.substringAfterLast(".", "")?.let {
-        arrayOf("zip", "bloom", "bloomd", "bloomSource", "bloompub").contains(it)
+        Locale.getDefault()
+        arrayOf("zip", "bloom", "bloomd", "bloomsource", "bloompub").contains(it.lowercase(Locale.getDefault()))
     } == true
 }
 // copy a file to the new location
@@ -412,7 +414,7 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<D
 //    val pattern = Regex("\\.lang_[a-z]+$")
 //    val match = pattern.find(storyName)
 //    if (match != null)
-//        storyName = storyName.substring(0, storyName.length - match?.value.length)
+//        storyName = storyName.substring(0, storyName.length - match.value.length)
 
     val internalFile = File("${context.filesDir}/${file.name!!}")
     var dlFileStr = bloomSourceAutoDLDir() + "/" + file.name

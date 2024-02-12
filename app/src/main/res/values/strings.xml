@@ -300,7 +300,7 @@
     <string name="copy_demo">Add Demo to Story List</string>
     <string name="more_templates">Download More Templates</string>
     <string name="bloom_templates">Download Bible Story Templates</string>
-    <string name="bloom_featured">Download Featured Bloom Books</string>
+<!--    <string name="bloom_featured">Download Featured Bloom Books</string>-->
     <string name="bloom_library">Download Bloom Books</string>
 
     <!-- Main Story Page -->

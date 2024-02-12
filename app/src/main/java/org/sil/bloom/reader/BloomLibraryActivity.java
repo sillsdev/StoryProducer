@@ -43,7 +43,7 @@ public class BloomLibraryActivity extends AppCompatActivity implements MessageRe
                 actionBar.setDisplayHomeAsUpEnabled(true);
 
         // Allows remote debugging of the WebView content using Chrome over a USB cable.
-        WebView.setWebContentsDebuggingEnabled(true);
+//        WebView.setWebContentsDebuggingEnabled(true);
 
         setContentView(R.layout.activity_bloom_library);
         mBrowser = this.findViewById(R.id.browser);
@@ -61,7 +61,7 @@ public class BloomLibraryActivity extends AppCompatActivity implements MessageRe
         mAppInterface = new WebAppInterface(this);
         // See the class comment on WebAppInterface for how this allows Javascript in
         // the WebView to make callbacks to our receiveMessage method.
-        mBrowser.addJavascriptInterface(mAppInterface, "ParentProxy");
+//        mBrowser.addJavascriptInterface(mAppInterface, "ParentProxy");
         final WebSettings webSettings = mBrowser.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setMediaPlaybackRequiresUserGesture(false);
