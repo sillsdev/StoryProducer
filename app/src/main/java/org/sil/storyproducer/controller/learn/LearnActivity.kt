@@ -3,12 +3,12 @@ package org.sil.storyproducer.controller.learn
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import androidx.core.content.res.ResourcesCompat
 import android.view.View
 import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.constraintlayout.widget.Guideline
+import androidx.core.content.res.ResourcesCompat
+import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SLIDE_NUM
@@ -120,6 +120,10 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         }
         videoSeekBar?.max = slideStartTimes.last()
 
+        // hide scripture text view as only needed if no audio
+        val scriptureTextView = findViewById<TextView>(R.id.fragment_scripture_text)
+        scriptureTextView.visibility = View.INVISIBLE
+
         // Adjust the Guideline control to scale the video view for 4:3 videos (also used for 16:9 videos)
         findViewById<Guideline>(R.id.guideline)
             ?.setGuidelineBegin((resources.displayMetrics.widthPixels.toFloat() / 4f * 3f).toInt())
@@ -143,6 +147,8 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
                     //at the end of video so special case
                     pauseStoryAudio()
                     showStartPracticeSnackBar()
+                    val scriptureTextView = findViewById<TextView>(R.id.fragment_scripture_text)
+                    scriptureTextView.visibility = View.INVISIBLE
                 } else {
                     //just play the next slide!
                     videoSeekBar?.progress = slideStartTimes[curPos+1]
@@ -262,6 +268,13 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         }
     }
 
+    private fun setScriptureText(textView: TextView) {
+        if (curPos < 0 || curPos >= story.slides.size)
+            return
+        val slide = story.slides[curPos]
+        textView.text = slide.content
+    }
+
     /**
      * Plays the audio
      */
@@ -274,11 +287,16 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         narrationPlayer.setVolume(if (isVolumeOn) 1.0f else 0.0f) //set the volume on or off based on the boolean
         narrationPlayer.playAudio()
         playButton!!.setImageResource(R.drawable.ic_pause_white_48dp)
+        val scriptureTextView = findViewById<TextView>(R.id.fragment_scripture_text)
         if (narrationPlayer.isDummyAudio) { // if this slide has dummy audio show missing audio message
-            Snackbar.make(findViewById(R.id.drawer_layout),
+            Snackbar.make(findViewById(R.id.activity_learn),
                     getString(R.string.translate_revise_playback_no_lwc_audio, Workspace.activeStory.langCode),
-                                AudioPlayer.dummyDurationInMilliseconds.toInt() - 100)
+                                AudioPlayer.dummyDurationInMilliseconds.toInt() - 600)
                     .setAction("Action", null).show()
+            scriptureTextView.visibility = View.VISIBLE
+            setScriptureText(scriptureTextView)
+        } else {
+            scriptureTextView.visibility = View.INVISIBLE
         }
     }
 
