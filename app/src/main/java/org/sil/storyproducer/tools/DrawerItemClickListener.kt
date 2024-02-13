@@ -54,7 +54,7 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
                 val intent = Intent(MainActivity.mainActivity, BloomLibraryActivity::class.java)
                 MainActivity.mainActivity?.startActivity(intent)
                 if (activity !is MainActivity)
-                    activity.finish()   // replace this activity with Featured Bloom Book DL activity on top
+                    activity.finish()   // replace this activity with Bloom Library WebView activity on top
             }
             4 -> {
                 if (activity !is WordLinksListActivity) {
