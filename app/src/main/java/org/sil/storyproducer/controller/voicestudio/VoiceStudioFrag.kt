@@ -39,7 +39,7 @@ class VoiceStudioFrag : MultiRecordFrag() {
         //Make the text bigger if it is the front Page.
         if(Workspace.activeStory.slides[slideNum].slideType == SlideType.FRONTCOVER){
             slideText?.setTextSize(COMPLEX_UNIT_DIP,24f)
-            slideText?.hint = context!!.getString(R.string.voice_studio_edit_title_text_hint)
+            slideText?.hint = requireContext().getString(R.string.voice_studio_edit_title_text_hint)
         }
 
         setupCameraAndEditButton()
@@ -93,7 +93,7 @@ class VoiceStudioFrag : MultiRecordFrag() {
      */
     private fun closeKeyboard(viewToFocus: View?) {
         if (viewToFocus != null) {
-            val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            val imm = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(viewToFocus.windowToken, 0)
             viewToFocus.requestFocus()
         }

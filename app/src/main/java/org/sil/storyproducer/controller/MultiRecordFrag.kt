@@ -148,11 +148,11 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
             if (resultCode == Activity.RESULT_OK && requestCode == ACTIVITY_SELECT_IMAGE) {
                 //copy image into workspace
                 var uri = data?.data
-                if (uri == null) uri = FileProvider.getUriForFile(context!!, "${BuildConfig.APPLICATION_ID}.fileprovider", tempPicFile!!)   //it was a camera intent
+                if (uri == null) uri = FileProvider.getUriForFile(requireContext(), "${BuildConfig.APPLICATION_ID}.fileprovider", tempPicFile!!)   //it was a camera intent
                 // SP422 - DKH 5/6/2022 Enable images on all the slides to be swapped out via the camera tool
                 // Put extension in a common place for use by others
                 Workspace.activeStory.slides[slideNum].imageFile = "$PROJECT_DIR/${slideNum}${Workspace.activeStory.slides[slideNum].localSlideExtension}"
-                copyToWorkspacePath(context!!, uri!!,
+                copyToWorkspacePath(requireContext(), uri!!,
                         "${Workspace.activeStory.title}/${Workspace.activeStory.slides[slideNum].imageFile}")
                 tempPicFile?.delete()
                 setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)

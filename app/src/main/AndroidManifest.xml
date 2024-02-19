@@ -75,9 +75,6 @@
             android:label="@string/title_activity_bldownload"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".controller.WorkspaceUpdateActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".activities.WelcomeDialogActivity"
             android:screenOrientation="portrait" /> <!-- Learn -->
         <activity
@@ -101,6 +98,10 @@
         <activity
             android:name=".controller.wordlink.WordLinksListActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name="org.sil.bloom.reader.BloomLibraryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|screenLayout"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

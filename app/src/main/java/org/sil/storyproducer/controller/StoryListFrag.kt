@@ -8,7 +8,11 @@ import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.ListView
+import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
@@ -33,7 +37,7 @@ class StoryListFrag : androidx.fragment.app.Fragment() {
 
         val lfview = inflater.inflate(R.layout.activity_list_view, container, false)
 
-        adapter = ListAdapter(context!!, R.layout.story_list_item, Workspace.Stories)
+        adapter = ListAdapter(requireContext(), R.layout.story_list_item, Workspace.Stories)
 
         val listView = lfview.findViewById<ListView>(R.id.story_list_view)
         // Assign adapter to ListView
@@ -69,10 +73,10 @@ class ListAdapter(context: Context, private val resourceId: Int, private val sto
 
         if(position <= stories.size){
             val story = stories[position]
-            holder.txtTitle.text = story.title
+            holder.txtTitle.text = story.localTitle
             //TODO put th number 8 in some configuration.  What if the images are different sizes?
             //Use the "second" image, because the first is just for the title screen.
-            holder.imgIcon.setImageBitmap(SlideService(context).getImage(1, 8, story))
+            holder.imgIcon.setImageBitmap(SlideService(context).getFirstImage(story))
             holder.txtSubTitle.text = story.slides[0].subtitle
             holder.txtLangCode.text = story.langCode
         }

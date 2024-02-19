@@ -113,16 +113,16 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
     }
 
     private fun makeLogView() {
-        val alertDialog = androidx.appcompat.app.AlertDialog.Builder(context!!)
-        val linf = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val alertDialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        val linf = requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val dialogLayout = linf.inflate(R.layout.activity_log_view, null)
 
         val listView = dialogLayout!!.findViewById<ListView>(R.id.log_list_view)
-        val lla = LogListAdapter(context!!, slideNum)
+        val lla = LogListAdapter(requireContext(), slideNum)
         listView.adapter = lla
         val tb = dialogLayout.findViewById<Toolbar>(R.id.toolbar2)
         //Note that user-facing slide number is 1-based while it is 0-based in code.
-        tb.title = context!!.getString(R.string.logging_slide_log_view_title, slideNum)
+        tb.title = requireContext().getString(R.string.logging_slide_log_view_title, slideNum)
         val exit = dialogLayout.findViewById<ImageButton>(R.id.exitButton)
         val learnCB = dialogLayout.findViewById<CheckBox>(R.id.LearnCheckBox)
         val draftCB = dialogLayout.findViewById<CheckBox>(R.id.DraftCheckBox)
@@ -173,7 +173,7 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
                 LinearLayout.LayoutParams.MATCH_PARENT)
         // Apply layout properties
         password.layoutParams = params
-        val passwordDialog = AlertDialog.Builder(context!!)
+        val passwordDialog = AlertDialog.Builder(requireContext())
                 .setTitle(getString(R.string.consultant_password_title))
                 .setMessage(getString(R.string.consultant_password_message))
                 .setView(password)
@@ -208,7 +208,7 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
      */
     // SP645 - BW 06/15/2022 new Affirm Accuracy Check dialog for SIL Story Producer
     private fun showAffirmAccuracyCheckDialog() {
-        val affirmDialog = AlertDialog.Builder(context!!)
+        val affirmDialog = AlertDialog.Builder(requireContext())
                 .setTitle(getString(R.string.affirm_accuracy_check_title))
                 .setMessage(getString(R.string.affirm_accuracy_check_message))
                 .setPositiveButton(getString(R.string.yes), null)
@@ -249,7 +249,7 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
      * Launches a dialog for requesting a Bible accuracy check, when user did not affirm it
      */
     private fun showRequestAccuracyCheckDialog() {
-        val requestAccCkDialog = AlertDialog.Builder(context!!)
+        val requestAccCkDialog = AlertDialog.Builder(requireContext())
                 .setMessage(getString(R.string.request_accuracy_check_message))
                 .setPositiveButton(getString(R.string.ok), null)
                 .create()

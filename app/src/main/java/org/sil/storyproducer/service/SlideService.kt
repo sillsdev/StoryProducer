@@ -1,7 +1,12 @@
 package org.sil.storyproducer.service
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Rect
 import androidx.preference.PreferenceManager
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Story
@@ -17,6 +22,14 @@ class SlideService(val context: Context) {
         } else {
             return getImage(story.slides[slideNum].imageFile, sampleSize, false, story)
         }
+    }
+    fun getFirstImage(story: Story): Bitmap {
+        for (s in 1..story.slides.size) {
+            if (!shouldShowDefaultImage(s, story)) {
+                return getImage(s, 8, story);
+            }
+        }
+        return getImage(1, 8, story);
     }
 
     fun shouldShowDefaultImage(slideNum: Int, story: Story): Boolean {

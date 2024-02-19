@@ -42,7 +42,7 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
-            slideNum = this.arguments!!.getInt(SLIDE_NUM)
+            slideNum = this.requireArguments().getInt(SLIDE_NUM)
             viewModel = SlideViewModelBuilder(Workspace.activeStory.slides[slideNum]).build()
             slide = Workspace.activeStory.slides[slideNum]
         } catch (ex: Exception) {
@@ -75,7 +75,7 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
         referenceAudioPlayer = AudioPlayer()
         val refAudioFile = Workspace.activePhase.getReferenceAudioFile(slideNum)
         if (refAudioFile.isNotEmpty())
-            referenceAudioPlayer.setStorySource(context!!, refAudioFile)
+            referenceAudioPlayer.setStorySource(requireContext(), refAudioFile)
 
         referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
@@ -167,7 +167,7 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
 
     private fun setReferenceAudioButton() {
         referencePlayButton!!.setOnClickListener {
-            if (!storyRelPathExists(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
+            if (!storyRelPathExists(requireContext(),Workspace.activePhase.getReferenceAudioFile(slideNum))) {
                 // Now using an appropriate "no audio" string for all phases
                 if (Workspace.activePhase.phaseType == PhaseType.TRANSLATE_REVISE)
                     Snackbar.make(rootView!!,

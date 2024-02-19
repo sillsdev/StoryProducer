@@ -8,7 +8,11 @@ import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.ListView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import org.sil.storyproducer.R
@@ -85,7 +89,7 @@ class StoryPageFragment : Fragment() {
         val lfview = inflater.inflate(R.layout.story_list_container, container, false)
 
         // Apply the Stories to the Story List View
-        adapter = ListAdapter(context!!, R.layout.story_list_item, storyPageTab.getStoryList(), storyPageTab)
+        adapter = ListAdapter(requireContext(), R.layout.story_list_item, storyPageTab.getStoryList(), storyPageTab)
 
         listView = lfview.findViewById(R.id.story_list_view)
 
@@ -118,7 +122,7 @@ class StoryPageFragment : Fragment() {
         // Update CurrentStoryList so that when a click is made on a story, we know which
         // story is selected
         CurrentStoryList = storyList
-        adapter = ListAdapter(context!!, R.layout.story_list_item, storyList, storyPageTab)
+        adapter = ListAdapter(requireContext(), R.layout.story_list_item, storyList, storyPageTab)
         listView.adapter = adapter
         adapter.notifyDataSetChanged()
     }
@@ -173,15 +177,15 @@ class ListAdapter(context: Context,
             // Espresso test will have to reflect this new naming convention for stories in
             //     each tab.
             when (storyPageTab){
-                StoryPageTab.ALL_STORIES-> holder.txtTitle.text = story.title  // leave unchanged
-                StoryPageTab.IN_PROGRESS-> holder.txtTitle.text = story.title + " " // add 1 space for uniqueness
-                StoryPageTab.COMPLETED-> holder.txtTitle.text = story.title + "  " // add 2 spaces for uniqueness
-                else -> holder.txtTitle.text = story.title + "   "  // add 3 spaces for uniqueness
+                StoryPageTab.ALL_STORIES-> holder.txtTitle.text = story.localTitle  // leave unchanged
+                StoryPageTab.IN_PROGRESS-> holder.txtTitle.text = story.localTitle + " " // add 1 space for uniqueness
+                StoryPageTab.COMPLETED-> holder.txtTitle.text = story.localTitle + "  " // add 2 spaces for uniqueness
+                else -> holder.txtTitle.text = story.localTitle + "   "  // add 3 spaces for uniqueness
             }
 
             //TODO put th number 8 in some configuration.  What if the images are different sizes?
             //Use the "second" image, because the first is just for the title screen.
-            holder.imgIcon.setImageBitmap(SlideService(context).getImage(1, 8, story))
+            holder.imgIcon.setImageBitmap(SlideService(context).getFirstImage(story))
             holder.txtSubTitle.text = story.slides[0].subtitle
             holder.txtLangCode.text = story.langCode
 

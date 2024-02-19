@@ -15,14 +15,20 @@ import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.sil.storyproducer.App
 import org.sil.storyproducer.R
-import org.sil.storyproducer.tools.*
-import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.file.deleteWorkspaceFile
+import org.sil.storyproducer.tools.file.getChildOutputStream
+import org.sil.storyproducer.tools.file.getDocumentFileFromUri
+import org.sil.storyproducer.tools.file.getWinCompatUriString
+import org.sil.storyproducer.tools.file.wordLinkListFromJson
+import org.sil.storyproducer.tools.file.workspaceRelPathExists
+import org.sil.storyproducer.tools.getFreeEmulatedExternalMemoryFile
+import org.sil.storyproducer.tools.getFreeInternalMemoryFile
+import org.sil.storyproducer.tools.getMaxFreeExtMemoryFile
 import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
 import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.Date
 
 
 internal const val SLIDE_NUM = "CurrentSlideNum"
@@ -531,7 +537,7 @@ object Workspace {
     private fun storyDownloadedBloomFiles(current : List<DocumentFile>): List<DocumentFile> {
         var fileDownloadDir = File(bloomSourceAutoDLDir())
         var blExt = bloomSourceZipExt()
-        val dlFiles = fileDownloadDir.listFiles()?.filter { it.name.endsWith(blExt) }
+        val dlFiles = fileDownloadDir.listFiles()?.filter { it.name.endsWith(blExt) || it.name.endsWith(".bloompub")  }
         var dlFilesList : MutableList<DocumentFile> = ArrayList()
         for (i in 0 until dlFiles?.size!!) {
             val installFilename = dlFiles[i].name
@@ -545,10 +551,15 @@ object Workspace {
     }
 
     fun buildStory(context: Context, storyPath: DocumentFile): Story? {
+        var lang : String? = null   // search for a language and use it if in the story path
+        val pattern = Regex("\\.lang_[a-z]+")
+        val match = pattern.find(storyPath.name!!)
+        if (match != null)
+            lang = match.value.substring(6)
         return copyOldStory(context, storyPath, workdocfile, previousWorkDocFile)
                 ?.let { oldStoryPath -> unzipIfZipped(context, oldStoryPath, workdocfile.listFiles()) }
                 ?.let { storyFolder -> pathOf(storyFolder) }
-                ?.let { storyPath1 -> parseStoryIfPresent(context, storyPath1) }
+                ?.let { storyPath1 -> parseStoryIfPresent(context, storyPath1, false, lang) }
                 ?.let { story -> migrateStory(context, story) }
         /*  Daniel March and BW figured this is what the lambdas are doing...
         var OldStoryPath = copyOldStory(context, storyPath, workdocfile, previousWorkDocFile)

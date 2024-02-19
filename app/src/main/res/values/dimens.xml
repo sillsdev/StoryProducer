@@ -21,5 +21,4 @@
     <dimen name="wordlink_layout_margin">8dp</dimen>
     <dimen name="wordlink_text_margin">16dp</dimen>
     <dimen name="app_bar_height">180dp</dimen>
-
 </resources>

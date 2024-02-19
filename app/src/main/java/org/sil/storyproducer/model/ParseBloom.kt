@@ -13,12 +13,14 @@ import org.jsoup.select.Elements
 import org.sil.storyproducer.App
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
-import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.file.copyFromFilesDir
+import org.sil.storyproducer.tools.file.copyToFilesDir
+import org.sil.storyproducer.tools.file.getDocumentText
+import org.sil.storyproducer.tools.file.getStoryParcelFileDescriptor
 import java.io.File
-import java.util.*
 
 
-fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
+fun parseBloomHTML(context: Context, storyPath: DocumentFile, defaultLang : String? = null): Story? {
     //See if there is a BLOOM html file there
     val childDocs = storyPath.listFiles()
     var html_name = ""
@@ -45,7 +47,9 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     // Here we generate additional parameters to the Bloom HTML parsing methods.
     // This is so that DocumentFile.listFiles() and DocumentFile.findFile() methods
     // are called the minimum number of times as they are quite slow to use:
-    var storyAudioPath = storyPath.findFile("audio") ?: return null
+    var storyAudioPath = storyPath.findFile("audio") ?: storyPath.createDirectory("audio") // create an 'audio' folder if necessary
+    if (storyAudioPath == null)
+        return null;    // could not create 'audio' folder
     var storyAudioFiles = storyAudioPath.listFiles()
 
     // In addition storyAudioMap enables a faster access to individual
@@ -56,13 +60,19 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     }
 
     //add the title slide
-    val frontCoverSlideBuilder = BloomFrontCoverSlideBuilder()
+    val frontCoverSlideBuilder = BloomFrontCoverSlideBuilder(defaultLang.orEmpty())
     frontCoverSlideBuilder.build(context, storyPath, storyAudioPath, storyAudioMap, soup)?.also {
         slides.add(it)
     } ?: return null
 
-    val lang = frontCoverSlideBuilder.lang
+    // open the story using the story's default language unless one was specified in 'defaultLang'
+    var lang = frontCoverSlideBuilder.lang
+    if (defaultLang != null && defaultLang.isNotEmpty()) {
+        lang = defaultLang
+    }
     story.langCode = lang
+
+    story.localTitle = frontCoverSlideBuilder.localTitle
 
     val isSPAuthored = frontCoverSlideBuilder.isSPAuthored
 

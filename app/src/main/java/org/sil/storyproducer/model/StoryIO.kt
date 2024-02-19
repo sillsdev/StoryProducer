@@ -11,12 +11,20 @@ import net.lingala.zip4j.ZipFile
 import org.sil.storyproducer.App
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
-import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.file.copyToFilesDir
+import org.sil.storyproducer.tools.file.deleteWorkspaceFile
+import org.sil.storyproducer.tools.file.getChildOutputStream
+import org.sil.storyproducer.tools.file.getDocumentText
+import org.sil.storyproducer.tools.file.getStoryChildOutputStream
+import org.sil.storyproducer.tools.file.getWorkspaceUri
+import org.sil.storyproducer.tools.file.storyRelPathExists
+import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 
 fun Story.toJson(context: Context){
@@ -174,7 +182,7 @@ fun isValidStory(context: Context, storyPath: DocumentFile) : Boolean {
     return true
 }
 
-fun parseStoryIfPresent(context: Context, storyPath: DocumentFile, validateOnly: Boolean = false): Story? {
+fun parseStoryIfPresent(context: Context, storyPath: DocumentFile, validateOnly: Boolean = false, lang : String? = null): Story? {
     var story: Story? = null
     //Check if path is path
     if(!storyPath.isDirectory) return null
@@ -196,7 +204,7 @@ fun parseStoryIfPresent(context: Context, storyPath: DocumentFile, validateOnly:
         if (validateOnly)
             return null // no valid story.json
         try {
-            story = parseBloomHTML(context, storyPath)
+            story = parseBloomHTML(context, storyPath, lang)
         } catch (e : Exception){
             FirebaseCrashlytics.getInstance().recordException(e)
             story = null
@@ -238,7 +246,8 @@ fun bloomSourceZipExt() : String {return ".bloomSource"}
 
 fun isZipped(fileName: String?): Boolean {
     return fileName?.substringAfterLast(".", "")?.let {
-        arrayOf("zip", "bloom", "bloomd", "bloomSource").contains(it)
+        Locale.getDefault()
+        arrayOf("zip", "bloom", "bloomd", "bloomsource", "bloompub").contains(it.lowercase(Locale.getDefault()))
     } == true
 }
 // copy a file to the new location
@@ -399,7 +408,14 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<D
     }
 
     var unzippedOk = false  // only delete file if it can be unzipped (installed) ok
-    val storyName = file.name!!.substringBeforeLast(".","")
+    var storyName = file.name!!.substringBeforeLast(".","")
+
+    // remove any language extension embedded in the story name [no longer needed]
+//    val pattern = Regex("\\.lang_[a-z]+$")
+//    val match = pattern.find(storyName)
+//    if (match != null)
+//        storyName = storyName.substring(0, storyName.length - match.value.length)
+
     val internalFile = File("${context.filesDir}/${file.name!!}")
     var dlFileStr = bloomSourceAutoDLDir() + "/" + file.name
     var dlFile = File(dlFileStr)
