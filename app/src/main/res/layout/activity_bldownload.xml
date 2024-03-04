@@ -28,17 +28,50 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <LinearLayout
+        android:id="@+id/layout_filter_lang"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:orientation="horizontal"
+        android:minHeight="64dp"
+        app:layout_constraintTop_toBottomOf="@id/constraintLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        >
+
+        <TextView android:id="@+id/bldl_lang_filter_label"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="center_vertical"
+            android:text="@string/bldl_lang_filter"
+            android:contentDescription="@string/communication_preference_hint"
+            android:textSize="@dimen/large_text"/>
+
+        <Spinner android:id="@+id/bldl_lang_choices"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_toEndOf="@+id/trainer_communication_label"
+            android:gravity="center_vertical"
+            android:spinnerMode="dialog" />
+
+
+    </LinearLayout>
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/bldl_card_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:scrollbars="vertical"
+        app:layout_constraintTop_toBottomOf="@id/layout_filter_lang"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/constraintLayout"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/bldl_fab"

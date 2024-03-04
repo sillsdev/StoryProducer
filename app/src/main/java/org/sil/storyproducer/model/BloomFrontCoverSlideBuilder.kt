@@ -6,6 +6,7 @@ import androidx.preference.PreferenceManager
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
+import org.sil.bloom.reader.DownloadProgressView.titleFromName
 import org.sil.storyproducer.tools.file.storyRelPathExists
 
 class BloomFrontCoverSlideBuilder(defaultLang: String) : SlideBuilder() {
@@ -36,7 +37,7 @@ class BloomFrontCoverSlideBuilder(defaultLang: String) : SlideBuilder() {
         localTitle = getContentLocalizedTitle(html, lang)
         var contentTile = localTitle
         if (contentTile.isEmpty())
-            contentTile = storyPath.name.orEmpty();
+            contentTile = titleFromName(storyPath.name.orEmpty())
         isSPAuthored = getSPAuthored(html)
         val frontCoverContent = FrontCoverContent(slideContent, contentTile, slideSubtitle, lang)
 

@@ -410,8 +410,8 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<D
     var unzippedOk = false  // only delete file if it can be unzipped (installed) ok
     var storyName = file.name!!.substringBeforeLast(".","")
 
-    // remove any language extension embedded in the story name [no longer needed]
-//    val pattern = Regex("\\.lang_[a-z]+$")
+    // remove any language extension embedded in the story name [no longer needed] [REMOVED FROM TITLE INSTEAD]
+//    val pattern = Regex("\\.lang_[a-z\\-]+$")
 //    val match = pattern.find(storyName)
 //    if (match != null)
 //        storyName = storyName.substring(0, storyName.length - match.value.length)
