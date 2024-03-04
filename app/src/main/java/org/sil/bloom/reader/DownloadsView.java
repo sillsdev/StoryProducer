@@ -272,6 +272,17 @@ public class DownloadsView extends LinearLayout {
         return langValue;
     }
 
+    private static String getBookIdFromPageUri(String strUri) {
+        Regex pattern = new Regex("/[^\\?/]+\\?");
+        MatchResult match = pattern.find(strUri, 0);
+        String strId = "";
+        if (match != null) {
+            strId = match.getValue();
+            strId =  strId.substring(1, strId.length() - 1);
+        }
+        return strId;
+    }
+
     // Gets a Uri parameter value
     public static String getParameterValue(String strUri, String parameterName) {
         String query = strUri.replaceFirst(".*\\?", "");
@@ -418,6 +429,7 @@ public class DownloadsView extends LinearLayout {
         String strExt = getFileExtensionFromUri(url);
         // get the language to use when parsing the story after downloading
         String lang = getFileLangFromPageUri(sourceUrl);
+        String bookId = getBookIdFromPageUri(sourceUrl);
         if (fileName == null || fileName.equals(""))
         {
             // If there isn't a .bloompub file at the location we requested,
@@ -431,8 +443,11 @@ public class DownloadsView extends LinearLayout {
         DownloadManager.Request request = new DownloadManager.Request(downloadUri);
         String template = getContext().getString(R.string.downloading_file);
         request.setTitle(String.format(template, fileName));
-        // Use the story language to create an extra file extension which can then
+        // Use the Book ID and story language to create extra file extensions which can then
         // indicate which language to open the story in after it has been downloaded
+        // and uniquely identify the Bloom book being downloaded
+        if (!bookId.isEmpty())
+            fileName = fileName + "." + bookId;
         if (lang != null && !lang.isEmpty())
             fileName = fileName + ".lang_" + lang;
         File downloadDest = new File(getDownloadDir(), fileName + strExt);
