@@ -8,15 +8,15 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.bldownload.BLCustomAdapter.BLViewHolder
-import java.util.ArrayList
+import org.sil.storyproducer.controller.bldownload.BLDownloadActivity.Companion.primaryLang
 
 // This class implements a RecyclerView.Adapter for the Bloom Library card list UI
 // The child class BLViewHolder is used to hold the UI widgets that make the card item
-class BLCustomAdapter(bldata: ArrayList<BLDataModel>) : RecyclerView.Adapter<BLViewHolder?>() {
+class BLCustomAdapter(bldata: ArrayList<BLDataModel>, langFilter : String) : RecyclerView.Adapter<BLViewHolder?>() {
     private val dataSet: ArrayList<BLDataModel>
 
     init {
-        dataSet = bldata
+        dataSet = bldata.filter { langFilter.isEmpty() || primaryLang(it.lang) == langFilter } as ArrayList<BLDataModel>
     }
 
     class BLViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

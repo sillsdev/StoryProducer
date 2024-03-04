@@ -80,7 +80,7 @@ public class DownloadProgressView extends ConstraintLayout {
         result = result.replace(".bloompub", "").replace(".bloomd", "").replace(".bloomSource", "");
 
         // remove any language extension from the title here
-        result = result.replaceFirst(".lang_[a-z]+$", "");
+        result = result.replaceFirst("\\.lang_[a-z\\-]+$", "");
 
         return result;
     }

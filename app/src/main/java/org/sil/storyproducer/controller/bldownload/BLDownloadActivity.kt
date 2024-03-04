@@ -10,6 +10,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -26,6 +29,7 @@ import org.sil.storyproducer.model.bloomSourceZipExt
 import org.sil.storyproducer.model.parseOPDSfile
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import java.io.File
+import java.util.Locale
 
 // This class implements the code for the BLDownloadActivity which shows the UI to download a story
 // automatically from the Bloom Library.  This UI consists of a list of CardView widgets each
@@ -55,9 +59,10 @@ class BLDownloadActivity : AppCompatActivity() {
                                                     BLDataModel.DOWNLOAD_NOT_REQUESTED) // default
                 val fileDownloadDir = bloomSourceAutoDLDir()
                 for (i in 0 until data.size) {
-                    val model = data.get(i)
+                    val model = data[i]
                     // Check if the file has already been downloaded or removed somehow since last checked
-                    model.isInBLDLDir = File(fileDownloadDir + "/" + convertToSafeFilename(model.title) + bloomSourceZipExt()).exists()
+                    var fileLang = fileLangExt(model.lang)
+                    model.isInBLDLDir = File(fileDownloadDir + "/" + convertToSafeFilename(model.title) + fileLang + bloomSourceZipExt()).exists()
                     if (model.isInBLDLDir && !model.isInWorkspace) {
                         recognisedDownloads++
                     }
@@ -90,6 +95,28 @@ class BLDownloadActivity : AppCompatActivity() {
                     .replace(':', '_')
                     .replace('>', '_')
                     .replace('\n', '_')
+                    .replace('\u00a0', ' ')
+                    .replace(Regex("\\s+"), " ")
+
+        }
+
+        // gets the primary (first) language from a space separated list
+        fun primaryLang(langs : String) : String {
+            if (langs == null)
+                return ""
+            var trimmedLangs = langs.trim()
+            if (trimmedLangs.isEmpty())
+                return ""
+            return trimmedLangs.split(" ").first().trim()
+        }
+
+        // gets the primary language file extension string
+        fun fileLangExt(langs : String) : String {
+            var selLang = primaryLang(langs)
+            var fileLang = ""
+            if (selLang.isNotEmpty())
+                fileLang = ".lang_$selLang";
+            return fileLang
         }
 
         private val TAG = "BLDownloadActivity"
@@ -99,6 +126,10 @@ class BLDownloadActivity : AppCompatActivity() {
         var data: Array<ArrayList<BLDataModel>> = Array<ArrayList<BLDataModel>>(2) { ArrayList<BLDataModel>() }
         lateinit var recyclerView: RecyclerView
         lateinit var downloadManager: DownloadManager
+        var selectedLangFilterIndex = 0
+        private var selectedLangFilter = ""
+        var lastItemClicked = -1    // last checked item - used for toggling
+        var lastItemCheckedTitle = ""   // for automatically unchecking items if more than one clicked on
     }
 
     lateinit var blOnClickListener: BLOnClickListener
@@ -136,7 +167,7 @@ class BLDownloadActivity : AppCompatActivity() {
             var numAlreadyDownloaded = 0
             var numAlreadyInstalled = 0
             val fileDownloadDir = bloomSourceAutoDLDir()
-            for (i in 0 until data[bldlActivityIndex].size)
+            for (i in 0 until  data[bldlActivityIndex].size)
             {
                 var dataItem = data[bldlActivityIndex].get(i)
                 // Check if the file has already been downloaded or removed somehow since last checked
@@ -152,7 +183,9 @@ class BLDownloadActivity : AppCompatActivity() {
                     request.setDescription(getString(R.string.bloom_lib_download))
 
                     val destDir = File(this.getExternalFilesDir(null), Environment.DIRECTORY_DOWNLOADS);
-                    val destFile = File(destDir, convertToSafeFilename(dataItem.title) + bloomSourceZipExt())
+
+                    var fileLang = fileLangExt(dataItem.lang)
+                    val destFile = File(destDir, convertToSafeFilename(dataItem.title) + fileLang + bloomSourceZipExt())
                     request.setDestinationUri(Uri.fromFile(destFile))
 
                     request.setAllowedOverMetered(true)     // set here until we have a setting for it
@@ -228,19 +261,16 @@ class BLDownloadActivity : AppCompatActivity() {
         recyclerView.itemAnimator = DefaultItemAnimator()
 
         // Get the definitive list of available Bloom Library story templates
-        var lastItemClicked = -1    // last checked item - used for toggling
         val blDataList = parseOPDSfile(bldlActivityIndex)
         if (blDataList != null)
         {
             onDownloadXmlBloomCatalogSuccess(false) // hide the loading messages
             // Find or add BLDataModel items to our data list and update any members for the known state
             lastItemClicked = blFindOrAddBookItems(blDataList)
-        }
-        // listen for clicks to check/uncheck item
-        blOnClickListener = BLOnClickListener(this, data[bldlActivityIndex], lastItemClicked)
 
-        adapter = BLCustomAdapter(data[bldlActivityIndex])
-        recyclerView.setAdapter(adapter)
+            blShowLangFilter(blDataList)
+
+        }
     }
 
     // When called for the first time it adds new BLDataModel items to the 'data' model list
@@ -253,14 +283,15 @@ class BLDownloadActivity : AppCompatActivity() {
         blDataList: MutableList<BLBook>
     ): Int {
         val fileDownloadDir = bloomSourceAutoDLDir()
-        var lastItemCheckedTitle = ""   // for automatically unchecking items if more than one clicked on
         for (i in 0 until blDataList.size) {
             val blItem = blDataList[i]
             // Check if the file has already been downloaded
             val isFileDownloaded =
                 File(fileDownloadDir + "/" + convertToSafeFilename(blItem.Title) + bloomSourceZipExt()).exists()
             // Check if the title is already in the workspace
-            val isInWorkspace = workspaceRelPathExists(this, convertToSafeFilename(blItem.Title))
+            var isInWorkspace = workspaceRelPathExists(this, convertToSafeFilename(blItem.Title))
+            if (!isInWorkspace)
+                isInWorkspace = workspaceRelPathExists(this, convertToSafeFilename(blItem.Title + ".lang_${primaryLang(blItem.LangCode)}"))
             val blItemFound = data[bldlActivityIndex].find { it -> it.title == blItem.Title }
             if (blItemFound != null) {
                 blItemFound.isInWorkspace = isInWorkspace
@@ -282,6 +313,8 @@ class BLDownloadActivity : AppCompatActivity() {
                         // file was downloaded after SP app has been restarted
                         blItemFound.downloadId = BLDataModel.ALREADY_DOWNLOADED
                     }
+                } else if (blItemFound.downloadId == BLDataModel.DOWNLOADED_COMPLETE) {
+                    blItemFound.downloadId = BLDataModel.DOWNLOAD_NOT_REQUESTED
                 }
                 if (blItemFound.isChecked && blItemFound.isEnabled)
                     lastItemCheckedTitle =
@@ -308,8 +341,10 @@ class BLDownloadActivity : AppCompatActivity() {
 
         var lastItemClicked = -1
         if (lastItemCheckedTitle.isNotEmpty()) {
-            lastItemClicked = data[bldlActivityIndex].indexOfFirst { it -> it.title == lastItemCheckedTitle }
+            val filteredData = data[bldlActivityIndex].filter { selectedLangFilter.isEmpty() || primaryLang(it.lang) == selectedLangFilter }
+            lastItemClicked = filteredData.indexOfFirst { it -> it.title == lastItemCheckedTitle }
         }
+        lastItemCheckedTitle = ""
         return lastItemClicked
     }
 
@@ -342,7 +377,9 @@ class BLDownloadActivity : AppCompatActivity() {
 
         // if any downloaded files exists from a previous action, process them now
         var downloadDir = bloomSourceAutoDLDir()
-        var firstExists = data[bldlActivityIndex].indexOfFirst { it -> File(downloadDir + "/" + convertToSafeFilename(it.title) + bloomSourceZipExt()).exists() }
+        var firstExists = data[bldlActivityIndex].indexOfFirst {
+            File(downloadDir + "/" + convertToSafeFilename(it.title) + fileLangExt(it.lang) + bloomSourceZipExt()).exists()
+        }
         if (firstExists != -1) {
             // one or more files have been downloaded so install them
             if (MainActivity.mainActivity != null) {
@@ -364,12 +401,81 @@ class BLDownloadActivity : AppCompatActivity() {
         if (loadBooks) {
             var bookList = parseOPDSfile(bldlActivityIndex)
             if (bookList != null) {
-                blFindOrAddBookItems(bookList)
+                lastItemClicked = blFindOrAddBookItems(bookList)
+
+                blShowLangFilter(bookList)
+
             }
             adapter.notifyDataSetChanged()
         }
         binding.textViewLoading.visibility = View.INVISIBLE  // hide loading messages
         binding.textViewWait.visibility = View.INVISIBLE
+    }
+
+    // get the UI display name for a bloom language codes if known by Android
+    // TODO: use a more comprehensive display language name in the future if more codes used
+    private fun nativeLanguageName(languageCode: String): String {
+        val codes = languageCode.split("-")
+        if (codes.size >= 2 && codes[0].trim().isNotEmpty() && codes[1].trim().isNotEmpty())
+            return Locale(codes[0].trim(), codes[1].trim()).displayName
+        return Locale(languageCode).displayName
+    }
+
+    // shows the language filter dropdown combo
+    private fun blShowLangFilter(bookList: MutableList<BLBook>) {
+
+        var langCodes: MutableList<Pair<String, String>> = mutableListOf()
+        bookList.forEach { it ->
+            var plang = primaryLang(it.LangCode)
+            if (plang.isNotEmpty()) {
+                if (langCodes.find { it.first == plang } == null) {
+                    langCodes.add(Pair(plang, nativeLanguageName(plang)))
+                }
+            }
+        }
+        langCodes.add(Pair("", getString(R.string.lang_codes_all_languages)))
+        langCodes.sortBy { it.second }
+        val langFilter = findViewById<Spinner>(R.id.bldl_lang_choices)
+        // Create an ArrayAdapter using the list and a default spinner layout
+        val langAdapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            langCodes.map { it.second }
+        )
+        // Specify the layout to use when the list of choices appears
+        langAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        // Apply the adapter to the spinner
+        langFilter.adapter = langAdapter
+
+        langFilter.setSelection(selectedLangFilterIndex)
+
+        // Set an OnItemSelectedListener to the Spinner
+        langFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                // The selected item position is 'position'
+                val selectedItem = langCodes[position].first
+                if (selectedItem != selectedLangFilter) {
+                    lastItemClicked = -1
+                    lastItemCheckedTitle = ""
+                    data[bldlActivityIndex].forEach { it.isChecked = false }
+                }
+                selectedLangFilter = selectedItem
+                selectedLangFilterIndex = position
+                blOnClickListener = BLOnClickListener(data[bldlActivityIndex], selectedLangFilter, lastItemClicked)
+
+                adapter = BLCustomAdapter(data[bldlActivityIndex], selectedItem)
+                recyclerView.adapter = adapter
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Do nothing
+            }
+        }
+
+        blOnClickListener = BLOnClickListener(data[bldlActivityIndex], selectedLangFilter, lastItemClicked)
+
+        adapter = BLCustomAdapter(data[bldlActivityIndex], selectedLangFilter)
+        recyclerView.setAdapter(adapter)
+
     }
 
     // On error display the error messages and set error color
@@ -381,7 +487,7 @@ class BLDownloadActivity : AppCompatActivity() {
 
 
     // Click listener for clicks on individual cards in the recycler list of BL downloads
-    class BLOnClickListener internal constructor(private val context: Context, var bldata: ArrayList<BLDataModel>, var lastSelectedItem: Int = -1) : View.OnClickListener {
+    class BLOnClickListener internal constructor(var bldata: ArrayList<BLDataModel>, val selectedLangFilter : String, var lastSelectedItem: Int = -1) : View.OnClickListener {
 
         // make true to allow multiple items to be checked for download
         var allowMultipleSelection: Boolean = false
@@ -405,7 +511,11 @@ class BLDownloadActivity : AppCompatActivity() {
         }
 
         private fun toggleSelected(i: Int) : Boolean {
-            var selectedDataItem = bldata.get(i)
+            var filteredDataSet: ArrayList<BLDataModel> = bldata.filter {
+                selectedLangFilter.isEmpty() || primaryLang(it.lang) == selectedLangFilter
+            } as ArrayList<BLDataModel>
+
+            var selectedDataItem = filteredDataSet[i]
             if (selectedDataItem.isEnabled)
                 selectedDataItem.isChecked = !selectedDataItem.isChecked   // toggle the checked state
 

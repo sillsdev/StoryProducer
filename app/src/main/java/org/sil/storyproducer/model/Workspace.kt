@@ -552,10 +552,15 @@ object Workspace {
 
     fun buildStory(context: Context, storyPath: DocumentFile): Story? {
         var lang : String? = null   // search for a language and use it if in the story path
-        val pattern = Regex("\\.lang_[a-z]+")
-        val match = pattern.find(storyPath.name!!)
-        if (match != null)
-            lang = match.value.substring(6)
+        var storyPathname = storyPath.name
+        if (!storyPathname.isNullOrEmpty() && storyPathname.endsWith(bloomSourceZipExt()))
+            storyPathname = storyPathname.substring(0, storyPathname.length - bloomSourceZipExt().length)
+        if (!storyPathname.isNullOrEmpty()) {
+            val pattern = Regex("\\.lang_[a-z\\-]+$")
+            val match = pattern.find(storyPathname)
+            if (match != null)
+                lang = match.value.substring(6)
+        }
         return copyOldStory(context, storyPath, workdocfile, previousWorkDocFile)
                 ?.let { oldStoryPath -> unzipIfZipped(context, oldStoryPath, workdocfile.listFiles()) }
                 ?.let { storyFolder -> pathOf(storyFolder) }

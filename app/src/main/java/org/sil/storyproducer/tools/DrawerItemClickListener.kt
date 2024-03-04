@@ -45,7 +45,7 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
                     activity.finish()   // replace this activity with SP Bloom Template DL activity on top
                                         // but only if the current activity is not the Main Activity
             }
-//            3 -> {
+//            2 -> {
 //                activity.showBLDownloadDialog(BaseActivity.BLOOM_DL_FEATURED_ACTIVITY)
 //                if (activity !is MainActivity)
 //                    activity.finish()   // replace this activity with Featured Bloom Book DL activity on top

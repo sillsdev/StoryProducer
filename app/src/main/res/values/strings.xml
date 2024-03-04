@@ -340,6 +340,9 @@
                                 ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
                                 OR OTHER DEALINGS IN THE SOFTWARE.</string>
 
+    <!-- Other Strings -->
+    <string name="lang_codes_all_languages">(all languages)</string>
+
     <!-- Logging -->
     <string name="logging_slide_log_view_title">Logs for Slide #%1$d</string>
     <string name="logging_item_date">Date</string>
@@ -351,7 +354,7 @@
 
     <!-- Snackbar Messages -->
     <string name="overwrite">Overwrite</string>
-    <string name="title_activity_bldownload">Bloom Library Download</string>
+    <string name="title_activity_bldownload">Download Bible Story Templates</string>
     <string name="action_settings">Settings</string>
     <string name="bloom_lib_download_started">Bloom Library: download started\nStay on this page for automatic install</string>
     <string name="bloom_lib_already_installed">Bloom Library: already installed</string>
@@ -416,6 +419,9 @@
 
     <string name="rec_toolbar_play_playlist_button">Play playlist</string>
     <string name="multi_record_up_button">Up recordings</string>
+    <string name="bldl_lang_filter">Filter language</string>
+
+
 
     <!-- Strings from Bloom Library Reader Web Download pages  -->
     <string name="read_now">Read Now</string>
