@@ -428,7 +428,7 @@
     <string name="downloads_are_complete">Book downloads are complete</string>
     <string name="download_is_complete">Book download is complete</string>
     <string name="view_books">View books</string>
-    <string name="downloading_file">Downloading %s</string>
+    <string name="downloading_file">Downloading: %s</string>
     <string name="downloading_books">Downloading books</string>
     <string name="book_already_downloaded">The book has already been downloaded for language \'%s\'.</string>
     <string name="del_story_title">Story Deletion</string>

@@ -1,5 +1,7 @@
 package org.sil.bloom.reader;
 
+import static org.sil.bloom.reader.DownloadsView.getBaseNameFromUriPath;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -95,7 +97,7 @@ public class DownloadProgressView extends ConstraintLayout {
             mMessage.setText(R.string.downloading_books);
             return;
         }
-        String name = new File(this.mBookPath).getName();
+        String name = getBaseNameFromUriPath(this.mBookPath);
         String template = getContext().getString(R.string.downloading_file);
 
         String label = String.format(template, titleFromName(name));
