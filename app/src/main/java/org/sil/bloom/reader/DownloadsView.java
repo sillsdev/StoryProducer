@@ -255,6 +255,13 @@ public class DownloadsView extends LinearLayout {
         return path.replaceFirst(".*/", "").replaceFirst("\\.[^.]*$", "");
     }
 
+    static String getBaseNameFromUriPath(String path) {
+        return path.replaceFirst(".*/", "")
+                .replaceFirst("\\.[^.]*$", "")
+                .replaceFirst("\\.[^.]*$", "")
+                .replaceFirst("\\.[^.]*$", "");
+    }
+
     private static String getFileExtensionFromUri(String strUri) {
         Regex pattern = new Regex("\\.[^.]*$");
         MatchResult match = pattern.find(strUri, 0);
