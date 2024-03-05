@@ -320,7 +320,7 @@
     <string name="license">License</string>
     <string name="about_title">About Story Producer</string>
     <string name="app_version">app version: %1$s</string>
-    <string name="license_body">This software is copyrighted © 2021-2023 SIL International.
+    <string name="license_body">This software is copyrighted © 2021-2024 SIL International.
                                 Portions Copyright (c) 2016-2021 Cedarville Univ. and SIL Intl.
                                 It is released under the following license:
                                 Permission is hereby granted, free of charge, to any person lawfully
@@ -388,7 +388,7 @@
     <string name="video_wide_screen">Generate Widescreen Video</string>
     <string name="video_wide_screen_summary">Generate a 16:9 HD widescreen MP4 output video only.</string>
     <string name="bloom_import_alt_lwc">Alternate Language</string>
-    <string name="bloom_import_alt_lwc_summary">Use this to specify which language code to use when importing a downloaded Bloom book. Only this language code will be imported into SP and the book must have content in that language. Leave this blank to import the book’s default language.</string>
+    <string name="bloom_import_alt_lwc_summary">Use this to specify which language code to use when importing a manually-installed story template / Bloom book (for example, on an SD card). Only this language code will be imported into SP and the book must have content in that language. Normally, leave this blank to import the book’s default language.</string>
     <string name="bloom_import_bgimage_color">Background Image Color #</string>
     <string name="bloom_import_bgimage_color_summary">Enter a background color to use for scaled images and videos here as a hex value or color name.</string>
     <string name="accuracy_check_approve_all">Approve All Slides</string>
