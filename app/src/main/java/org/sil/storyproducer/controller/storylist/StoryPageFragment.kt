@@ -102,8 +102,8 @@ class StoryPageFragment : Fragment() {
         // Upon a story click, the story is set as the current story and a new
         // activity is started using the selected story.  Use CurrentStoryList to
         // determine which story
-        listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                (activity as MainActivity).switchToStory(CurrentStoryList[position]) }
+        listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, pos, _ ->
+                (activity as MainActivity).switchToStory(CurrentStoryList[pos]) }
 
         // Assign adapter to ListView
         listView.adapter = adapter

@@ -38,7 +38,8 @@ object MediaHelper {
         val mmr = MediaMetadataRetriever()
         try {
             mmr.setDataSource(context, uri)
-            val durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+            val durationStr =
+                mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION) ?: return 0
             return (Integer.parseInt(durationStr) * 1000).toLong()
         } catch (e: Exception) {
             //I don't know what happened, but lets not stop everything.

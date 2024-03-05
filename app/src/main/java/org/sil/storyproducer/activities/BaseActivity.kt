@@ -163,7 +163,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         readingTemplatesDialog = AlertDialog.Builder(this)
                 .setTitle(R.string.scanning_sp_templates)
                 .setMessage("")
-                .setNegativeButton(R.string.cancel) { d, i -> controller.cancelUpdate() }
+                .setNegativeButton(R.string.cancel) { _, _ -> controller.cancelUpdate() }
                 .setCancelable(false)
                 .create()
 

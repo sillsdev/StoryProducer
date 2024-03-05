@@ -1,6 +1,7 @@
 package org.sil.storyproducer.model
 
 import android.os.AsyncTask
+import android.util.Base64
 import android.util.Xml
 import org.sil.storyproducer.App
 import org.sil.storyproducer.R
@@ -11,9 +12,8 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.*
-import android.util.Base64
 import java.text.SimpleDateFormat
+import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
@@ -140,13 +140,11 @@ open class BLBookList(var dateUpdated: Date) {
                 else -> skip(parser)
             }
         }
-        if (title == null || langCode == null || thumbLink == null || bookLink == null) {
-            return null
+        return if (title == null || thumbLink == null || bookLink == null) {
+            null
         } else {
-            return BLBook(title!!, langCode!!, thumbLink!!, bookLink!!)
+            BLBook(title, langCode, thumbLink, bookLink)
         }
-
-
     }
 
     // Processes title tags in the feed.

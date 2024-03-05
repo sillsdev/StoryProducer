@@ -39,7 +39,7 @@ class BLCustomAdapter(bldata: ArrayList<BLDataModel>, langFilter : String) : Rec
         parent: ViewGroup,
         viewType: Int
     ): BLViewHolder {
-        val view: View = LayoutInflater.from(parent.getContext())
+        val view: View = LayoutInflater.from(parent.context)
             .inflate(R.layout.bldl_cards_layout, parent, false)
         view.setOnClickListener(BLDownloadActivity.bldlActivity.blOnClickListener)
         return BLViewHolder(view)
