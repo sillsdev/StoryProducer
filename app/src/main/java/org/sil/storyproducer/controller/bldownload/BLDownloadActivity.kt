@@ -61,7 +61,7 @@ class BLDownloadActivity : AppCompatActivity() {
                 for (i in 0 until data.size) {
                     val model = data[i]
                     // Check if the file has already been downloaded or removed somehow since last checked
-                    var fileLang = fileLangExt(model.lang)
+                    val fileLang = fileLangExt(model.lang)
                     model.isInBLDLDir = File(fileDownloadDir + "/" + convertToSafeFilename(model.title) + fileLang + bloomSourceZipExt()).exists()
                     if (model.isInBLDLDir && !model.isInWorkspace) {
                         recognisedDownloads++
@@ -102,9 +102,7 @@ class BLDownloadActivity : AppCompatActivity() {
 
         // gets the primary (first) language from a space separated list
         fun primaryLang(langs : String) : String {
-            if (langs == null)
-                return ""
-            var trimmedLangs = langs.trim()
+            val trimmedLangs = langs.trim()
             if (trimmedLangs.isEmpty())
                 return ""
             return trimmedLangs.split(" ").first().trim()
@@ -112,7 +110,7 @@ class BLDownloadActivity : AppCompatActivity() {
 
         // gets the primary language file extension string
         fun fileLangExt(langs : String) : String {
-            var selLang = primaryLang(langs)
+            val selLang = primaryLang(langs)
             var fileLang = ""
             if (selLang.isNotEmpty())
                 fileLang = ".lang_$selLang";
@@ -169,7 +167,7 @@ class BLDownloadActivity : AppCompatActivity() {
             val fileDownloadDir = bloomSourceAutoDLDir()
             for (i in 0 until  data[bldlActivityIndex].size)
             {
-                var dataItem = data[bldlActivityIndex].get(i)
+                val dataItem = data[bldlActivityIndex][i]
                 // Check if the file has already been downloaded or removed somehow since last checked
                 dataItem.isInBLDLDir = File(fileDownloadDir + "/" + convertToSafeFilename(dataItem.title) + bloomSourceZipExt()).exists()
                 // find out which action(s) or message needs processing
@@ -184,7 +182,7 @@ class BLDownloadActivity : AppCompatActivity() {
 
                     val destDir = File(this.getExternalFilesDir(null), Environment.DIRECTORY_DOWNLOADS);
 
-                    var fileLang = fileLangExt(dataItem.lang)
+                    val fileLang = fileLangExt(dataItem.lang)
                     val destFile = File(destDir, convertToSafeFilename(dataItem.title) + fileLang + bloomSourceZipExt())
                     request.setDestinationUri(Uri.fromFile(destFile))
 
@@ -359,7 +357,7 @@ class BLDownloadActivity : AppCompatActivity() {
         unregisterBLBroadcastReceiver(blBroadCastReceiver)
     }
 
-    fun registerBLBroadcastReceiver(blBroadCastReceiver: BroadcastReceiver, filter: IntentFilter) {
+    private fun registerBLBroadcastReceiver(blBroadCastReceiver: BroadcastReceiver, filter: IntentFilter) {
         if (!blReceiverRegistered) {
             registerReceiver(blBroadCastReceiver, filter)
             blReceiverRegistered = true
@@ -376,8 +374,8 @@ class BLDownloadActivity : AppCompatActivity() {
         bldlActivity.unregisterBLBroadcastReceiver(blBroadCastReceiver) // bug fix for crash in updateStories()
 
         // if any downloaded files exists from a previous action, process them now
-        var downloadDir = bloomSourceAutoDLDir()
-        var firstExists = data[bldlActivityIndex].indexOfFirst {
+        val downloadDir = bloomSourceAutoDLDir()
+        val firstExists = data[bldlActivityIndex].indexOfFirst {
             File(downloadDir + "/" + convertToSafeFilename(it.title) + fileLangExt(it.lang) + bloomSourceZipExt()).exists()
         }
         if (firstExists != -1) {
@@ -399,7 +397,7 @@ class BLDownloadActivity : AppCompatActivity() {
     // then hide the loading messages
     fun onDownloadXmlBloomCatalogSuccess(loadBooks : Boolean = true) {
         if (loadBooks) {
-            var bookList = parseOPDSfile(bldlActivityIndex)
+            val bookList = parseOPDSfile(bldlActivityIndex)
             if (bookList != null) {
                 lastItemClicked = blFindOrAddBookItems(bookList)
 
@@ -424,9 +422,9 @@ class BLDownloadActivity : AppCompatActivity() {
     // shows the language filter dropdown combo
     private fun blShowLangFilter(bookList: MutableList<BLBook>) {
 
-        var langCodes: MutableList<Pair<String, String>> = mutableListOf()
+        val langCodes: MutableList<Pair<String, String>> = mutableListOf()
         bookList.forEach { it ->
-            var plang = primaryLang(it.LangCode)
+            val plang = primaryLang(it.LangCode)
             if (plang.isNotEmpty()) {
                 if (langCodes.find { it.first == plang } == null) {
                     langCodes.add(Pair(plang, nativeLanguageName(plang)))
@@ -490,7 +488,7 @@ class BLDownloadActivity : AppCompatActivity() {
     class BLOnClickListener internal constructor(var bldata: ArrayList<BLDataModel>, val selectedLangFilter : String, var lastSelectedItem: Int = -1) : View.OnClickListener {
 
         // make true to allow multiple items to be checked for download
-        var allowMultipleSelection: Boolean = false
+        private var allowMultipleSelection: Boolean = false
 
         override fun onClick(v: View) {
             val selectedItemPosition: Int = recyclerView.getChildLayoutPosition(v)
@@ -511,11 +509,11 @@ class BLDownloadActivity : AppCompatActivity() {
         }
 
         private fun toggleSelected(i: Int) : Boolean {
-            var filteredDataSet: ArrayList<BLDataModel> = bldata.filter {
+            val filteredDataSet: ArrayList<BLDataModel> = bldata.filter {
                 selectedLangFilter.isEmpty() || primaryLang(it.lang) == selectedLangFilter
             } as ArrayList<BLDataModel>
 
-            var selectedDataItem = filteredDataSet[i]
+            val selectedDataItem = filteredDataSet[i]
             if (selectedDataItem.isEnabled)
                 selectedDataItem.isChecked = !selectedDataItem.isChecked   // toggle the checked state
 

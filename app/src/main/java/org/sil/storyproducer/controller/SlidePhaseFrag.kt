@@ -227,12 +227,12 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
             textView.setOnTouchListener() { view: View, motionEvent: MotionEvent ->
                 when (motionEvent.action) {
                     MotionEvent.ACTION_DOWN -> {
-                        rootView?.findViewById<View>(R.id.concheck_logs_button)?.visibility = View.INVISIBLE
-                        rootView?.findViewById<View>(R.id.concheck_checkmark_button)?.visibility = View.INVISIBLE
+                        rootView.findViewById<View>(R.id.concheck_logs_button).visibility = View.INVISIBLE
+                        rootView.findViewById<View>(R.id.concheck_checkmark_button).visibility = View.INVISIBLE
                     }
                     MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                        rootView?.findViewById<View>(R.id.concheck_logs_button)?.visibility = View.VISIBLE
-                        rootView?.findViewById<View>(R.id.concheck_checkmark_button)?.visibility = View.VISIBLE
+                        rootView.findViewById<View>(R.id.concheck_logs_button).visibility = View.VISIBLE
+                        rootView.findViewById<View>(R.id.concheck_checkmark_button).visibility = View.VISIBLE
                     }
                 }
                 false

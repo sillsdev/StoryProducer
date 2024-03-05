@@ -47,11 +47,7 @@ class Story(var title: String, var slides: List<Slide>){
     var langCode = ""   // the language code used when parsing the Bloom html
     var localTitle: String = ""
         get() {
-        return if (field.isNotEmpty())
-                return field    // the localized story title for user display (no longer the sub-folder)
-
-            else
-                return title
+        return field.ifEmpty { title }
     }
 
     val inProgress: Boolean get() {

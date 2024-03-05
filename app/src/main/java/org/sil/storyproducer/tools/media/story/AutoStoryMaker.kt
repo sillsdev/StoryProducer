@@ -1,7 +1,6 @@
 package org.sil.storyproducer.tools.media.story
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.media.MediaMuxer
@@ -9,12 +8,17 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.preference.PreferenceManager
 import com.arthenica.mobileffmpeg.Config
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import org.sil.storyproducer.model.*
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.MUSIC_CONTINUE
+import org.sil.storyproducer.model.MUSIC_NONE
+import org.sil.storyproducer.model.Slide
+import org.sil.storyproducer.model.SlideType
+import org.sil.storyproducer.model.Story
+import org.sil.storyproducer.model.VIDEO_DIR
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.service.SlideService
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import org.sil.storyproducer.tools.file.getStoryUri
@@ -24,7 +28,8 @@ import org.sil.storyproducer.viewmodel.SlideViewModelBuilder
 import java.io.Closeable
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.GregorianCalendar
+import java.util.Locale
 
 
 /**
@@ -175,28 +180,28 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         slides.add(slide)
 
         while (iSlide < slides.size) {
-            val slide = slides[iSlide++]
+            val curSlide = slides[iSlide++]
 
             //Check if the song slide should be included
-            if(slide.slideType == SlideType.LOCALSONG && !mIncludeSong) continue
+            if(curSlide.slideType == SlideType.LOCALSONG && !mIncludeSong) continue
 
-            val image = if (mIncludePictures) slide.imageFile else ""
-            var audio = Story.getFilename(slide.chosenVoiceStudioFile)
+            val image = if (mIncludePictures) curSlide.imageFile else ""
+            var audio = Story.getFilename(curSlide.chosenVoiceStudioFile)
             //fallback to draft audio
             if (audio == "") {
-                audio = Story.getFilename(slide.chosenTranslateReviseFile)
+                audio = Story.getFilename(curSlide.chosenTranslateReviseFile)
             }
             //fallback to LWC audio
             if (audio == "") {
-                audio = Story.getFilename(slide.narrationFile)
+                audio = Story.getFilename(curSlide.narrationFile)
             }
 
             var soundtrack = ""
             var soundtrackVolume = 0.0f
             if (mIncludeBackgroundMusic) {
 
-                soundtrack = slide.musicFile
-                soundtrackVolume = slide.volume
+                soundtrack = curSlide.musicFile
+                soundtrackVolume = curSlide.volume
                 if (soundtrack == MUSIC_CONTINUE) {
                     //Try not to leave nulls in so null may be reserved for no soundtrack.
                     soundtrack = lastSoundtrack
@@ -211,20 +216,20 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             }
 
             var kbfx: KenBurnsEffect? = null
-            if (mIncludePictures && mIncludeKBFX && slide.slideType == SlideType.NUMBEREDPAGE) {
+            if (mIncludePictures && mIncludeKBFX && curSlide.slideType == SlideType.NUMBEREDPAGE) {
                 // SP422 - DKH 5/6/2022 Enable images on all the slides to be swapped out via the camera tool
                 // Ken Burns effect is not yet implemented on local slides, ie, slides created
                 // with the camera tool
-                if(!(image.contains(slide.localSlideExtension)) &&
-                        slide.startMotion != null &&
-                        slide.endMotion != null) {
+                if(!(image.contains(curSlide.localSlideExtension)) &&
+                        curSlide.startMotion != null &&
+                        curSlide.endMotion != null) {
 
                     val videoRect = SlideService(mContext).getVideoScreenRect(true, true)
-                    kbfx = KenBurnsEffect.fromSlide(slide, videoRect.width(), videoRect.height())
+                    kbfx = KenBurnsEffect.fromSlide(curSlide, videoRect.width(), videoRect.height())
                 }
             }
 
-            val overlayText = SlideViewModelBuilder(slide).buildOverlayText(mIncludeText)
+            val overlayText = SlideViewModelBuilder(curSlide).buildOverlayText(mIncludeText)
 
             //error
             var duration = 5000000L  // 5 seconds, microseconds.
@@ -232,7 +237,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 duration = MediaHelper.getAudioDuration(context, getStoryUri(audio)!!)
             }
 
-            pages.add(StoryPage(image, audio, duration, kbfx, overlayText, soundtrack,soundtrackVolume,slide.slideType))
+            pages.add(StoryPage(image, audio, duration, kbfx, overlayText, soundtrack,soundtrackVolume,curSlide.slideType))
         }
 
         return pages.toTypedArray()

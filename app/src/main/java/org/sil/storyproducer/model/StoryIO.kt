@@ -183,7 +183,7 @@ fun isValidStory(context: Context, storyPath: DocumentFile) : Boolean {
 }
 
 fun parseStoryIfPresent(context: Context, storyPath: DocumentFile, validateOnly: Boolean = false, lang : String? = null): Story? {
-    var story: Story? = null
+    var story: Story?
     //Check if path is path
     if(!storyPath.isDirectory) return null
 
@@ -267,7 +267,7 @@ fun copySubFile(context: Context, subFile: String, newDocumentFolder: DocumentFi
         val buffer = ByteArray(1024 * 64)
         val outStream = context.contentResolver.openOutputStream(newDoc.uri) ?: return false
         val inStream = context.contentResolver.openInputStream(oldDoc.uri) ?: return false
-        var bytesRead = 0
+        var bytesRead: Int
         do {
             bytesRead = inStream.read(buffer)
             if (bytesRead > 0)
