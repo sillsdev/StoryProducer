@@ -556,7 +556,7 @@ object Workspace {
         if (!storyPathname.isNullOrEmpty() && storyPathname.endsWith(bloomSourceZipExt()))
             storyPathname = storyPathname.substring(0, storyPathname.length - bloomSourceZipExt().length)
         if (!storyPathname.isNullOrEmpty()) {
-            val pattern = Regex("\\.lang_[a-z\\-]+$")
+            val pattern = Regex("\\.lang_[a-zA-Z0-9\\-]+$")
             val match = pattern.find(storyPathname)
             if (match != null)
                 lang = match.value.substring(6)

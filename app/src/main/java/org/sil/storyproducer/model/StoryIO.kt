@@ -411,7 +411,7 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<D
     var storyName = file.name!!.substringBeforeLast(".","")
 
     // remove any language extension embedded in the story name [no longer needed] [REMOVED FROM TITLE INSTEAD]
-//    val pattern = Regex("\\.lang_[a-z\\-]+$")
+//    val pattern = Regex("\\.lang_[a-zA-Z0-9\\-]+$")
 //    val match = pattern.find(storyName)
 //    if (match != null)
 //        storyName = storyName.substring(0, storyName.length - match.value.length)
