@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -126,7 +127,7 @@ class BLDownloadActivity : AppCompatActivity() {
         lateinit var downloadManager: DownloadManager
         var selectedLangFilterIndex = 0
         private var selectedLangFilter = ""
-        var lastItemClicked = -1    // last checked item - used for toggling
+        var lastItemClicked = -1    // last checked story download item - used for toggling
         var lastItemCheckedTitle = ""   // for automatically unchecking items if more than one clicked on
     }
 
@@ -445,6 +446,11 @@ class BLDownloadActivity : AppCompatActivity() {
         // Apply the adapter to the spinner
         langFilter.adapter = langAdapter
 
+            // get language filter initial selection from persisted settings
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val lastLangFilterCode = prefs.getString("bldl_filter_lang", "")
+        val lastLangFilterIndex = langCodes.indexOfFirst { it.first == lastLangFilterCode }
+        selectedLangFilterIndex = if (lastLangFilterIndex == -1) 0 else lastLangFilterIndex
         langFilter.setSelection(selectedLangFilterIndex)
 
         // Set an OnItemSelectedListener to the Spinner
@@ -459,6 +465,13 @@ class BLDownloadActivity : AppCompatActivity() {
                 }
                 selectedLangFilter = selectedItem
                 selectedLangFilterIndex = position
+
+                    // persist the language filter code for next time
+                val prefs = PreferenceManager.getDefaultSharedPreferences(view?.context)
+                val editor = prefs.edit()
+                editor.putString("bldl_filter_lang", selectedLangFilter)
+                editor.apply()
+
                 blOnClickListener = BLOnClickListener(data[bldlActivityIndex], selectedLangFilter, lastItemClicked)
 
                 adapter = BLCustomAdapter(data[bldlActivityIndex], selectedItem)
