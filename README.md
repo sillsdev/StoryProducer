@@ -19,7 +19,8 @@ Developers:
    * Software engineers for filtered story list, Film Producer, extensive refactoring based on v3.02: Cedarville Univesity students (Jake Allinson, Nathan ONeel, Clare)
    * Software engineer for v3.0.4 - 3.0.6 Dale Hensley
    * Software engineer for v3.1 Bryan Wussow
-   * Software engineer for v3.2 - current Peter Cheeseman
+   * Software engineer for v3.2 - 3.4 Peter Cheeseman
+   * Software engineer for v4.0 - current Peter Cheeseman
 
 Translate and produce stories (starting with templates in a major language made up of images, audio and text) by working through these phases:  
 * [REGISTER project and team information (one time)]
