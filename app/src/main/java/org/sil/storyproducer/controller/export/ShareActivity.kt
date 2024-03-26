@@ -1,22 +1,24 @@
 package org.sil.storyproducer.controller.export
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.storage.StorageManager
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.ListView
+import android.widget.TextView
+import com.hbisoft.pickit.Utils
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.controller.storylist.PopupHelpUtils
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getChildDocuments
 import org.sil.storyproducer.tools.file.getWorkspaceUri
-import com.hbisoft.pickit.Utils
 
 
 /**
@@ -173,6 +175,48 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
             mNoVideosText!!.visibility = View.VISIBLE
         }
         videosAdapter!!.setVideoPaths(exportedVideos)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        addAndStartPopupMenus()
+    }
+
+    private fun addAndStartPopupMenus() {
+
+        if (mPopupHelpUtils != null)
+            mPopupHelpUtils?.dismissPopup()
+
+        mPopupHelpUtils = PopupHelpUtils(this)
+
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.toolbar,
+            50, 75,
+            R.string.help_share_phase_title, R.string.help_share_phase_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.videos_list,
+            5, 5,
+            R.string.help_share_play_video_title, R.string.help_share_play_video_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.videos_list,
+            15, 5,
+            R.string.help_share_share_video_title, R.string.help_share_share_video_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.videos_list,
+            75, 5,
+            R.string.help_share_name_video_title, R.string.help_share_name_video_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.videos_list,
+            90, 5,
+            R.string.help_share_ext_video_title, R.string.help_share_ext_video_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.toolbar,
+            10, 50,
+            R.string.help_share_story_list_title, R.string.help_share_story_list_body)
+
+        mPopupHelpUtils?.showNextPopupHelp()
+
     }
 
 }

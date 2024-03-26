@@ -4,12 +4,15 @@
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
-        <item name="android:colorBackground">@color/white</item>
+        <item name="android:colorBackground">@color/darkGray</item>
         <item name="android:windowBackground">@color/black_overlay</item>
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="actionButtonStyle">@style/ActionButtonPadded</item>
         <item name="android:actionButtonStyle">@style/ActionButtonPadded</item>
+
+        <item name="android:popupMenuStyle">@style/PopupMenuStyle</item>
+
     </style>
 
     <style name="ActionButtonPadded" parent="@android:style/Widget.ActionButton">
@@ -23,5 +26,16 @@
         <item name="closeIconVisible">false</item>
         <item name="checkedIcon">@drawable/ic_mtrl_chip_checked_black</item>
     </style>
+
+    <style name="PopupAnimation" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@anim/fade_in</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
+    </style>
+
+    <style name="PopupMenuStyle" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:popupBackground">@color/popup_menu_background</item>
+        <item name="android:textColor">@color/popup_menu_text_color</item>
+    </style>
+
 
 </resources>

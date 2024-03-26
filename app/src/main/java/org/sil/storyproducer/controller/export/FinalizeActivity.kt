@@ -10,9 +10,15 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.controller.storylist.PopupHelpUtils
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
@@ -127,6 +133,40 @@ class FinalizeActivity : PhaseBaseActivity() {
         mCheckboxKBFX.setOnCheckedChangeListener { _, _ -> toggleVisibleElements(mCheckboxKBFX) }
         mCheckboxText.setOnCheckedChangeListener { _, _ -> toggleVisibleElements(mCheckboxText) }
         mCheckboxSong.setOnCheckedChangeListener { _, _ -> toggleVisibleElements(mCheckboxSong) }
+
+        addAndStartPopupMenus()
+
+    }
+
+    private fun addAndStartPopupMenus() {
+
+        if (mPopupHelpUtils != null)
+            mPopupHelpUtils?.dismissPopup()
+
+        mPopupHelpUtils = PopupHelpUtils(this)
+
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.toolbar,
+            50, 75,
+            R.string.help_finalize_phase_title, R.string.help_finalize_phase_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.button_local_credits,
+            50, 50,
+            R.string.help_finalize_credits_title, R.string.help_finalize_credits_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.editText_export_title,
+            5, 50,
+            R.string.help_finalize_filename_title, R.string.help_finalize_filename_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.checkbox_export_song,
+            5, 50,
+            R.string.help_finalize_song_title, R.string.help_finalize_song_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.button_export_start,
+            50, 50,
+            R.string.help_finalize_video_title, R.string.help_finalize_video_body)
+
+        mPopupHelpUtils?.showNextPopupHelp()
     }
 
     override fun onPause() {

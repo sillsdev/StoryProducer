@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
+import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.controller.storylist.PopupHelpUtils
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 /**
@@ -14,10 +16,12 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
  * sure the draft is okay and leave any comments should they feel the need
  */
 class CommunityWorkFrag : MultiRecordFrag() {
+
     override var recordingToolbar: RecordingToolbar = RecordingToolbar()
     private var dispList : RecordingsListAdapter.RecordingsListModal? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
         rootView = inflater.inflate(R.layout.fragment_community_work, container, false)
 
         setPic(rootView!!.findViewById(R.id.fragment_image_view))
@@ -61,5 +65,50 @@ class CommunityWorkFrag : MultiRecordFrag() {
         super.onStartedSlidePlayBack()
 
         dispList!!.stopAudio()
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+
+        addAndStartPopupMenus(slideNum)
+    }
+
+    private fun addAndStartPopupMenus(slideNumber: Int) {
+
+        if (mPopupHelpUtils != null)
+            mPopupHelpUtils?.dismissPopup()
+
+        mPopupHelpUtils = PopupHelpUtils(this)
+
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.toolbar,
+            50, 75,
+            R.string.help_community_phase_title, R.string.help_community_phase_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.phase_frame,
+            95, 50,
+            R.string.help_community_swipe_title, R.string.help_community_swipe_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.fragment_reference_audio_button,
+            50, 50,
+            R.string.help_community_play_title, R.string.help_community_play_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.start_recording_button,
+            50, 50,
+            R.string.help_community_record_title, R.string.help_community_record_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.phase_frame,
+            95, 50,
+            R.string.help_community_continue_title, R.string.help_community_continue_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.toolbar,
+            50, 75,
+            R.string.help_community_revise_title, R.string.help_community_revise_body)
+
+        mPopupHelpUtils?.showNextPopupHelp()
+
+        (requireActivity() as PhaseBaseActivity).setBasePopupHelpUtils(mPopupHelpUtils!!)
+
     }
 }

@@ -1,18 +1,15 @@
 package org.sil.storyproducer.controller
 
 import android.Manifest
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings.Secure
-import android.text.Html
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -26,13 +23,12 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.text.HtmlCompat.fromHtml
-import androidx.core.view.GravityCompat
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
@@ -129,11 +125,13 @@ open class RegistrationActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.menu_with_help, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val ret = super.onOptionsItemSelected(item)
         return when (item.itemId) {
             R.id.helpButton -> {
                 val alert = AlertDialog.Builder(this)
@@ -152,8 +150,9 @@ open class RegistrationActivity : AppCompatActivity() {
                 alert.show()
                 true
             }
-            else -> { true } // should never happen
+            else -> { ret } // should never happen
         }
+        return ret
     }
 
     /**

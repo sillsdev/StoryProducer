@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller.storylist
 
+
 import android.app.Activity
 import android.content.Context
 import android.os.Build
@@ -20,6 +21,7 @@ import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.service.SlideService
+
 
 /**
  * StoryPageFragment is a flexible fragment in that it displays different things based on the
@@ -110,7 +112,6 @@ class StoryPageFragment : Fragment() {
 
         return lfview
     }
-
     /**
      * Updates ListAdapter to use the newly provided list. This is very helpful when filter options
      * are used.
@@ -129,6 +130,8 @@ class StoryPageFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         if(storyPageTab.hasFilterToolbar && storyPageTab.getStoryList().isNotEmpty()) {
             val childFragment = FilterToolbarFrag()
             childFragment.setStoryPageFrag(this)
@@ -136,7 +139,6 @@ class StoryPageFragment : Fragment() {
             transaction.replace(R.id.filter_container, childFragment).commit()
         }
     }
-
 }
 
 class ListAdapter(context: Context,

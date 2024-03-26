@@ -6,7 +6,6 @@ import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.ToJson
-import java.util.*
 
 /**
  * This class contains metadata pertinent to a given slide from a story template.
@@ -61,6 +60,7 @@ class Slide{
     var isChecked: Boolean = false
 
     fun isFrontCover() = slideType == SlideType.FRONTCOVER
+    fun isSongSlide() = slideType == SlideType.LOCALSONG
     fun isNumberedPage() = slideType == SlideType.NUMBEREDPAGE
 
     companion object

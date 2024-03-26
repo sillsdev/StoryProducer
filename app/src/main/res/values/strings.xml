@@ -199,7 +199,7 @@
     <string name="wordlinks_no_database_installed">There is currently no WordLinks database installed</string>
 
     <!-- Voice Studio Phase -->
-    <string name="voice_studio_edit_text_hint">Write story text for videos with included text.</string>
+    <string name="voice_studio_edit_text_hint">Write the story text here if you want the option to include it as a caption on the video.</string>
     <string name="voice_studio_edit_title_text_hint">Write story title to show for all videos made.</string>
 
     <!-- Share Phase -->
@@ -433,5 +433,218 @@
     <string name="book_already_downloaded">The book has already been downloaded for language \'%s\'.</string>
     <string name="del_story_title">Story Deletion</string>
     <string name="del_story_message">Do you want to delete the story \"%1$s\" from your device? Deleting this story will delete any audio recordings you have made in this story.</string>
+
+    <!-- Strings for Help Popup views: titles and body  -->
+    <string name="help_welcome_title">Welcome to Story Producer</string>
+    <string name="help_welcome_body">
+        <![CDATA[To see a quick tour of this page, tap <b>Next</b>.<br/>Or tap the <b>X</b> to skip this popup help.]]>
+    </string>
+    <string name="help_main_screen_title"></string>
+    <string name="help_main_screen_body">
+        <![CDATA[This main screen shows a list of the stories currently installed.]]>
+    </string>
+    <string name="help_main_help_title"></string>
+    <string name="help_main_help_body">
+        <![CDATA[Tap on the Help button anytime to get help for the current screen.]]>
+    </string>
+    <string name="help_main_menus_settings_title"></string>
+    <string name="help_main_menus_settings_body">
+        <![CDATA[Menu and Settings are available here.]]>
+    </string>
+    <string name="help_main_downloads_title"></string>
+    <string name="help_main_downloads_body">
+        <![CDATA[You can download more stories using the menu.]]>
+    </string>
+    <string name="help_main_story_title"></string>
+    <string name="help_main_story_body">
+        <![CDATA[Tap on a story to begin your translation work.]]>
+    </string>
+
+    <string name="help_learn_phase_title">Learn Phase</string>
+    <string name="help_learn_phase_body">
+        <![CDATA[In this first phase, your task is to learn and retell the story.]]>
+    </string>
+    <string name="help_learn_listen_title">Listen</string>
+    <string name="help_learn_listen_body">
+        <![CDATA[Play the story several times until you learn the story well enough to retell it.]]>
+    </string>
+    <string name="help_learn_practice_title">Practice</string>
+    <string name="help_learn_practice_body">
+        <![CDATA[Practice retelling the story in your local language several times. When you are ready, tap the microphone button and record it.]]>
+    </string>
+    <string name="help_learn_listen2_title">Listen</string>
+    <string name="help_learn_listen2_body">
+        <![CDATA[A playback button will appear here.<br/>Play it back to listen to your story.<br/>If you want, you may record it again.]]>
+    </string>
+    <string name="help_learn_next_phase_title">Phases</string>
+    <string name="help_learn_next_phase_body">
+        <![CDATA[When you finish the Learn Phase, tap here or swipe up to go to the next phase, Translate + Revise.]]>
+    </string>
+
+    <string name="help_translate_phase_title">Translate + Revise Phase</string>
+    <string name="help_translate_phase_body">
+        <![CDATA[In this phase, your task is to translate each slide.]]>
+    </string>
+    <string name="help_translate_title_title">Title Slide</string>
+    <string name="help_translate_title_body">
+        <![CDATA[Consider the title ideas below. Then tap the pencil to enter your translated title.]]>
+    </string>
+    <string name="help_translate_record_title">Record Your Translation</string>
+    <string name="help_translate_record_body">
+        <![CDATA[Tap the microphone to start recording audio of the translated title.]]>
+    </string>
+    <string name="help_translate_swipe_left_title">Swipe Left</string>
+    <string name="help_translate_swipe_left_body">
+        <![CDATA[When you are done on this Title slide, swipe left to go to the first slide of the story.<br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
+    </string>
+    <string name="help_translate_play_title">Story Slide</string>
+    <string name="help_translate_play_body">
+        <![CDATA[Listen to the audio for this slide carefully and think about how you could translate it accurately into your language.]]>
+    </string>
+    <string name="help_translate_record_slide_title">Record Your Translation</string>
+    <string name="help_translate_record_slide_body">
+        <![CDATA[Tap the microphone to start recording your translation.]]>
+    </string>
+    <string name="help_translate_listen_title">Listen</string>
+    <string name="help_translate_listen_body">
+        <![CDATA[Play it back to listen to your translation.<br/>If you want, you may record it again.]]>
+    </string>
+    <string name="help_translate_swipe_left2_title">Swipe Left</string>
+    <string name="help_translate_swipe_left2_body">
+        <![CDATA[When you are done recording this slide, swipe left to go to the next slide and continue the translation process.<br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
+    </string>
+    <string name="help_translate_song_slide_title">Song Slide</string>
+    <string name="help_translate_song_slide_body">
+        <![CDATA[Now that you have finished translating the story slides, you have the option to create a song to summarize the message of the story.]]>
+    </string>
+    <string name="help_translate_record_song_title">Record Your Song</string>
+    <string name="help_translate_record_song_body">
+        <![CDATA[Tap the microphone.]]>
+    </string>
+    <string name="help_translate_song_title_title">Song Title</string>
+    <string name="help_translate_song_title_body">
+        <![CDATA[Tap here to enter a song title.]]>
+    </string>
+    <string name="help_translate_song_camera_title">Camera</string>
+    <string name="help_translate_song_camera_body">
+        <![CDATA[Or you could add a photo of the singers or of something in your village.]]>
+    </string>
+    <string name="help_translate_navigation_title">Navigation</string>
+    <string name="help_translate_navigation_body">
+        <![CDATA[When you are done, swipe left to go to the Title Slide &lt;&lt;&lt;&lt;&lt;&lt;,<br/><br/>Swipe up or tap here to go to the next phase, Community Work]]>
+    </string>
+
+    <string name="help_community_phase_title">Community Work Phase</string>
+    <string name="help_community_phase_body">
+        <![CDATA[In this phase, your task is to gather community feedback on your translation.]]>
+    </string>
+    <string name="help_community_swipe_title"></string>
+    <string name="help_community_swipe_body">
+        <![CDATA[If needed, swipe left or right to begin on the title slide.<br/>&lt;&lt;&lt;&lt;&lt;&lt; &gt;&gt;&gt;&gt;&gt;&gt;]]>
+    </string>
+    <string name="help_community_play_title">Play Audio</string>
+    <string name="help_community_play_body">
+        <![CDATA[Allow people in your community to play the translation for this slide.<br/>Is it meaningful?<br/>Are the words clear and natural?]]>
+    </string>
+    <string name="help_community_record_title"></string>
+    <string name="help_community_record_body">
+        <![CDATA[Ask people to give feedback directly or by recording their comments using the microphone button.]]>
+    </string>
+    <string name="help_community_continue_title">Continue</string>
+    <string name="help_community_continue_body">
+        <![CDATA[Swipe left to go to the next slide.<br/>Gather community feedback on every slide.<br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
+    </string>
+    <string name="help_community_revise_title">Revise</string>
+    <string name="help_community_revise_body">
+        <![CDATA[Use the feedback to improve the translation.<br/>Go back to the Translate + Revise Phase to make the revisions.]]>
+    </string>
+
+    <string name="help_accuracy_phase_title">Accuracy Check Phase</string>
+    <string name="help_accuracy_phase_body">
+        <![CDATA[In this phase, your task is to have another person check and approve the story.<br/>If this is a Bible story, he/she should have Bible knowledge.]]>
+    </string>
+    <string name="help_accuracy_history_title">History Log</string>
+    <string name="help_accuracy_history_body">
+        <![CDATA[The accuracy checker should tap here to review the work that has been done on this slide.]]>
+    </string>
+    <string name="help_accuracy_play_title">Play Audio</string>
+    <string name="help_accuracy_play_body">
+        <![CDATA[Allow the accuracy checker to play the translation for this slide.<br/>Is it accurate?<br/>Do the important words communicate the correct meaning?<br/>Are those words used consistently in the story?]]>
+    </string>
+    <string name="help_accuracy_confirm_title">Confirm</string>
+    <string name="help_accuracy_confirm_body">
+        <![CDATA[The accuracy checker should tap here if they approve this slide.]]>
+    </string>
+    <string name="help_accuracy_continue_title">Continue</string>
+    <string name="help_accuracy_continue_body">
+        <![CDATA[Swipe left to go to the next slide.<br/>Check each slide for accuracy.<br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
+    </string>
+
+    <string name="help_voice_phase_title">Voice Studio Phase</string>
+    <string name="help_voice_phase_body">
+        <![CDATA[In this phase, your task is to re-record the approved translation with a person who has a good story teller voice.<br/>Do this in a quiet place.]]>
+    </string>
+    <string name="help_voice_listen_title">Listen, Memorize</string>
+    <string name="help_voice_listen_body">
+        <![CDATA[Internalize the audio until you are ready to say it fluently and dramatically]]>
+    </string>
+    <string name="help_voice_record_title">Record Dramatically</string>
+    <string name="help_voice_record_body">
+        <![CDATA[Record the audio with the appropriate drama.]]>
+    </string>
+    <string name="help_voice_continue_title">Continue</string>
+    <string name="help_voice_continue_body">
+        <![CDATA[Record dramatized audio for each slide.]]>
+    </string>
+
+    <string name="help_finalize_phase_title">Finalize Phase</string>
+    <string name="help_finalize_phase_body">
+        <![CDATA[In this phase, your task is to add credits and a short story name, and choose the options for your video.]]>
+    </string>
+    <string name="help_finalize_credits_title">Credits</string>
+    <string name="help_finalize_credits_body">
+        <![CDATA[This allows you to give appropriate credit to all who participated.]]>
+    </string>
+    <string name="help_finalize_filename_title">Filename</string>
+    <string name="help_finalize_filename_body">
+        <![CDATA[Type a short story name.]]>
+    </string>
+    <string name="help_finalize_song_title">Local Song</string>
+    <string name="help_finalize_song_body">
+        <![CDATA[If you have created a local song and you want it to play at the end of the story video, tick this option.]]>
+    </string>
+    <string name="help_finalize_video_title">Create Video</string>
+    <string name="help_finalize_video_body">
+        <![CDATA[Tap here, and wait on this screen until the video is created.]]>
+    </string>
+
+    <string name="help_share_phase_title">Share Phase</string>
+    <string name="help_share_phase_body">
+        <![CDATA[In this last phase, your task is to share your video with others.]]>
+    </string>
+    <string name="help_share_play_video_title">Play Video</string>
+    <string name="help_share_play_video_body">
+        <![CDATA[Watch your video to check it before you share it.]]>
+    </string>
+    <string name="help_share_share_video_title"></string>
+    <string name="help_share_share_video_body">
+        <![CDATA[Share your video.]]>
+    </string>
+    <string name="help_share_name_video_title">Naming Code</string>
+    <string name="help_share_name_video_body">
+        <![CDATA[These letters represent all the options you chose in the Finalize phase.]]>
+    </string>
+    <string name="help_share_ext_video_title">.mp4 or .3gp?</string>
+    <string name="help_share_ext_video_body">
+        <![CDATA[3gp is the low quality video for sharing with feature phones.]]>
+    </string>
+    <string name="help_share_story_list_title">Story List</string>
+    <string name="help_share_story_list_body">
+        <![CDATA[When you have finished the work on this story, use the menu to return to the Story List.]]>
+    </string>
+
+    <string name="help_menu_detailed">Show detailed help for this page</string>
+    <string name="help_menu_popup">Show Popup Help</string>
+    <string name="help_dismiss_message">If you want to turn Popup Help back on, tap the  Help button (?) on the toolbar at the top.</string>
 
 </resources>

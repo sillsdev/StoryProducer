@@ -20,5 +20,7 @@ interface BaseActivityView {
     fun updateReadingTemplatesDialog(current: Int, total: Int, currentTemplate: String)
     fun hideReadingTemplatesDialog()
     fun showCancellingReadingTemplatesDialog()
+    fun showDetailedHelp()
+    fun showPopupHelp()
 
 }

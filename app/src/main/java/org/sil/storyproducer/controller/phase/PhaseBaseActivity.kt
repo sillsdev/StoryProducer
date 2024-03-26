@@ -86,6 +86,7 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        super.onPrepareOptionsMenu(menu)
         val item = menu.getItem(0)
         item.setIcon(phase.getIcon())
         return true
@@ -97,6 +98,7 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
      * @return
      */
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.menu_phases, menu)
 
         val item = menu.findItem(R.id.spinner)
@@ -154,6 +156,27 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
         mDrawerToggle!!.onConfigurationChanged(newConfig)            //needed to make the drawer synced
     }
 
+
+    override fun showDetailedHelp() {
+        super.showDetailedHelp()
+
+        val alert = AlertDialog.Builder(this)
+        alert.setTitle("${Workspace.activePhase.getDisplayName()} Help")
+
+        val wv = WebView(this)
+        val iStream = assets.open(Phase.getHelpDocFile(Workspace.activePhase.phaseType))
+        val text = iStream.reader().use {
+            it.readText() }
+
+        wv.loadDataWithBaseURL(null,text,"text/html",null,null)
+        alert.setView(wv)
+        alert.setNegativeButton("Close") { dialog, _ ->
+            dialog!!.dismiss()
+        }
+        alert.show()
+
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
@@ -168,20 +191,7 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
                 mDrawerToggle!!.onOptionsItemSelected(item)
             }
             R.id.helpButton -> {
-                val alert = AlertDialog.Builder(this)
-                alert.setTitle("${Workspace.activePhase.getDisplayName()} Help")
-
-                val wv = WebView(this)
-                val iStream = assets.open(Phase.getHelpDocFile(Workspace.activePhase.phaseType))
-                val text = iStream.reader().use {
-                    it.readText() }
-
-                wv.loadDataWithBaseURL(null,text,"text/html",null,null)
-                alert.setView(wv)
-                alert.setNegativeButton("Close") { dialog, _ ->
-                    dialog!!.dismiss()
-                }
-                alert.show()
+                showHelpContextMenu()
                 true
             }
             else -> mDrawerToggle!!.onOptionsItemSelected(item)

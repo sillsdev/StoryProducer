@@ -2,20 +2,27 @@ package org.sil.storyproducer.controller.accuracycheck
 
 import android.content.Context
 import android.os.Bundle
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.Toolbar
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.CheckBox
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ListView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import androidx.preference.PreferenceManager
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.controller.logging.LogListAdapter
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.controller.storylist.PopupHelpUtils
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SlideType
@@ -31,6 +38,7 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
     var grayCheckmark: VectorDrawableCompat ?= null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
         greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
         grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
 
@@ -293,5 +301,46 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
         val CONSULTANT_PREFS = "Consultant_Checks"
         val IS_CONSULTANT_APPROVED = "isApproved"
         private val PASSWORD = "appr00ved"
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+
+        addAndStartPopupMenus(slideNum)
+
+    }
+    private fun addAndStartPopupMenus(slideNumber: Int) {
+
+        if (mPopupHelpUtils != null)
+            mPopupHelpUtils?.dismissPopup()
+
+        mPopupHelpUtils = PopupHelpUtils(this)
+
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.toolbar,
+            50, 75,
+            R.string.help_accuracy_phase_title, R.string.help_accuracy_phase_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.concheck_logs_button,
+            50, 5,
+            R.string.help_accuracy_history_title, R.string.help_accuracy_history_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.fragment_reference_audio_button,
+            50, 50,
+            R.string.help_accuracy_play_title, R.string.help_accuracy_play_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.concheck_checkmark_button,
+            50, 5,
+            R.string.help_accuracy_confirm_title, R.string.help_accuracy_confirm_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.phase_frame,
+            95, 50,
+            R.string.help_accuracy_continue_title, R.string.help_accuracy_continue_body)
+
+        mPopupHelpUtils?.showNextPopupHelp()
+
+        (requireActivity() as PhaseBaseActivity).setBasePopupHelpUtils(mPopupHelpUtils!!)
+
     }
 }

@@ -38,4 +38,9 @@
     which doesn't have enough contrast -->
     <color name="alert_buttons">#009688</color>
 
+    <color name="popup_help_background">#0066ff</color>
+
+    <color name="popup_menu_background">#212121</color> <!-- Dark background color -->
+    <color name="popup_menu_text_color">#FFFFFF</color> <!-- White text color -->
+
 </resources>

@@ -1,6 +1,7 @@
 package org.sil.storyproducer.activities
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -15,6 +16,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import io.reactivex.disposables.CompositeDisposable
 import org.sil.storyproducer.R
@@ -26,6 +28,7 @@ import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companio
 import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.UPDATE_TEMPLATES_FOLDER
 import org.sil.storyproducer.controller.SettingsActivity
 import org.sil.storyproducer.controller.bldownload.BLDownloadActivity
+import org.sil.storyproducer.controller.storylist.PopupHelpUtils
 import org.sil.storyproducer.controller.wordlink.WordLinksListActivity
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.DrawerItemClickListener
@@ -46,6 +49,8 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     protected var mDrawerLayout: androidx.drawerlayout.widget.DrawerLayout? = null
     protected var mDrawerToggle: ActionBarDrawerToggle? = null
     protected var mAdapter: ArrayAdapter<String>? = null
+    protected var mPopupHelpUtils: PopupHelpUtils? = null
+
 
     companion object {
         const val BLOOM_DL_TEMPLATES_ACTIVITY = 0
@@ -60,9 +65,19 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         controller = SelectTemplatesFolderController(this, this, Workspace)
     }
 
+    override fun onPause() {
+        super.onPause()
+        stopAndDeletePopupMenus()
+    }
+
     override fun onResume() {
         super.onResume()
         Timber.tag(javaClass.simpleName).v("onResume")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopAndDeletePopupMenus()
     }
 
     override fun onActivityResult(request: Int, result: Int, data: Intent?) {
@@ -290,9 +305,63 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
      * adds the items to the drawer from the array resources
      */
     private fun addDrawerItems() {
-        val menuArray = resources.getStringArray(R.array.global_menu_array)
+        val menuArray = resources.getStringArray(R.array.global_menu_array).toMutableList() //as MutableList<String>
+//        menuArray.removeAt(4) // (note on how to edit menus proramatically - delete later when done)
+        //
         mAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, menuArray)
         mDrawerList!!.adapter = mAdapter
+    }
+
+    class CustomPopupMenu(context: Context, anchor: View) :
+        PopupMenu(context, anchor)
+    {
+        init {
+            setForceShowIcon(true)
+        }
+    }
+
+    protected fun showHelpContextMenu() {
+        val anchorView = findViewById<View>(R.id.helpButton) // Provide the id of the help button
+        val helpMenu = CustomPopupMenu(this, anchorView)
+        helpMenu.inflate(R.menu.help_context_menu)
+
+        helpMenu.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {    
+                R.id.action_detailed_help -> {
+                    // Handle detailed help option
+                    showDetailedHelp()
+                    true
+                }
+                R.id.action_popup_help -> {
+                    // Handle popup help option
+                    showPopupHelp()
+                    true
+                }
+                else -> false
+            }
+        }
+
+        helpMenu.show()
+    }
+
+    override fun showDetailedHelp() {
+    }
+
+    override fun showPopupHelp() {
+        if (mPopupHelpUtils != null)
+            mPopupHelpUtils?.reShowPopupHelp()
+    }
+
+    fun setBasePopupHelpUtils(popupHelp: PopupHelpUtils) {
+        mPopupHelpUtils = popupHelp
+    }
+
+    fun stopAndDeletePopupMenus() {
+
+        if (mPopupHelpUtils != null) {
+            mPopupHelpUtils?.dismissPopup()
+            mPopupHelpUtils = null
+        }
     }
 
 }

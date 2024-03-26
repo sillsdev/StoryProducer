@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:theme="@style/PopupMenuStyle">
+    <item
+        android:icon="@drawable/ic_help_white_24dp"
+        android:id="@+id/action_detailed_help"
+        android:title="@string/help_menu_detailed" />
+    <item
+        android:id="@+id/action_popup_help"
+        android:title="@string/help_menu_popup" />
+</menu>

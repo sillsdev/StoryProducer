@@ -21,6 +21,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
+import org.sil.storyproducer.controller.storylist.PopupHelpUtils
 import org.sil.storyproducer.controller.storylist.StoryPageAdapter
 import org.sil.storyproducer.controller.storylist.StoryPageTab
 import org.sil.storyproducer.model.Phase
@@ -108,6 +109,41 @@ class MainActivity : BaseActivity(), Serializable {
 
     }
 
+    private fun addAndStartPopupMenus() {
+
+        if (mPopupHelpUtils != null)
+            mPopupHelpUtils?.dismissPopup()
+
+        mPopupHelpUtils = PopupHelpUtils(this)
+
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.activity_main,
+            -1, -1,
+            R.string.help_welcome_title, R.string.help_welcome_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.story_list_view,
+            50, 100,
+            R.string.help_main_screen_title, R.string.help_main_screen_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.toolbar,
+            90, 50,
+            R.string.help_main_help_title, R.string.help_main_help_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.toolbar,
+            10, 50,
+            R.string.help_main_menus_settings_title, R.string.help_main_menus_settings_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.toolbar,
+            10, 80,
+            R.string.help_main_downloads_title, R.string.help_main_downloads_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.story_list_view,
+            50, 100,
+            R.string.help_main_story_title, R.string.help_main_story_body)
+
+        mPopupHelpUtils?.showNextPopupHelp()
+    }
+
     // If only one or two stories are (auto) installed then display short
     // message to user to explain how to download more bloom templates
     private fun checkDownloadStoriesMessage() {
@@ -129,6 +165,7 @@ class MainActivity : BaseActivity(), Serializable {
 
         checkDownloadStoriesMessage()
 
+        addAndStartPopupMenus()
     }
 
     override fun onStart() {
@@ -145,6 +182,7 @@ class MainActivity : BaseActivity(), Serializable {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.menu_with_help, menu)
         return true
     }
@@ -171,6 +209,22 @@ class MainActivity : BaseActivity(), Serializable {
             .show()
     }
 
+    override fun showDetailedHelp() {
+        val wv = WebView(this)
+        val iStream = assets.open(Phase.getHelpDocFile(PhaseType.STORY_LIST))
+        val text = iStream.reader().use {
+            it.readText() }
+
+        wv.loadDataWithBaseURL(null, text,"text/html",null,null)
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Story List Help")
+            .setView(wv)
+            .setNegativeButton("Close") { dialog, _ ->
+                dialog!!.dismiss()
+            }
+        dialog.show()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
@@ -182,20 +236,8 @@ class MainActivity : BaseActivity(), Serializable {
                 true
             }
             R.id.helpButton -> {
-
-                val wv = WebView(this)
-                val iStream = assets.open(Phase.getHelpDocFile(PhaseType.STORY_LIST))
-                val text = iStream.reader().use {
-                        it.readText() }
-
-                wv.loadDataWithBaseURL(null,text,"text/html",null,null)
-                val dialog = AlertDialog.Builder(this)
-                    .setTitle("Story List Help")
-                    .setView(wv)
-                    .setNegativeButton("Close") { dialog, _ ->
-                        dialog!!.dismiss()
-                    }
-                dialog.show()
+                // Show the help context menu
+                showHelpContextMenu()
                 true
             }
             else -> super.onOptionsItemSelected(item)
