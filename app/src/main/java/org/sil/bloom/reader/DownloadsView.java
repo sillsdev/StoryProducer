@@ -30,6 +30,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.model.Workspace;
 
 import android.os.Environment;
 
@@ -183,7 +184,13 @@ public class DownloadsView extends LinearLayout {
                                 case DownloadManager.STATUS_PENDING:
                                     break;
                                 case DownloadManager.STATUS_FAILED:
-                                    // todo: something?
+                                    // todo: something? Now logging an error to analytics
+                                    String downloadUri = CommonUtilities.getStringFromCursor(cursor, DownloadManager.COLUMN_URI);
+                                    String downloadDescription = CommonUtilities.getStringFromCursor(cursor, DownloadManager.COLUMN_DESCRIPTION);
+                                    // Log that there was an error while downloading with Firebase analytics
+                                    if (downloadUri != null && downloadDescription != null)
+                                        Workspace.INSTANCE.logDownloadEvent(getContext(), Workspace.DOWNLOAD_TEMPLATE_TYPE.BLOOM_BOOK, Workspace.DOWNLOAD_EVENT.FAILED,
+                                                downloadId, downloadStatus, downloadUri, downloadDescription, "");
                                     break;
                             }
                             // Use this if we find we do need to do it on the UI thread.
@@ -243,26 +250,34 @@ public class DownloadsView extends LinearLayout {
         return result;
     }
 
-    // This is a much simpler way of extracting a filename than we use in IOUtilities, OK because
+    // This is a much simpler way of extracting a file basename than we use in IOUtilities, OK because
     // we create these URIs ourselves and know they are based on a local file.
-    private static String getFileNameFromUri(Uri uri) {
+    public static String getFileNameFromUri(Uri uri) {
         if (uri == null) return null;
         String path = uri.getPath();
         if (path == null) return null;
-        return getFileNameFromUriPath(path);
+        return getFilenameFromUriPath(path);
     }
-    private static String getFileNameFromUriPath(String path) {
+    public static String getFileBasenameFromUri(Uri uri) {
+        if (uri == null) return null;
+        String path = uri.getPath();
+        if (path == null) return null;
+        return getFileBasenameFromUriPath(path);
+    }
+    private static String getFileBasenameFromUriPath(String path) {
         return path.replaceFirst(".*/", "").replaceFirst("\\.[^.]*$", "");
     }
-
-    static String getBaseNameFromUriPath(String path) {
+    public static String getBasenameFromUriPath(String path) {
         return path.replaceFirst(".*/", "")
                 .replaceFirst("\\.[^.]*$", "")
                 .replaceFirst("\\.[^.]*$", "")
                 .replaceFirst("\\.[^.]*$", "");
     }
+    public static String getFilenameFromUriPath(String path) {
+        return path.replaceFirst(".*/", "");
+    }
 
-    private static String getFileExtensionFromUri(String strUri) {
+    static String getFileExtensionFromUri(String strUri) {
         Regex pattern = new Regex("\\.[^.]*$");
         MatchResult match = pattern.find(strUri, 0);
         String strExt = "";
@@ -274,12 +289,12 @@ public class DownloadsView extends LinearLayout {
     // If the user searched for a story in the Bloom library using the app hosted Url
     // we should be able to extract the search language from the download page and
     // use it for parsing the story when downloaded.
-    private static String getFileLangFromPageUri(String strUri) {
+    public static String getFileLangFromPageUri(String strUri) {
         String langValue = getParameterValue(strUri, "lang");
-        return langValue;
+        return langValue == null ? "" : langValue;
     }
 
-    private static String getBookIdFromPageUri(String strUri) {
+    public static String getBookIdFromPageUri(String strUri) {
         Regex pattern = new Regex("/[^\\?/]+\\?");
         MatchResult match = pattern.find(strUri, 0);
         String strId = "";
@@ -292,8 +307,10 @@ public class DownloadsView extends LinearLayout {
 
     // Gets a Uri parameter value
     public static String getParameterValue(String strUri, String parameterName) {
+        if (strUri == null)
+            return null;
         String query = strUri.replaceFirst(".*\\?", "");
-        if (query != null) {
+        if (!query.isEmpty()) {
             Map<String, String> parameters = parseQuery(query);
             // Get the value for the specified parameter
             return parameters.get(parameterName);
@@ -377,14 +394,20 @@ public class DownloadsView extends LinearLayout {
                 if (!strExt.equals(".bloompub") && !strExt.equals(".bloomSource")) {
                     continue; // some unrelated download
                 }
-                String fileName = getFileNameFromUriPath(path);
-                File downloadDest = new File(getDownloadDir(), fileName + strExt);
+                String fileBasename = getFileBasenameFromUriPath(path);
+                File downloadDest = new File(getDownloadDir(), fileBasename + strExt);
                 long downloadId = CommonUtilities.getLongFromCursor(cursor, DownloadManager.COLUMN_ID);
                 int downloadStatus = CommonUtilities.getIntFromCursor(cursor, DownloadManager.COLUMN_STATUS);
+                String downloadUri = CommonUtilities.getStringFromCursor(cursor, DownloadManager.COLUMN_URI);
+                String downloadDescription = CommonUtilities.getStringFromCursor(cursor, DownloadManager.COLUMN_DESCRIPTION);
                 if (downloadId > 0 && downloadStatus > 0) {
                     switch (downloadStatus) {
                         default:
                             // if we see a failed download, for now we'll ignore it.
+                            // Log an error while downloading with Firebase analytics
+                            if (downloadUri != null && downloadDescription != null)
+                                Workspace.INSTANCE.logDownloadEvent(getContext(), Workspace.DOWNLOAD_TEMPLATE_TYPE.BLOOM_BOOK, Workspace.DOWNLOAD_EVENT.FAILED,
+                                        downloadId, downloadStatus, downloadUri, downloadDescription, "");
                             continue;
                             // But if it's running or paused or pending we want to show the status and allow it to complete.
                         case DownloadManager.STATUS_RUNNING:
@@ -395,8 +418,7 @@ public class DownloadsView extends LinearLayout {
                         // And if one has finished since our last call of this method, even while
                         // our app was not running, we'll show the complete message.
                         case DownloadManager.STATUS_SUCCESSFUL:
-                            String downloadDescription = CommonUtilities.getStringFromCursor(cursor, DownloadManager.COLUMN_DESCRIPTION);
-                            handleDownloadComplete(downloadDest.getPath(), downloadId, downloadDescription);
+                            handleDownloadComplete(downloadDest.getPath(), downloadId, downloadUri, downloadDescription);
                             break;
                     }
                 }
@@ -432,12 +454,12 @@ public class DownloadsView extends LinearLayout {
                                 long contentLength, String sourceUrl) {
 
         Uri downloadUri = Uri.parse(url);
-        String fileName = getFileNameFromUri(downloadUri);
+        String fileBasename = getFileBasenameFromUri(downloadUri);
         String strExt = getFileExtensionFromUri(url);
         // get the language to use when parsing the story after downloading
         String lang = getFileLangFromPageUri(sourceUrl);
         String bookId = getBookIdFromPageUri(sourceUrl);
-        if (fileName == null || fileName.equals(""))
+        if (fileBasename == null || fileBasename.equals(""))
         {
             // If there isn't a .bloompub file at the location we requested,
             // we seem to get a meaningless url (probably from a 404 redirect).
@@ -449,16 +471,16 @@ public class DownloadsView extends LinearLayout {
         }
         DownloadManager.Request request = new DownloadManager.Request(downloadUri);
         String template = getContext().getString(R.string.downloading_file);
-        request.setTitle(String.format(template, fileName));
+        request.setTitle(String.format(template, fileBasename));
         // Use the Book ID and story language to create extra file extensions which can then
         // indicate which language to open the story in after it has been downloaded
         // and uniquely identify the Bloom book being downloaded
         if (!bookId.isEmpty())
-            fileName = fileName + "." + bookId;
-        if (lang != null && !lang.isEmpty())
-            fileName = fileName + ".lang_" + lang;
-        File downloadDest = new File(getDownloadDir(), fileName + strExt);
-        boolean isInWorkspace = workspaceRelPathExists(getContext(), fileName);
+            fileBasename = fileBasename + "." + bookId;
+        if (!lang.isEmpty())
+            fileBasename = fileBasename + ".lang_" + lang;
+        File downloadDest = new File(getDownloadDir(), fileBasename + strExt);
+        boolean isInWorkspace = workspaceRelPathExists(getContext(), fileBasename);
         if (downloadDest.exists() || isInWorkspace) {
             String message = String.format(getContext().getString(R.string.book_already_downloaded), lang);
             Toast toast = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
@@ -469,6 +491,9 @@ public class DownloadsView extends LinearLayout {
         request.setDestinationUri(target);
         request.setDescription(sourceUrl);
         long downloadId = mDownloadManager.enqueue(request);
+        int dmStatus = downloadId == -1 ? DownloadManager.STATUS_FAILED : DownloadManager.STATUS_RUNNING;
+        Workspace.INSTANCE.logDownloadEvent(getContext(), Workspace.DOWNLOAD_TEMPLATE_TYPE.BLOOM_BOOK, Workspace.DOWNLOAD_EVENT.START,
+                downloadId, dmStatus, url, sourceUrl, "");
         showDownloadProgress(downloadId, downloadDest);
     }
 
@@ -540,9 +565,10 @@ public class DownloadsView extends LinearLayout {
                 if (action != null && action.equals(DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
                     Cursor cursor = mDownloadManager.query(new DownloadManager.Query().setFilterById(downloadId));
                     if (cursor.moveToFirst()) {
+                        String downloadUri = CommonUtilities.getStringFromCursor(cursor, DownloadManager.COLUMN_URI);
                         String downloadDescription = CommonUtilities.getStringFromCursor(cursor, DownloadManager.COLUMN_DESCRIPTION);
                         mDownloadsInProgress.remove(downloadId);
-                        handleDownloadComplete(data.destPath, downloadId, downloadDescription);
+                        handleDownloadComplete(data.destPath, downloadId, downloadUri, downloadDescription);
                         if (mDownloadsInProgress.size() == 0) {
                             cleanupDownloadDirectory();
                             //  We may have just finished multiple ones, but if so, we already put
@@ -558,7 +584,7 @@ public class DownloadsView extends LinearLayout {
         }
     };
 
-    private void handleDownloadComplete(String downloadDestPath, long downloadId, String downloadDescription) {
+    private void handleDownloadComplete(String downloadDestPath, long downloadId, String uri, String pageUrl) {
         File source = new File(downloadDestPath);
         if (!source.exists()) {
             // just ignore any download we think we got that didn't result in a file.
@@ -574,6 +600,10 @@ public class DownloadsView extends LinearLayout {
             mDownloadManager.remove(downloadId);
             return;
         }
+
+        // Log a successful download with Firebase analytics
+        Workspace.INSTANCE.logDownloadEvent(getContext(), Workspace.DOWNLOAD_TEMPLATE_TYPE.BLOOM_BOOK, Workspace.DOWNLOAD_EVENT.COMPLETE,
+                downloadId, DownloadManager.STATUS_SUCCESSFUL, uri, pageUrl, "");
 
         // The download has completed so make the app-hosted webview downloads page go back
         // to the initial starting view, ready for the next webview download command

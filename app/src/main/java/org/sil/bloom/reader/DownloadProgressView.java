@@ -1,25 +1,19 @@
 package org.sil.bloom.reader;
 
-import static org.sil.bloom.reader.DownloadsView.getBaseNameFromUriPath;
+import static org.sil.bloom.reader.DownloadsView.getBasenameFromUriPath;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import java.io.File;
-
 
 import org.sil.storyproducer.R;
-
-import kotlin.text.MatchResult;
-import kotlin.text.Regex;
 
 // This class displays a progress bar at the bottom of BloomLibraryActivity (or MainActivity)
 // and supports canceling the download(s) in progress.
@@ -97,7 +91,7 @@ public class DownloadProgressView extends ConstraintLayout {
             mMessage.setText(R.string.downloading_books);
             return;
         }
-        String name = getBaseNameFromUriPath(this.mBookPath);
+        String name = getBasenameFromUriPath(this.mBookPath);
         String template = getContext().getString(R.string.downloading_file);
 
         String label = String.format(template, titleFromName(name));

@@ -20,11 +20,13 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import org.sil.bloom.reader.CommonUtilities
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.databinding.ActivityBldownloadBinding
 import org.sil.storyproducer.model.BLBook
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.bloomSourceAutoDLDir
 import org.sil.storyproducer.model.bloomSourceZipExt
 import org.sil.storyproducer.model.parseOPDSfile
@@ -52,7 +54,7 @@ class BLDownloadActivity : AppCompatActivity() {
         // process a message from the DownloadManager to see if it has completed one of our story files
         override fun onReceive(context: Context?, intent: Intent?) {
             // check that we have received a download complete action
-            if (DownloadManager.ACTION_DOWNLOAD_COMPLETE == intent!!.action) {
+            if (context != null && intent != null && DownloadManager.ACTION_DOWNLOAD_COMPLETE == intent.action) {
                 // process the download complete action - installing any downloads if necessary
                 var moreDownloadsToComplete = 0
                 var recognisedDownloads = 0
@@ -69,11 +71,25 @@ class BLDownloadActivity : AppCompatActivity() {
                     }
                     if (downloadCompleteId >= 0 && model.downloadId == downloadCompleteId) {
                         model.downloadId = BLDataModel.DOWNLOADED_COMPLETE   // no longer need to check for this download id
+
+                        // Log a successful download with Firebase analytics
+                        val query = DownloadManager.Query().setFilterById(downloadCompleteId)
+                        val cursor = downloadManager.query(query)
+                        cursor?.use {
+                            if (cursor.moveToNext()) {
+                                val uri = CommonUtilities.getStringFromCursor(cursor, DownloadManager.COLUMN_URI)
+                                val downloadStatus = CommonUtilities.getIntFromCursor(cursor, DownloadManager.COLUMN_STATUS)
+                                Workspace.logDownloadEvent(context, Workspace.DOWNLOAD_TEMPLATE_TYPE.BIBLE_STORY, Workspace.DOWNLOAD_EVENT.COMPLETE,
+                                    downloadCompleteId, downloadStatus, uri, "", model.lang)
+                            }
+                        }
+
                     }
                     else if (model.downloadId >= 0) {
                         moreDownloadsToComplete++ // we have other ids in the list that are still being downloaded
                     }
                 }
+
                 if (moreDownloadsToComplete == 0 && recognisedDownloads > 0) {
                     // Show download complete toast message
                     Toast.makeText(context, R.string.bloom_lib_download_complete, Toast.LENGTH_LONG).show()
@@ -196,6 +212,10 @@ class BLDownloadActivity : AppCompatActivity() {
                     request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                     // queue the download
                     dataItem.downloadId = downloadManager.enqueue(request)
+                    val dmStatus =
+                        if (dataItem.downloadId == -1L) DownloadManager.STATUS_FAILED else DownloadManager.STATUS_RUNNING
+                    Workspace.logDownloadEvent(view.context, Workspace.DOWNLOAD_TEMPLATE_TYPE.BIBLE_STORY, Workspace.DOWNLOAD_EVENT.START,
+                        dataItem.downloadId, dmStatus, dataItem.downloadUri, "", dataItem.lang)
 
                     adapter.notifyItemChanged(i)    // update the display of this card to be grayed out
 

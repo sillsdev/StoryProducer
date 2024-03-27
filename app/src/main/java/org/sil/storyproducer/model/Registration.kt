@@ -19,6 +19,8 @@ class Registration{
     get() {return getBoolean("registration_complete",false)}
     set(value){putBoolean("registration_complete",value)}
 
+    val useInLogs: Boolean = false  // true if ok to use registration info in Analytics logging
+
     // gets the String from a text file in internal storage or null if error
     private fun getInternalText(context: Context, relPath: String) : String? {
         try {
