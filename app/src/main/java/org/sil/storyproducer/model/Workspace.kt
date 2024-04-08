@@ -6,15 +6,19 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
-import android.provider.Settings.Secure
 import android.util.Log
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.analytics.FirebaseAnalytics
+import org.sil.bloom.reader.DownloadProgressView
+import org.sil.bloom.reader.DownloadsView
 import org.sil.storyproducer.App
+import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.tools.file.deleteWorkspaceFile
 import org.sil.storyproducer.tools.file.getChildOutputStream
 import org.sil.storyproducer.tools.file.getDocumentFileFromUri
@@ -24,6 +28,7 @@ import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import org.sil.storyproducer.tools.getFreeEmulatedExternalMemoryFile
 import org.sil.storyproducer.tools.getFreeInternalMemoryFile
 import org.sil.storyproducer.tools.getMaxFreeExtMemoryFile
+import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
@@ -638,16 +643,95 @@ object Workspace {
         return true
     }
 
-    fun logEvent(context: Context, eventName: String, params: Bundle = Bundle()){
-        params.putString("phone_id", Secure.getString(context.contentResolver,
-                Secure.ANDROID_ID))
-        params.putString("story_number", activeStory.titleNumber)
-        params.putString("ethnolog", registration.getString("ethnologue", " "))
-        params.putString("lwc", registration.getString("lwc", " "))
-        params.putString("translator_email", registration.getString("translator_email", " "))
-        params.putString("trainer_email", registration.getString("trainer_email", " "))
-        params.putString("consultant_email", registration.getString("consultant_email", " "))
-        firebaseAnalytics.logEvent(eventName, params)
+    fun logEvent(eventName: String, params: Bundle = Bundle()) {
+        val bundle = Bundle()
+
+        // TODO: FOR A FUTURE RELEASE - ADD CHECKBOX (DEFAULT NO) TO REGISTRATION FOR LOGGING THESE AS WELL.  LOG " " IF NOT AGREED
+        // TODO: POSSIBLE FUTURE CHECKBOX QUESTION: Allow sending of app usage analytics and registration information to help us to improve our software and services?
+        if (registration.useInLogs) {
+            bundle.putString("ethnolog", registration.getString("ethnologue", " ")) // ethnolog [SIC]
+            bundle.putString("lwc", registration.getString("lwc", " "))
+            bundle.putString("language", registration.getString("language", " "))   // being translated into
+            bundle.putString("country", registration.getString("country", " "))
+        } else if (false) {
+                // log placeholders [NOT IMPLEMENTED YET - waiting to finialize a UI requesting user permissions]
+            bundle.putString("ethnolog", " ")   // ethnolog [SIC]
+            bundle.putString("lwc", " ")
+            bundle.putString("language", " ")
+            bundle.putString("country", " ")
+        }
+        bundle.putString("android_version", Build.VERSION.RELEASE)
+
+        // new: Log Story Producer version info:
+        val versionName = MainActivity.mainActivity?.packageManager?.getPackageInfo(MainActivity.mainActivity?.packageName!!, 0)?.versionName
+        bundle.putString("sp_version", versionName)  // for diagnosing problems in specific versions
+
+        // Put the passed parameters after the above logs
+        bundle.putAll(params)   // now put caller params (at the end hopefully)
+
+        if (BuildConfig.DEBUG)
+            Timber.d("FIREBASE LOG EVENT: $eventName: $bundle") // log to console in debug mode
+        firebaseAnalytics.logEvent(eventName, bundle)
+    }
+
+    enum class DOWNLOAD_TEMPLATE_TYPE {
+        BIBLE_STORY, BLOOM_BOOK
+    }
+    enum class DOWNLOAD_EVENT {
+        START, COMPLETE, FAILED
+    }
+
+    // Makes a Firebase Analytics log for a Bible Story Template or Bloom Book download event
+    // url - is the Bible Story or Bloom Book url for the book being downloaded
+    // pageUrl - is for Bloom Books only and is the Browser WebView Url for the book's download button page
+    // lang - is the default language to be used to open the .bloomSource download when complete
+    //        i.e. the language used in the Bible Story list filter or the Bloom Book search language
+    fun logDownloadEvent(context: Context, type: DOWNLOAD_TEMPLATE_TYPE, event: DOWNLOAD_EVENT,
+                         downloadId: Long, downloadStatus: Int, url: String, pageUrl: String = "", lang: String = "") {
+        var logName =
+            when (type) {
+                DOWNLOAD_TEMPLATE_TYPE.BIBLE_STORY -> "download_bible_story"
+                DOWNLOAD_TEMPLATE_TYPE.BLOOM_BOOK -> "download_bloom_book"
+            }
+        logName +=
+            when (event) {
+                DOWNLOAD_EVENT.START -> ""
+                DOWNLOAD_EVENT.COMPLETE -> "_success"
+                DOWNLOAD_EVENT.FAILED -> "_status"
+            }
+
+        val params = Bundle()
+
+        params.putString("download_status", downloadStatus.toString())  // 0 if enqueue failed (otherwise e.g. DownloadManager.STATUS_RUNNING)
+
+        // The following parameters are extracted from the source download uri, and for Bloom Books, also the Bloom Book 'download page' uri
+        val path = Uri.parse(url).path
+        val basename = DownloadsView.getBasenameFromUriPath(path)
+        val title = DownloadProgressView.titleFromName(basename)
+        val fileName = DownloadsView.getFileNameFromUri(Uri.parse(url))
+        val bookId = DownloadsView.getBookIdFromPageUri(pageUrl)
+        var downloadLanguage = DownloadsView.getFileLangFromPageUri(pageUrl)
+        if (downloadLanguage.isNullOrEmpty())
+            downloadLanguage = lang
+
+        params.putString("title", title)
+        params.putString("filename", fileName)  // Including file extension
+        params.putString("download_language", downloadLanguage)     // The Bible Story language filter code OR Bloom Book language search code
+
+        if (type == DOWNLOAD_TEMPLATE_TYPE.BLOOM_BOOK) {
+            params.putString("pageUrl", pageUrl)    // The Bloom Book page used Url with download button
+            params.putString("book_id", bookId)     // The book id for the Bloom Book
+        }
+
+        logEvent(logName, params)
+    }
+
+    fun logVideoCreationEvent(videoName: String) {
+        val params = Bundle()
+        params.putString("story_number", activeStory.title) // WAS: activeStory.titleNumber)
+        params.putString("video_name", videoName)
+
+        logEvent("video_creation", params)
     }
 
     fun sortStoriesByTitle() {
@@ -655,5 +739,3 @@ object Workspace {
     }
 
 }
-
-

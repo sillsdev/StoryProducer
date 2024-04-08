@@ -5,7 +5,6 @@ import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.media.MediaMuxer
 import android.net.Uri
-import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.arthenica.mobileffmpeg.Config
@@ -19,6 +18,7 @@ import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.model.Workspace.activeStory
 import org.sil.storyproducer.service.SlideService
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import org.sil.storyproducer.tools.file.getStoryUri
@@ -117,11 +117,9 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         if (isSuccess) {
             Log.v(TAG, "Moving completed video to " + videoRelPath)
             copyToWorkspacePath(context,Uri.fromFile(videoTempFile),"$VIDEO_DIR/$videoRelPath")
-            Workspace.activeStory.addVideo(videoRelPath)
+            activeStory.addVideo(videoRelPath)
 
-            val params = Bundle()
-            params.putString("video_name", videoRelPath)
-            Workspace.logEvent(context,"video_creation",params)
+            Workspace.logVideoCreationEvent(videoRelPath)
 
             //Make 3gp video before you delete the temp video - it's made from that.
             if (!isVideoWidescreen) {   // but not if doing wide screen
