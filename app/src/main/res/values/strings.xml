@@ -40,7 +40,7 @@
     <string name="share_title">Share</string>
     <string name="whole_story_title">Whole Story Back Translation</string>
     <string name="back_translation_title">Back Translation</string>
-    <string name="title_activity_story_templates">Story Templates</string>
+    <string name="title_activity_story_templates">Story List</string>
     <string name="title_activity_wordlink_list">WordLinks List</string>
 
     <!-- String names for registration -->
@@ -103,7 +103,7 @@
     <string name="affirm_accuracy_check_NotaBibleStory">(this story is not a Bible story)</string>
     <string name="request_accuracy_check_message">Please have someone with Bible knowledge check this story for accuracy.</string>
     <string name="stories_not_found_title"></string><!-- intentionally blank for now, the body messages are ok alone -->
-    <string name="stories_not_found_body">Now it\'s time to install some story templates.&lt;br/>
+    <string name="stories_not_found_body">Now it\'s time to install some stories.&lt;br/>
         Tap the menu in the upper left, then...&lt;br/>&lt;br/>
         To install the demo story, choose:&lt;br/>
         &lt;b>&lt;font color="#ffffff">Add Demo to Story List&lt;/font>&lt;/b>&lt;br/>&lt;br/>
@@ -307,7 +307,7 @@
     <string name="all_stories_tab">All Stories</string>
     <string name="in_progress_tab">In Progress</string>
     <string name="completed_tab">Completed</string>
-    <string name="more_story_templates"><b>Tip:</b>\nIf you are connected to the internet, you can add more story templates!\nTap the menu in the upper left, and choose one of the <b>\'Download ...\'</b> actions.</string>
+    <string name="more_story_templates"><b>Tip:</b>\nIf you are connected to the internet, you can add more stories!\nTap the menu in the upper left, and choose one of the <b>\'Download ...\'</b> actions.</string>
 
     <!-- Filter Toolbar -->
     <string name="film_toolbar">Film</string>
