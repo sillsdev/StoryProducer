@@ -13,8 +13,8 @@ android {
         applicationId "org.sil.storyproducer"
         minSdkVersion 21
         targetSdkVersion 33
-        versionCode 34
-        versionName '4.1.1'
+        versionCode 35
+        versionName '4.1.2'
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
