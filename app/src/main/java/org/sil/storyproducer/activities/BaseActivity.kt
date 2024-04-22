@@ -28,7 +28,7 @@ import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companio
 import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.UPDATE_TEMPLATES_FOLDER
 import org.sil.storyproducer.controller.SettingsActivity
 import org.sil.storyproducer.controller.bldownload.BLDownloadActivity
-import org.sil.storyproducer.controller.storylist.PopupHelpUtils
+import org.sil.storyproducer.controller.PopupHelpUtils
 import org.sil.storyproducer.controller.wordlink.WordLinksListActivity
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.DrawerItemClickListener

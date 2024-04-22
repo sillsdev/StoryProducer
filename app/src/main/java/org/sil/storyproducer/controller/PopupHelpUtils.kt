@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller.storylist
+package org.sil.storyproducer.controller
 
 import android.content.Context
 import android.graphics.Canvas
@@ -34,19 +34,6 @@ import org.sil.storyproducer.R
 import timber.log.Timber
 import kotlin.math.min
 
-
-/**
- * StoryPageFragment is a flexible fragment in that it displays different things based on the
- * current configurations. Typically, this shows a list of list of stories. However, when there are
- * no stories present, a message is shown that notifies the user that there aren't any stories of
- * that type in the tab. Lastly, a StoryPageFragment can contain a FilterToolbarFrag that helps to
- * sort the list of stories in the adapter.
- *
- * StoryPageFragment has a one-one relationship with a StoryPageTab, however, since the
- * StoryPageFragment is an Android:Fragment, it will follow the typical activity lifecycle, which
- * means that it gets created and destroyed when it is not being used.
- */
-
 class PopupItem(val anchorViewId: Int,
                 val percentX: Int,
                 val percentY: Int,
@@ -55,20 +42,14 @@ class PopupItem(val anchorViewId: Int,
                 val waitForUi: Boolean = false) {
 
     var itemString = ""
-
 }
-
 class PopupHelpUtils(private val parent: Any,
                      private val slideNumber: Int = 0) {
 
     private var helpPopupWindow: PopupWindow? = null
-    private var onClickListener: (() -> Unit)? = null
-
     private var popupItems: MutableList<PopupItem> = mutableListOf()
     private var context: Context? = null
     private var activity: ComponentActivity? = null
-
-
     init {
         if (parent is Fragment) {
             activity = parent.requireActivity()
@@ -145,8 +126,7 @@ class PopupHelpUtils(private val parent: Any,
                     titleResId: Int,
                     bodyResId: Int,
                          waitForUi: Boolean = false) {
-        var newPopup = PopupItem(anchorViewId, percentX, percentY, titleResId, bodyResId, waitForUi)
-//        newPopup.itemString = context!!.getString(titleResId)
+        val newPopup = PopupItem(anchorViewId, percentX, percentY, titleResId, bodyResId, waitForUi)
         popupItems.add(newPopup)
     }
 
@@ -155,10 +135,7 @@ class PopupHelpUtils(private val parent: Any,
     }
 
     fun reShowPopupHelp() {
-        val activityClassName = getDerivedClassName(parent)
-//        val prefString = "PopupHelpGroup_${activityClassName}_"
         val prefString = "PopupHelpGroup_"
-
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         // Use the SharedPreferences editor to remove the preferences within the subgroup
         val editor = sharedPreferences.edit()
@@ -172,7 +149,6 @@ class PopupHelpUtils(private val parent: Any,
         editor.apply()
 
         showNextPopupHelp()
-
     }
 
     fun showNextPopupHelp() {
@@ -278,13 +254,6 @@ class PopupHelpUtils(private val parent: Any,
     private fun showHelpPopup2(context: Context, parentView: View, arrowTarget: Point, titleResId: Int, bodyResId: Int, showOk: Boolean = false)
             : PopupWindow {
 
-        // TODO: take the width and arrowTarget point and fix CustomBackgroundDrawable class
-        // to determine which edge of the rectangle the arrow is on and what width to draw
-        // the rectangle and the rectangle origin
-
-//            var parentWidth = parentView.rootView.width
-//            var parentHeight = parentView.rootView.height
-
         val parentDrawableBounds = Rect()
         parentView.getDrawingRect(parentDrawableBounds)
         val parentViewLocationOnScreen = IntArray(2)
@@ -298,18 +267,13 @@ class PopupHelpUtils(private val parent: Any,
         val rootDisplayFrame = Rect()
         rootView.getWindowVisibleDisplayFrame(rootDisplayFrame)
 
-
         var rootDrawableBounds = Rect()
         rootView.getDrawingRect(rootDrawableBounds)
         val rootViewLocationOnScreen = IntArray(2)
         rootView.getLocationOnScreen(rootViewLocationOnScreen)
         rootDrawableBounds.offset(rootViewLocationOnScreen[0], rootViewLocationOnScreen[1])
 
-        rootDrawableBounds = rootDisplayFrame   // FIX?????
-
-//            parentWidth = rootDrawableBounds.width()
-//            parentHeight = rootDrawableBounds.height()
-
+        rootDrawableBounds = rootDisplayFrame
 
 // Assuming childView is the view whose coordinates you want to convert
         val childCoordinates = IntArray(2)
@@ -326,8 +290,6 @@ class PopupHelpUtils(private val parent: Any,
         while (offsetX < 0)
             offsetX += parentView.rootView.width    // fix x offset if found on a different slide
         var offsetY = childCoordinates[1] - rootViewCoordinates[1]
-//            offsetX -= rootDisplayFrame.left
-//            offsetY -= rootDisplayFrame.top
         if (BuildConfig.DEBUG)
             Timber.d("COORD LOG EVENT: offsetX=$offsetX OffsetY=$offsetY") // log to console in debug mode
 
@@ -349,23 +311,23 @@ class PopupHelpUtils(private val parent: Any,
             rootArrowTarget.y = rootDrawableBounds.top
 
         val boxWidthFraction = 0.65f
-        val sideWidthFraction = 0.0625f
+        val sideWidthFraction = 0.04 //0.0625f
         var popupArrowLength = 200
 
         val inflater = LayoutInflater.from(context)
         val popupView = inflater.inflate(R.layout.balloon_message_x, null)
 
-        var textTitleView = popupView.findViewById<TextView>(R.id.textTitle)
+        val textTitleView = popupView.findViewById<TextView>(R.id.textTitle)
         textTitleView?.text = context.getString(titleResId)
-        var textBodyView = popupView.findViewById<TextView>(R.id.textBody)
-        var bodyString = context.getString(bodyResId)
+        val textBodyView = popupView.findViewById<TextView>(R.id.textBody)
+        val bodyString = context.getString(bodyResId)
         textBodyView.text = HtmlCompat.fromHtml(bodyString, HtmlCompat.FROM_HTML_MODE_LEGACY)
         if (showOk) {
-            var textOkButton = popupView.findViewById<Button>(R.id.btnNext)
+            val textOkButton = popupView.findViewById<Button>(R.id.btnNext)
             textOkButton.text = context.getString(R.string.ok)
         }
 
-        var usedPopupWidth = (rootDrawableBounds.width() * boxWidthFraction).toInt()
+        val usedPopupWidth = (rootDrawableBounds.width() * boxWidthFraction).toInt()
         // Set the measured width as the width of the inflated view
         val layoutParams =
             ViewGroup.LayoutParams(usedPopupWidth, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -383,7 +345,7 @@ class PopupHelpUtils(private val parent: Any,
         var shiftBoxY = 0
 
         // need to determine where the arrow goes (north, east, south, west) and length of arrow
-        var arrowDirection: CompassPoint
+        val arrowDirection: CompassPoint
         if (displayCentral)
             arrowDirection = CompassPoint.NO_COMPASS_POINT
         else if (rootArrowTarget.x > rootDrawableBounds.width() * (1.0f - sideWidthFraction))
@@ -397,8 +359,8 @@ class PopupHelpUtils(private val parent: Any,
 
         var boxDrawX: Int
         var boxDrawY: Int
-        var boxDrawPoint: Point
-        var pointDrawOffset: Point
+        val boxDrawPoint: Point
+        val pointDrawOffset: Point
 
         when (arrowDirection) {
             CompassPoint.NO_COMPASS_POINT -> {
@@ -478,11 +440,10 @@ class PopupHelpUtils(private val parent: Any,
         val shiftedView = ShiftedView(context, null, 0, popupView)
         shiftedView.setShift(shiftBoxX, shiftBoxY) // Shift the child view by given amount
 
-
-        var popupWindow = CustomPopupWindow(shiftedView, popupBoxWidth, popupBoxHeight)
+        val popupWindow = CustomPopupWindow(shiftedView, popupBoxWidth, popupBoxHeight)
 //        popupWindow.setTouchModal(true)   // not working? (needs API 29 anyway)
 
-        var customBackgroundDrawable =
+        val customBackgroundDrawable =
             CustomBackgroundDrawable(context, arrowDirection, popupArrowLength, pointDrawOffset)
         popupWindow.setBackgroundDrawable(customBackgroundDrawable)
 
@@ -528,8 +489,8 @@ class PopupHelpUtils(private val parent: Any,
                 CompassPoint.SOUTH -> yAdjustSub = popupArrowLength.toFloat()
                 CompassPoint.EAST -> xAdjustSub = popupArrowLength.toFloat()
             }
-            var arrowBaseXShift = ((bounds.right-xAdjustSub)/2-arrowPoint.x)/2
-            var arrowBaseYShift = ((bounds.bottom-yAdjustSub)/2-arrowPoint.y)/1.25f
+            val arrowBaseXShift = ((bounds.right-xAdjustSub)/2-arrowPoint.x)/2
+            val arrowBaseYShift = ((bounds.bottom-yAdjustSub)/2-arrowPoint.y)/1.25f
 
             // Define a path for the polygon shape
             val path = Path().apply {
@@ -569,6 +530,7 @@ class PopupHelpUtils(private val parent: Any,
         override fun setColorFilter(colorFilter: android.graphics.ColorFilter?) {
             // Not implemented
         }
+        @Deprecated("Deprecated in Java")
         override fun getOpacity(): Int {
             // Not implemented
             return PixelFormat.TRANSPARENT

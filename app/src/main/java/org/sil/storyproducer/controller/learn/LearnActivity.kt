@@ -11,7 +11,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
-import org.sil.storyproducer.controller.storylist.PopupHelpUtils
+import org.sil.storyproducer.controller.PopupHelpUtils
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Story

@@ -19,10 +19,10 @@ import androidx.appcompat.widget.Toolbar
 import androidx.preference.PreferenceManager
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.PopupHelpUtils
 import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.controller.logging.LogListAdapter
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
-import org.sil.storyproducer.controller.storylist.PopupHelpUtils
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SlideType
@@ -335,7 +335,7 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
             R.string.help_accuracy_confirm_title, R.string.help_accuracy_confirm_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.phase_frame,
-            95, 50,
+            98, 50,
             R.string.help_accuracy_continue_title, R.string.help_accuracy_continue_body)
 
         mPopupHelpUtils?.showNextPopupHelp()

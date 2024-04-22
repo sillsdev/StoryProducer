@@ -14,7 +14,7 @@ import android.widget.TextView
 import com.hbisoft.pickit.Utils
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
-import org.sil.storyproducer.controller.storylist.PopupHelpUtils
+import org.sil.storyproducer.controller.PopupHelpUtils
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getChildDocuments

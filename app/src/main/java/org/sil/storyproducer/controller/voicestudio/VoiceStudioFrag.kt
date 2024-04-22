@@ -13,7 +13,7 @@ import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
-import org.sil.storyproducer.controller.storylist.PopupHelpUtils
+import org.sil.storyproducer.controller.PopupHelpUtils
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar

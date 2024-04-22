@@ -16,7 +16,6 @@ import androidx.core.content.FileProvider
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.storylist.PopupHelpUtils
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import org.sil.storyproducer.tools.toolbar.MultiRecordRecordingToolbar

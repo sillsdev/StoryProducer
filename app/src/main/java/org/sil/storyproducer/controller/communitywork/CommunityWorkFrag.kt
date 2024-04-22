@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
+import org.sil.storyproducer.controller.PopupHelpUtils
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
-import org.sil.storyproducer.controller.storylist.PopupHelpUtils
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 /**
@@ -87,7 +87,7 @@ class CommunityWorkFrag : MultiRecordFrag() {
             R.string.help_community_phase_title, R.string.help_community_phase_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.phase_frame,
-            95, 50,
+            98, 50,
             R.string.help_community_swipe_title, R.string.help_community_swipe_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.fragment_reference_audio_button,
@@ -99,7 +99,7 @@ class CommunityWorkFrag : MultiRecordFrag() {
             R.string.help_community_record_title, R.string.help_community_record_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.phase_frame,
-            95, 50,
+            98, 50,
             R.string.help_community_continue_title, R.string.help_community_continue_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,

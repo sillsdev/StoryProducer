@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
+import org.sil.storyproducer.controller.PopupHelpUtils
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
-import org.sil.storyproducer.controller.storylist.PopupHelpUtils
 import org.sil.storyproducer.model.Workspace
 
 /**
@@ -45,7 +45,7 @@ class TranslateReviseFrag : MultiRecordFrag() {
                 R.string.help_translate_record_title, R.string.help_translate_record_body)
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.phase_frame,
-                95, 50,
+                98, 50,
                 R.string.help_translate_swipe_left_title, R.string.help_translate_swipe_left_body)
         } else if (Workspace.activeStory.slides[slideNumber].isNumberedPage()) {
             mPopupHelpUtils = PopupHelpUtils(this, 1)   // always use slide 1
@@ -63,7 +63,7 @@ class TranslateReviseFrag : MultiRecordFrag() {
                 R.string.help_translate_listen_title, R.string.help_translate_listen_body)
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.phase_frame,
-                95, 50,
+                98, 50,
                 R.string.help_translate_swipe_left2_title, R.string.help_translate_swipe_left2_body)
 
         } else if (Workspace.activeStory.slides[slideNumber].isSongSlide()) {

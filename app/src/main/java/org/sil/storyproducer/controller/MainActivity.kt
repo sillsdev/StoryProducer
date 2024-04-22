@@ -21,7 +21,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
-import org.sil.storyproducer.controller.storylist.PopupHelpUtils
 import org.sil.storyproducer.controller.storylist.StoryPageAdapter
 import org.sil.storyproducer.controller.storylist.StoryPageTab
 import org.sil.storyproducer.model.Phase
