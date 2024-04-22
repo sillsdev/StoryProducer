@@ -129,7 +129,7 @@ class PopupHelpUtils(private val parent: Any,
     }
 
     fun stopShowingPopupHelp() {
-        currentHelpIndex = -1
+        currentHelpIndex = -1   // Stop showing popup help for the current Phase/Activity
     }
 
     fun reShowPopupHelp() {
