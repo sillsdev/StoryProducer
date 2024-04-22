@@ -101,6 +101,7 @@ class BloomFrontCoverSlideBuilder(defaultLang: String) : SlideBuilder() {
             ?.select("div[data-book=bookTitle]")
             ?.find { it.attr("lang") == lang }
             ?.wholeText()
+            ?.replace(Regex("\\s+"), " ")
             ?.trim()
             ?: ""
     }
