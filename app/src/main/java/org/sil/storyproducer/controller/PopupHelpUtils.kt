@@ -29,9 +29,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.preference.PreferenceManager
-import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
-import timber.log.Timber
 import kotlin.math.min
 
 class PopupItem(val anchorViewId: Int,
@@ -231,6 +229,8 @@ class PopupHelpUtils(private val parent: Any,
             }
         }
     }
+
+    // a PopupWindow that should enable resource deletion on destruction
     class CustomPopupWindow(contentView: View, width: Int, height: Int) :
             PopupWindow(contentView, width, height) {
 
@@ -254,26 +254,14 @@ class PopupHelpUtils(private val parent: Any,
     private fun showHelpPopup2(context: Context, parentView: View, arrowTarget: Point, titleResId: Int, bodyResId: Int, showOk: Boolean = false)
             : PopupWindow {
 
-        val parentDrawableBounds = Rect()
-        parentView.getDrawingRect(parentDrawableBounds)
-        val parentViewLocationOnScreen = IntArray(2)
-        parentView.getLocationOnScreen(parentViewLocationOnScreen)
-        parentDrawableBounds.offset(
-            parentViewLocationOnScreen[0],
-            parentViewLocationOnScreen[1]
-        )
+        // local hard-coded settings
+        val boxWidthFraction = 0.65f    // the screen width fraction to use for the width of a popup help message
+        val sideWidthFraction = 0.04    // If closer than this width fraction to the edge then draw arrow East or West
+        var popupArrowLength = 200      // The length of the popup pointing arrow
 
         val rootView = parentView.rootView
-        val rootDisplayFrame = Rect()
-        rootView.getWindowVisibleDisplayFrame(rootDisplayFrame)
-
-        var rootDrawableBounds = Rect()
-        rootView.getDrawingRect(rootDrawableBounds)
-        val rootViewLocationOnScreen = IntArray(2)
-        rootView.getLocationOnScreen(rootViewLocationOnScreen)
-        rootDrawableBounds.offset(rootViewLocationOnScreen[0], rootViewLocationOnScreen[1])
-
-        rootDrawableBounds = rootDisplayFrame
+        val rootDrawableBounds = Rect()
+        rootView.getWindowVisibleDisplayFrame(rootDrawableBounds)
 
 // Assuming childView is the view whose coordinates you want to convert
         val childCoordinates = IntArray(2)
@@ -290,17 +278,18 @@ class PopupHelpUtils(private val parent: Any,
         while (offsetX < 0)
             offsetX += parentView.rootView.width    // fix x offset if found on a different slide
         var offsetY = childCoordinates[1] - rootViewCoordinates[1]
-        if (BuildConfig.DEBUG)
-            Timber.d("COORD LOG EVENT: offsetX=$offsetX OffsetY=$offsetY") // log to console in debug mode
+//        if (BuildConfig.DEBUG)
+//            Timber.d("COORD LOG EVENT: offsetX=$offsetX OffsetY=$offsetY") // log to console in debug mode
 
 // Now you can use offsetX and offsetY to get the coordinates on the rootView
         val rootViewX = arrowTarget.x + offsetX
         val rootViewY = arrowTarget.y + offsetY
 
-        val displayCentral = arrowTarget.x == -1 && arrowTarget.y == -1
+        val displayCentral = arrowTarget.x == -1 && arrowTarget.y == -1 // true if we have no arrow and popup is centred
 
-        val rootArrowTarget = Point(rootViewX, rootViewY)
+        val rootArrowTarget = Point(rootViewX, rootViewY)   // location of arrow in root coordinates
 
+        // keep the root target point within drawable bounds
         if (rootArrowTarget.x > rootDrawableBounds.right)
             rootArrowTarget.x = rootDrawableBounds.right
         if (rootArrowTarget.x < rootDrawableBounds.left)
@@ -310,25 +299,24 @@ class PopupHelpUtils(private val parent: Any,
         if (rootArrowTarget.y < rootDrawableBounds.top)
             rootArrowTarget.y = rootDrawableBounds.top
 
-        val boxWidthFraction = 0.65f
-        val sideWidthFraction = 0.04 //0.0625f
-        var popupArrowLength = 200
-
+        // Inflate the balloon message xml resource popup design
         val inflater = LayoutInflater.from(context)
         val popupView = inflater.inflate(R.layout.balloon_message_x, null)
 
+        // Update the popup title and body text with the given string IDs
         val textTitleView = popupView.findViewById<TextView>(R.id.textTitle)
         textTitleView?.text = context.getString(titleResId)
         val textBodyView = popupView.findViewById<TextView>(R.id.textBody)
         val bodyString = context.getString(bodyResId)
         textBodyView.text = HtmlCompat.fromHtml(bodyString, HtmlCompat.FROM_HTML_MODE_LEGACY)
         if (showOk) {
+            // the last popup in the series says "OK" rather than "Next"
             val textOkButton = popupView.findViewById<Button>(R.id.btnNext)
             textOkButton.text = context.getString(R.string.ok)
         }
 
         val usedPopupWidth = (rootDrawableBounds.width() * boxWidthFraction).toInt()
-        // Set the measured width as the width of the inflated view
+        // Set the width we are allowed to use as the width of the inflated view
         val layoutParams =
             ViewGroup.LayoutParams(usedPopupWidth, ViewGroup.LayoutParams.WRAP_CONTENT)
         popupView.layoutParams = layoutParams
@@ -341,8 +329,8 @@ class PopupHelpUtils(private val parent: Any,
         // Get the measured height of the inflated view for the text box
         var popupBoxWidth = usedPopupWidth
         var popupBoxHeight = popupView.measuredHeight
-        var shiftBoxX = 0
-        var shiftBoxY = 0
+        var shiftBoxX = 0   // how far we need to shift X coord of the popup to make room for the arrow
+        var shiftBoxY = 0   // ditto for Y
 
         // need to determine where the arrow goes (north, east, south, west) and length of arrow
         val arrowDirection: CompassPoint
@@ -362,7 +350,9 @@ class PopupHelpUtils(private val parent: Any,
         val boxDrawPoint: Point
         val pointDrawOffset: Point
 
+        // calculate how to draw the popup box and arrow
         when (arrowDirection) {
+
             CompassPoint.NO_COMPASS_POINT -> {
                 popupArrowLength = 0
                 boxDrawX = 0
@@ -437,20 +427,23 @@ class PopupHelpUtils(private val parent: Any,
             }
         }
 
+        // create a FrameLayout that we can draw the text and buttons shifted leaving
+        // room for the arrow pointing north or west
         val shiftedView = ShiftedView(context, null, 0, popupView)
         shiftedView.setShift(shiftBoxX, shiftBoxY) // Shift the child view by given amount
 
         val popupWindow = CustomPopupWindow(shiftedView, popupBoxWidth, popupBoxHeight)
 //        popupWindow.setTouchModal(true)   // not working? (needs API 29 anyway)
 
+        // use a background drawing class to draw the box and arrow
         val customBackgroundDrawable =
             CustomBackgroundDrawable(context, arrowDirection, popupArrowLength, pointDrawOffset)
         popupWindow.setBackgroundDrawable(customBackgroundDrawable)
 
-// Set animation style
+        // Set animation style - to show a fade in and out when the help popup appears and disappears
         popupWindow.animationStyle = R.style.PopupAnimation
 
-        // Show the popup window
+        // Show the popup window at the desired location using root coordinates
         popupWindow.showAtLocation(
             rootView,
             if (arrowDirection == CompassPoint.NO_COMPASS_POINT)
@@ -477,8 +470,7 @@ class PopupHelpUtils(private val parent: Any,
         }
 
         override fun draw(canvas: Canvas) {
-            val bounds = bounds
-
+            val bounds = bounds // the drawing bounds of this item
             var xAdjustAdd = 0.0f
             var yAdjustAdd = 0.0f
             var xAdjustSub = 0.0f
@@ -520,7 +512,6 @@ class PopupHelpUtils(private val parent: Any,
                 }
                 close() // Close the path back to top-left
             }
-
             // Draw the polygon shape as the background
             canvas.drawPath(path, paint)
         }
