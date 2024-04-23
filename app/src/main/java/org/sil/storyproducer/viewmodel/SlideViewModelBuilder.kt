@@ -73,7 +73,7 @@ class SlideViewModelBuilder(
                 .filterNot { it.isEmpty() }
                 .elementAtOrNull(1).orEmpty().trim()                    // The 'first title idea' is the text we want to show.
                 .let { "\\[[^\\]]*\\]?".toRegex().replace(it, "") }     // Drop any content within square brackets.
-                .let { "[\\.\\!\\?].*".toRegex().replace(it) { matchResult -> matchResult.value.first().toString() } } // remove everything after a .!? if there is one (now keeping the first punctuation)
+                .let { "[.!?][^.!?]*$".toRegex().replace(it) { matchResult -> matchResult.value.first().toString() } } // remove everything after the last .!? if there is one (now keeping the first punctuation)
                 .let { "\\s+".toRegex().replace(it, " ") }              // Make all double spaces one space.
     }
 
