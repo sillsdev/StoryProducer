@@ -161,7 +161,7 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
         super.showDetailedHelp()
 
         val alert = AlertDialog.Builder(this)
-        alert.setTitle("${Workspace.activePhase.getDisplayName()} Help")
+        alert.setTitle("${Workspace.activePhase.getDisplayName()} Help")    // TODO: LOCALIZATION: Move this text to strings.xml resource
 
         val wv = WebView(this)
         val iStream = assets.open(Phase.getHelpDocFile(Workspace.activePhase.phaseType))
@@ -170,7 +170,7 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
 
         wv.loadDataWithBaseURL(null,text,"text/html",null,null)
         alert.setView(wv)
-        alert.setNegativeButton("Close") { dialog, _ ->
+        alert.setNegativeButton("Close") { dialog, _ -> // TODO: LOCALIZATION: Move this text to strings.xml resource
             dialog!!.dismiss()
         }
         alert.show()

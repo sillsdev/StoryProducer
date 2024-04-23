@@ -180,7 +180,7 @@ class WordLinksActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarM
             }
             R.id.helpButton -> {
                 val alert = AlertDialog.Builder(this)
-                alert.setTitle("${Workspace.activePhase.getDisplayName()} Help")
+                alert.setTitle("${Workspace.activePhase.getDisplayName()} Help")  // TODO: LOCALIZATION: Move this text to strings.xml resource
 
                 val wv = WebView(this)
                 val iStream = assets.open(Phase.getHelpDocFile(Workspace.activePhase.phaseType))

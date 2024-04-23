@@ -216,9 +216,9 @@ class MainActivity : BaseActivity(), Serializable {
 
         wv.loadDataWithBaseURL(null, text,"text/html",null,null)
         val dialog = AlertDialog.Builder(this)
-            .setTitle("Story List Help")
+            .setTitle("Story List Help")    // TODO: LOCALIZATION: Move this text to strings.xml resource
             .setView(wv)
-            .setNegativeButton("Close") { dialog, _ ->
+            .setNegativeButton("Close") { dialog, _ ->  // TODO: LOCALIZATION: Move this text to strings.xml resource
                 dialog!!.dismiss()
             }
         dialog.show()
@@ -272,8 +272,8 @@ class MainActivity : BaseActivity(), Serializable {
 
     override fun onBackPressed() {
         val dialog = AlertDialog.Builder(this)
-                .setTitle("Exit Application?")
-                .setMessage("Are you sure you want to quit?")
+                .setTitle("Exit Application?")  // TODO: LOCALIZATION: Move this text to strings.xml resource
+                .setMessage("Are you sure you want to quit?")   // TODO: LOCALIZATION: Move this text to strings.xml resource
                 .setNegativeButton(getString(R.string.no), null)
                 .setPositiveButton(getString(R.string.yes)) { _, _ ->
                     finishAffinity()
