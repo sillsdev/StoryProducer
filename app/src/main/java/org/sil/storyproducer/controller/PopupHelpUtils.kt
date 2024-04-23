@@ -76,7 +76,6 @@ class PopupHelpUtils(private val parent: Any,
     private var currentHelpIndex = 0
         get () {
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-            val a = parent.javaClass.simpleName
             val activityClassName = getDerivedClassName(parent)
             val prefString = "PopupHelpGroup_${activityClassName}_${slideNumber}"
             field = prefs.getInt(prefString, 0)
