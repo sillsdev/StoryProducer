@@ -1,26 +1,28 @@
 
 package org.sil.storyproducer.controller.wordlink
 
-import androidx.appcompat.widget.SearchView
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.TextView
-import androidx.appcompat.app.ActionBar
-import androidx.appcompat.widget.Toolbar
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
-import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.PHASE
+import org.sil.storyproducer.model.Phase
+import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.WORD_LINKS_CLICKED_TERM
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.Workspace.termToWordLinkMap
 
 /**
@@ -77,10 +79,10 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.menu_wordlink_list_view, menu)
         val searchItem = menu.findItem(R.id.search_button)
         (searchItem.actionView as SearchView).setOnQueryTextListener(this)
-
         return true
     }
 
@@ -106,9 +108,9 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
                 wv.loadDataWithBaseURL(null,text,"text/html",null,null)
                 // display the help text in a dialog box
                 val dialog = android.app.AlertDialog.Builder(this)
-                        .setTitle("Word Links Help")
+                        .setTitle("Word Links Help")    // TODO: LOCALIZATION: Move this text to strings.xml resource
                         .setView(wv)
-                        .setNegativeButton("Close") { dialog, _ ->
+                        .setNegativeButton("Close") { dialog, _ ->  // TODO: LOCALIZATION: Move this text to strings.xml resource
                             dialog!!.dismiss()
                         }
                 dialog.show()

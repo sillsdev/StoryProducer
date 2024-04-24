@@ -105,6 +105,7 @@ class Phase (val phaseType: PhaseType) {
      */
     fun getDisplayName() : String {
         return when (phaseType) {
+            // TODO: LOCALIZATION: Move these to strings.xml resource
             PhaseType.REGISTRATION     -> "Registration"
             PhaseType.LEARN            -> "Learn"
             PhaseType.TRANSLATE_REVISE -> "Translate + Revise"
@@ -145,7 +146,7 @@ class Phase (val phaseType: PhaseType) {
     // This instructional string is appended to the generated display name
     fun getDisplayNameAdditionalInfo() : String {
         return when (phaseType) {
-            PhaseType.WORD_LINKS       -> " --> Press and hold to back translate"
+            PhaseType.WORD_LINKS       -> " --> Press and hold to back translate"   // TODO: LOCALIZATION: Move this text to strings.xml resource
             else -> ""
         }
     }

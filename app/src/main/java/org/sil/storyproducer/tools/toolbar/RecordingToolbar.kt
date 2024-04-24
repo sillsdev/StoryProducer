@@ -145,8 +145,6 @@ open class RecordingToolbar : Fragment() {
     }
 
     protected fun recordAudio(recordingRelPath: String) {
-        toolbarMediaListener.onStartedToolbarRecording()
-
         voiceRecorder?.startNewRecording(recordingRelPath)
 
         if(isAnimationEnabled()){
@@ -163,6 +161,10 @@ open class RecordingToolbar : Fragment() {
         micButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
         micButton.contentDescription = getString(R.string.rec_toolbar_stop_button)
         hideInheritedToolbarButtons()
+
+        toolbarMediaListener.onStartedToolbarRecording()
+
+
     }
 
     /**

@@ -11,6 +11,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.controller.PopupHelpUtils
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Story
@@ -50,6 +51,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_learn)
 
         setToolbar()
@@ -129,12 +131,53 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
             ?.setGuidelineBegin((resources.displayMetrics.widthPixels.toFloat() / 4f * 3f).toInt())
 
         invalidateOptionsMenu()
+
+        addAndStartPopupMenus()
+
+    }
+
+
+
+    private fun addAndStartPopupMenus() {
+
+        if (mPopupHelpUtils != null)
+            mPopupHelpUtils?.dismissPopup()
+
+        mPopupHelpUtils = PopupHelpUtils(this)
+
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.toolbar,
+            50, 75,
+            R.string.help_learn_phase_title, R.string.help_learn_phase_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.fragment_reference_audio_button,
+            50, 50,
+            R.string.help_learn_listen_title, R.string.help_learn_listen_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.start_recording_button,
+            50, 10,
+            R.string.help_learn_practice_title, R.string.help_learn_practice_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.play_recording_button,
+            50, 10,
+            R.string.help_learn_listen2_title, R.string.help_learn_listen2_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.toolbar,
+            50, 75,
+            R.string.help_learn_next_phase_title, R.string.help_learn_next_phase_body)
+
+        mPopupHelpUtils?.showNextPopupHelp()
+
     }
 
     public override fun onPause() {
         super.onPause()
         pauseStoryAudio()
         narrationPlayer.release()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
     public override fun onResume() {
@@ -172,7 +215,11 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         },0,33)
 
         setSlideFromSeekbar()
+
+//        Moved to OnCreate() to fix double display on new install permissions request
+//        addAndStartPopupMenus()
     }
+
 
     private fun setSlideFromSeekbar() {
         val time = videoSeekBar!!.progress
@@ -208,14 +255,17 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
 
     override fun onStoppedToolbarRecording() {
         makeLogIfNecessary(true)
-
         super.onStoppedToolbarRecording()
+
+//        mPopupHelpUtils.showNextPopupHelp()
     }
 
     override fun onStartedToolbarRecording() {
         super.onStartedToolbarRecording()
 
         markLogStart()
+
+//        mPopupHelpUtils.showNextPopupHelp()
     }
 
     override fun onStoppedToolbarMedia() {

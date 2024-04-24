@@ -10,6 +10,8 @@
     <dimen name="nav_drawer_margin">16dp</dimen>
     <dimen name="large_text">18sp</dimen>
     <dimen name="header_text">24sp</dimen>
+    <dimen name="help_title">19sp</dimen>
+    <dimen name="help_body">16sp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="fab_margin">40dp</dimen>
     <dimen name="triangle_width">50dp</dimen>

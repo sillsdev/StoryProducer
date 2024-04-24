@@ -4,20 +4,34 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.method.LinkMovementMethod
-import android.view.*
-import android.widget.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.SeekBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.Guideline
 import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
-import org.sil.storyproducer.model.*
+import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.SLIDE_NUM
+import org.sil.storyproducer.model.Slide
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
+import org.sil.storyproducer.model.stringToWordLink
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.viewmodel.SlideViewModel
 import org.sil.storyproducer.viewmodel.SlideViewModelBuilder
 import timber.log.Timber
-import java.util.*
+import java.util.Timer
+import java.util.TimerTask
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
@@ -38,9 +52,13 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
     protected var slideNum: Int = 0 //gets overwritten
     protected lateinit var slide: Slide
     protected lateinit var viewModel: SlideViewModel
+    protected var mPopupHelpUtils: PopupHelpUtils? = null
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         try {
             slideNum = this.requireArguments().getInt(SLIDE_NUM)
             viewModel = SlideViewModelBuilder(Workspace.activeStory.slides[slideNum]).build()
@@ -49,10 +67,13 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
             Timber.e(ex)
         }
         setHasOptionsMenu(true)
+
     }
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        super.onCreateView(inflater, container, savedInstanceState)
         // The last two arguments ensure LayoutParams are inflated
         // properly.
         rootView = inflater.inflate(R.layout.fragment_slide, container, false)
@@ -128,9 +149,17 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
      */
     override fun onPause() {
         super.onPause()
+
         refPlaybackProgress = referenceAudioPlayer.currentPosition
         mSeekBarTimer.cancel()
         referenceAudioPlayer.release()
+
+        stopAndDeletePopupMenus()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopAndDeletePopupMenus()
     }
 
     /**
@@ -250,6 +279,15 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
         }
         //There is no reference text.
         textView.text = ""
+    }
+
+    private fun stopAndDeletePopupMenus() {
+
+        if (mPopupHelpUtils != null) {
+            mPopupHelpUtils?.dismissPopup()
+            mPopupHelpUtils = null
+        }
+
     }
 
 }

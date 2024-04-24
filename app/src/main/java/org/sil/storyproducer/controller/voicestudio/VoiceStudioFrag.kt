@@ -13,11 +13,13 @@ import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.controller.PopupHelpUtils
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 class VoiceStudioFrag : MultiRecordFrag() {
+
     override var recordingToolbar: RecordingToolbar = VoiceStudioRecordingToolbar()
     private var slideText: EditText? = null
 
@@ -105,5 +107,44 @@ class VoiceStudioFrag : MultiRecordFrag() {
                 setPic(rootView!!.findViewById(R.id.fragment_image_view))
             }
         }
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+
+        addAndStartPopupMenus(slideNum)
+
+    }
+
+    private fun addAndStartPopupMenus(slideNumber: Int) {
+
+        if (mPopupHelpUtils != null)
+            mPopupHelpUtils?.dismissPopup()
+
+        mPopupHelpUtils = PopupHelpUtils(this)
+
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.toolbar,
+            50, 75,
+            R.string.help_voice_phase_title, R.string.help_voice_phase_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.fragment_reference_audio_button,
+            50, 50,
+            R.string.help_voice_listen_title, R.string.help_voice_listen_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.start_recording_button,
+            50, 50,
+            R.string.help_voice_record_title, R.string.help_voice_record_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.phase_frame,
+            95, 50,
+            R.string.help_voice_continue_title, R.string.help_voice_continue_body)
+
+        mPopupHelpUtils?.showNextPopupHelp()
+
+        (requireActivity() as PhaseBaseActivity).setBasePopupHelpUtils(mPopupHelpUtils!!)
+
+
     }
 }

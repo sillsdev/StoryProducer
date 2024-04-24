@@ -18,14 +18,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomsheet.BottomSheetBehavior.*
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+import com.google.android.material.bottomsheet.BottomSheetBehavior.from
 import org.sil.storyproducer.R
-import org.sil.storyproducer.tools.dpToPx
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
-import org.sil.storyproducer.model.*
+import org.sil.storyproducer.model.PHASE
+import org.sil.storyproducer.model.Phase
+import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.WORD_LINKS_CLICKED_TERM
+import org.sil.storyproducer.model.WORD_LINKS_SLIDE_NUM
+import org.sil.storyproducer.model.WordLinkList
+import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.model.stringToWordLink
+import org.sil.storyproducer.tools.dpToPx
 import org.sil.storyproducer.tools.file.toJson
 import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
-import java.util.*
+import java.util.Locale
+import java.util.Stack
 
 /**
  * This activity shows information about the active Word Link so the user can learn more
@@ -153,6 +163,7 @@ class WordLinksActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarM
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.menu_wordlink_view, menu)
         return true
     }
@@ -169,7 +180,7 @@ class WordLinksActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarM
             }
             R.id.helpButton -> {
                 val alert = AlertDialog.Builder(this)
-                alert.setTitle("${Workspace.activePhase.getDisplayName()} Help")
+                alert.setTitle("${Workspace.activePhase.getDisplayName()} Help")  // TODO: LOCALIZATION: Move this text to strings.xml resource
 
                 val wv = WebView(this)
                 val iStream = assets.open(Phase.getHelpDocFile(Workspace.activePhase.phaseType))
