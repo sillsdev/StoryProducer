@@ -12,6 +12,7 @@ import android.os.ParcelFileDescriptor
 import android.util.Log
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
+import androidx.preference.PreferenceManager
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.sil.bloom.reader.DownloadProgressView
 import org.sil.bloom.reader.DownloadsView
@@ -165,6 +166,8 @@ object Workspace {
 
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
+    private var wordLinksMenuPos: Int? = null
+
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
     fun initializeWorkspace(activity: Activity) {
@@ -274,6 +277,20 @@ object Workspace {
         context.startActivity(openURL)
     }
 
+    // Returns the WordLinks menu position if it is to be removed from the menu list
+    fun wordLinksRemoveMenuPos(context: Context): Int {
+        if (wordLinksMenuPos != null)
+            return wordLinksMenuPos!!
+        var showWordLinks = false;
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        showWordLinks = prefs.getBoolean("show_wordlinks", false);
+        if (showWordLinks)
+            wordLinksMenuPos = -1   // keep WordLinks menu item
+        else
+            wordLinksMenuPos = 4    // WordLinks menu item position to be removed
+        return wordLinksMenuPos!!
+    }
+
     fun importWordLinks(context: Context) {
         var wordLinksDir = workdocfile.findFile(WORD_LINKS_DIR)
         var csvFileName : String? = null  // csv file name if found
@@ -307,6 +324,9 @@ object Workspace {
                 }
             }
         }
+
+        if (wordLinksRemoveMenuPos(context) != -1)
+            return  // we are removing WordLinks activity so don't load csv here
 
         if (wordLinksDir != null) {
             // DKH - 11/19/2021 Issue #613 Create Word Links CSV file if it does not exist

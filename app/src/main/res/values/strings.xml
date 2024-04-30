@@ -382,6 +382,7 @@
     <!-- Preference Titles -->
     <string name="video_creation">Video Creation</string>
     <string name="bloom_import">Bloom Book Import</string>
+    <string name="general">General</string>
     <string name="accuracy_check">Accuracy Check</string>
 
     <!-- Sync Preferences -->
@@ -392,6 +393,8 @@
     <string name="bloom_import_bgimage_color">Background Image Color #</string>
     <string name="bloom_import_bgimage_color_summary">Enter a background color to use for scaled images and videos here as a hex value or color name.</string>
     <string name="accuracy_check_approve_all">Approve All Slides</string>
+    <string name="show_wordlinks">Show WordLinks</string>
+    <string name="show_wordlinks_summary">(an app restart will be required)</string>
 
     <!-- Settings -->
     <string name="settings">Settings</string>

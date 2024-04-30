@@ -27,7 +27,12 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
 
     /** Swaps fragments in the main content view  */
     private fun selectItem(position: Int) {
-        when (position) {
+
+        var pos = position
+        var wordLinksMenuPos = Workspace.wordLinksRemoveMenuPos(activity)
+        if (wordLinksMenuPos != -1 && pos >= wordLinksMenuPos)
+            pos++   // skip over WordLinks menu position if necessary
+        when (pos) {
             0 -> {
                 if (activity !is MainActivity)
                     activity.finish()   // if this is not the main activity then
