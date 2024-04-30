@@ -22,13 +22,13 @@ import io.reactivex.disposables.CompositeDisposable
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.BaseController
 import org.sil.storyproducer.controller.MainActivity
+import org.sil.storyproducer.controller.PopupHelpUtils
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.SelectTemplatesFolderController
 import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.SELECT_TEMPLATES_FOLDER_REQUEST_CODES
 import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.UPDATE_TEMPLATES_FOLDER
 import org.sil.storyproducer.controller.SettingsActivity
 import org.sil.storyproducer.controller.bldownload.BLDownloadActivity
-import org.sil.storyproducer.controller.PopupHelpUtils
 import org.sil.storyproducer.controller.wordlink.WordLinksListActivity
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.DrawerItemClickListener
@@ -306,8 +306,11 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
      */
     private fun addDrawerItems() {
         val menuArray = resources.getStringArray(R.array.global_menu_array).toMutableList() //as MutableList<String>
-//        menuArray.removeAt(4) // (note on how to edit menus proramatically - delete later when done)
-        //
+
+        var wordLinksMenuPos = Workspace.wordLinksRemoveMenuPos(applicationContext)
+        if (wordLinksMenuPos != -1)
+            menuArray.removeAt(wordLinksMenuPos)    // remove the WordLinks menu item
+
         mAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, menuArray)
         mDrawerList!!.adapter = mAdapter
     }
