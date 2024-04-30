@@ -7,6 +7,7 @@ import android.graphics.Path
 import android.graphics.PixelFormat
 import android.graphics.Point
 import android.graphics.Rect
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.Gravity
@@ -475,36 +476,42 @@ class PopupHelpUtils(private val parent: Any,
             var yAdjustAdd = 0.0f
             var xAdjustSub = 0.0f
             var yAdjustSub = 0.0f
+            val cornerRadius = 30.0f
             when (compassPoint) {
                 CompassPoint.NORTH -> yAdjustAdd = popupArrowLength.toFloat()
                 CompassPoint.WEST -> xAdjustAdd = popupArrowLength.toFloat()
                 CompassPoint.SOUTH -> yAdjustSub = popupArrowLength.toFloat()
                 CompassPoint.EAST -> xAdjustSub = popupArrowLength.toFloat()
             }
+            val rect = RectF(xAdjustAdd, yAdjustAdd, bounds.right.toFloat()-xAdjustSub, bounds.bottom.toFloat()-yAdjustSub)
             val arrowBaseXShift = ((bounds.right-xAdjustSub)/2-arrowPoint.x)/2
             val arrowBaseYShift = ((bounds.bottom-yAdjustSub)/2-arrowPoint.y)/1.25f
 
             // Define a path for the polygon shape
             val path = Path().apply {
-                moveTo(xAdjustAdd, yAdjustAdd) // top-left
+                moveTo(rect.left, rect.top + cornerRadius) // top-left (before clockwise arc)
+                arcTo(RectF(rect.left, rect.top, rect.left + 2 * cornerRadius, rect.top + 2 * cornerRadius), 180f, 90f)
                 if (compassPoint == CompassPoint.NORTH) {
                     lineTo(bounds.right.toFloat()*9/16-arrowBaseXShift, yAdjustAdd) // arrow-base-right
                     lineTo(arrowPoint.x.toFloat(), arrowPoint.y.toFloat()) // arrow-tip
                     lineTo(bounds.right.toFloat()*7/16-arrowBaseXShift, yAdjustAdd) // arrow-base-left
                 }
-                lineTo(bounds.right.toFloat()-xAdjustSub, yAdjustAdd) // top-right
+                lineTo(rect.right - cornerRadius, rect.top) // top-right
+                arcTo(RectF(rect.right - 2 * cornerRadius, rect.top, rect.right, rect.top + 2 * cornerRadius), 270f, 90f)
                 if (compassPoint == CompassPoint.EAST) {
                     lineTo(bounds.right.toFloat()-xAdjustSub,bounds.bottom.toFloat()*9/16-arrowBaseYShift) // arrow-base-left-bottom
                     lineTo(arrowPoint.x.toFloat(), arrowPoint.y.toFloat()) // arrow-tip
                     lineTo(bounds.right.toFloat()-xAdjustSub,bounds.bottom.toFloat()*7/16-arrowBaseYShift) // arrow-base-left-top
                 }
-                lineTo(bounds.right.toFloat()-xAdjustSub, bounds.bottom.toFloat()-yAdjustSub) // bottom-right
+                lineTo(rect.right, rect.bottom - cornerRadius) // bottom-right
+                arcTo(RectF(rect.right - 2 * cornerRadius, rect.bottom - 2 * cornerRadius, rect.right, rect.bottom), 0f, 90f)
                 if (compassPoint == CompassPoint.SOUTH) {
                     lineTo(bounds.right.toFloat()*9/16-arrowBaseXShift, bounds.bottom.toFloat()-yAdjustSub) // arrow-base-right
                     lineTo(arrowPoint.x.toFloat(), arrowPoint.y.toFloat()) // arrow-tip
                     lineTo(bounds.right.toFloat()*7/16-arrowBaseXShift, bounds.bottom.toFloat()-yAdjustSub) // arrow-base-left
                 }
-                lineTo(xAdjustAdd,bounds.bottom.toFloat()-yAdjustSub) // Bottom-left
+                lineTo(rect.left + cornerRadius, rect.bottom) // Bottom-left
+                arcTo(RectF(rect.left, rect.bottom - 2 * cornerRadius, rect.left + 2 * cornerRadius, rect.bottom), 90f, 90f)
                 if (compassPoint == CompassPoint.WEST) {
                     lineTo(xAdjustAdd, bounds.bottom.toFloat()*9/16-arrowBaseYShift) // arrow-base-left-bottom
                     lineTo(arrowPoint.x.toFloat(), arrowPoint.y.toFloat()) // arrow-tip
