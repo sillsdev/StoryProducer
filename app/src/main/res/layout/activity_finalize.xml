@@ -187,12 +187,33 @@
         android:layout_height="match_parent"
         android:background="@color/black_semi_transparent">
 
-        <ImageView
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            app:srcCompat="@drawable/ic_lock_blue"
-            android:contentDescription="@string/stage_locked" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/lockImage"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                app:srcCompat="@drawable/ic_lock_blue"
+                android:contentDescription="@string/stage_locked" />
+
+            <TextView
+                android:id="@+id/lockScreenText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lock_screen_text"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:background="@color/lock_screen_text_background"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="0dp"
+                android:layout_marginLeft="56dp"
+                android:layout_marginRight="56dp"
+                android:padding="12dp" />
+
+        </LinearLayout>
     </RelativeLayout>
 </RelativeLayout>

@@ -15,10 +15,11 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.controller.PopupHelpUtils
+import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
@@ -114,6 +115,10 @@ class FinalizeActivity : PhaseBaseActivity() {
         setContentView(R.layout.activity_finalize)
         setupViews()
         invalidateOptionsMenu()
+
+        val lockTextImage = findViewById<TextView>(R.id.lockScreenText)
+        setLockTextAndImage(this, lockTextImage)
+
         if (Workspace.activeStory.isApproved) {
             findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
         } else {

@@ -11,12 +11,14 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import org.sil.storyproducer.R
+import org.sil.storyproducer.activities.BaseActivity
 import org.sil.storyproducer.controller.MultiRecordFrag
-import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.controller.PopupHelpUtils
+import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
+
 
 class VoiceStudioFrag : MultiRecordFrag() {
 
@@ -29,6 +31,9 @@ class VoiceStudioFrag : MultiRecordFrag() {
         setPic(rootView?.findViewById<View>(R.id.fragment_image_view) as ImageView)
         slideText = rootView?.findViewById(R.id.fragment_dramatization_edit_text)
         slideText?.setText(Workspace.activeStory.slides[slideNum].translatedContent, TextView.BufferType.EDITABLE)
+
+        val lockTextImage = rootView?.findViewById<TextView>(R.id.lockScreenText)
+        BaseActivity.setLockTextAndImage(requireContext(), lockTextImage)
 
         if (Workspace.activeStory.isApproved) {
             setToolbar()
