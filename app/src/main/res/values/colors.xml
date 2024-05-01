@@ -43,4 +43,6 @@
     <color name="popup_menu_background">#212121</color> <!-- Dark background color -->
     <color name="popup_menu_text_color">#FFFFFF</color> <!-- White text color -->
 
+    <color name="lock_screen_text_background">#43b3e6</color>
+
 </resources>

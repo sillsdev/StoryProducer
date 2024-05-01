@@ -210,16 +210,13 @@ class PopupHelpUtils(private val parent: Any,
                             helpPopupWindow!!.getContentView().findViewById(R.id.btnNext)
                         buttonNext.setOnClickListener {
 
-                            //                        Toast.makeText(context, "Showing Next...", Toast.LENGTH_SHORT).show()
                             dismissPopup()
 
                             currentHelpIndex++  // show next help popup next time (backed by preferences)
-                            globalCancelCount = 0 // reset cancelled count (backed by preferences) TODO: TO CONFIRM WITH BRYAN AND GREG
+                            globalCancelCount = 0 // reset cancelled count (backed by preferences)
 
                             if (currentHelpIndex >= 0 && currentHelpIndex < popupItems.size) {
-
                                 var nextPopupItem = popupItems[currentHelpIndex]
-
                                 if (!nextPopupItem.waitForUi) {
                                     showNextPopupHelp()
                                 }

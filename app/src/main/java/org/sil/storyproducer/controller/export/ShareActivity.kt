@@ -13,8 +13,8 @@ import android.widget.ListView
 import android.widget.TextView
 import com.hbisoft.pickit.Utils
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.controller.PopupHelpUtils
+import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getChildDocuments
@@ -46,6 +46,10 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_share)
         invalidateOptionsMenu()
+
+        val lockTextImage = findViewById<TextView>(R.id.lockScreenText)
+        setLockTextAndImage(this, lockTextImage)
+
         if (Workspace.activeStory.isApproved) {
             findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
         } else {

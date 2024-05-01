@@ -3,11 +3,16 @@ package org.sil.storyproducer.activities
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
+import android.text.Spannable
+import android.text.SpannableString
 import android.text.Spanned
+import android.text.style.ImageSpan
+import android.text.style.StyleSpan
 import android.view.View
 import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import android.widget.ArrayAdapter
@@ -56,6 +61,31 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         const val BLOOM_DL_TEMPLATES_ACTIVITY = 0
         const val BLOOM_DL_FEATURED_ACTIVITY = 1
         const val BLOOM_DL_ACTIVITY_INDEX = "BLDL_Activity_Index"
+
+        fun setLockTextAndImage(context: Context, lockTextView: TextView?) {
+            if (lockTextView == null)
+                return
+
+            // set bold spannable
+            var lockScreenText = (lockTextView.text ?: return) as String
+            val boldStart = lockScreenText.indexOf("<b>")
+            val boldEnd = lockScreenText.indexOf("</b>") - 3
+            lockScreenText = lockScreenText.replace("<b>", "")
+            lockScreenText = lockScreenText.replace("</b>", "")
+            if (boldStart < 0 || boldEnd < 0)
+                return
+            val spannableString = SpannableString(lockScreenText)
+            spannableString.setSpan(StyleSpan(Typeface.BOLD), boldStart, boldEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            // set tick image spannable
+            val tickImageSpan = ImageSpan(context, R.drawable.ic_checkmark_green)
+            val tickStart = lockScreenText.indexOf("|")
+            val tickEnd = tickStart + 1
+            spannableString.setSpan(tickImageSpan, tickStart, tickEnd, 0)
+
+            // replace the text with spannable bold and image
+            lockTextView.text = spannableString
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
