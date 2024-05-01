@@ -378,7 +378,6 @@
     <string name="migrate_stories_title">Move current projects?</string>
     <string name="migrate_stories_message">Would you like to move your current projects to this folder? (recommended)</string>
     <string name="title_activity_settings">SettingsActivity</string>
-    <string name="lock_screen_textx"></string>
     <string name="lock_screen_text"><![CDATA[You cannot use this phase until you go back to the <b>Accuracy Check</b> phase and make sure each slide is approved by an accuracy checker. |]]></string>
 
     <!-- Preference Titles -->
