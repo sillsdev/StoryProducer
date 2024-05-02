@@ -31,6 +31,8 @@ import org.sil.storyproducer.tools.Network.ConnectivityStatus
 import org.sil.storyproducer.tools.Network.VolleySingleton
 import org.sil.storyproducer.tools.file.deleteWorkspaceFile
 import java.io.Serializable
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.system.exitProcess
 
 class MainActivity : BaseActivity(), Serializable {
@@ -115,13 +117,18 @@ class MainActivity : BaseActivity(), Serializable {
 
         mPopupHelpUtils = PopupHelpUtils(this)
 
+        // assume a maximum of 9 stories can be viewed
+        val totalVisibleStories = max(min(Workspace.Stories.count(), 9), 1)
+        // so point (roughly) to end of first story
+        val storyListViewPercent = (100f / totalVisibleStories).toInt()
+
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.activity_main,
             -1, -1,
             R.string.help_welcome_title, R.string.help_welcome_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.story_list_view,
-            50, 100,
+            50, storyListViewPercent,
             R.string.help_main_screen_title, R.string.help_main_screen_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,
@@ -137,7 +144,7 @@ class MainActivity : BaseActivity(), Serializable {
             R.string.help_main_downloads_title, R.string.help_main_downloads_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.story_list_view,
-            50, 100,
+            50, storyListViewPercent,
             R.string.help_main_story_title, R.string.help_main_story_body)
 
         mPopupHelpUtils?.showNextPopupHelp()
