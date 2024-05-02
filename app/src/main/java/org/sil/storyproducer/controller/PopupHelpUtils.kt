@@ -176,9 +176,10 @@ class PopupHelpUtils(private val parent: Any,
                     helpPopupWindow = showHelpPopup2(
                         // using the class context seems to give a different style to
                         // using view2.rootView.context which seems to be the expected style
-                        // we are now using the context!! here as it matches the artwork in figma.com better
-                        // we WERE using the view2.rootView.context to be consistent
-                        context!!,//view2.rootView.context,
+                        // we WERE using the context!! here as it matched the artwork in figma.com better
+                        // but unfortunately that did not work on all devices
+                        // we are now using the view2.rootView.context and a separate style in styles.xml
+                        view2.rootView.context,//context!!,
                         view2,
                         if (popupItem.percentX == -1)
                             Point(-1, -1)
