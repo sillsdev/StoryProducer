@@ -60,6 +60,7 @@
     <string name="spoken_language_hint">Spoken Languages</string>
     <string name="phone_hint">Phone</string>
     <string name="email_hint">E-mail</string>
+    <string name="other_hint">Other</string>
     <string name="person_location_hint">Location</string>
     <string name="education_hint">Education Level</string>
     <string name="communication_preference_hint">Communication Preference:</string>
@@ -131,10 +132,11 @@
     </string-array>
 
     <string-array name="communication_list">
-        <item>Phone</item>
+        <item>Phone (SMS)</item>
         <item>E-mail</item>
-        <item>WhatsApp</item>
+        <item>WhatsApp (Text)</item>
         <item>Facebook</item>
+        <item>Other</item>
     </string-array>
 
     <string-array name="location_type_list">

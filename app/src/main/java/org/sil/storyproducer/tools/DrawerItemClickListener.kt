@@ -42,7 +42,10 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
                 // Showing registration on top of the MainActivity in the task stack
                 // This should allow registering without finishing the main activity
                 // and without hanging in the splash screen as previously experienced
-                activity.showRegistration(true)
+                activity.showRegistration(false)
+                if (activity !is MainActivity)
+                    activity.finish()   // replace this activity with Registration activity on top
+                                        // but only if the current activity is not the Main Activity
             }
             2 -> {
                 activity.showBLDownloadDialog(BaseActivity.BLOOM_DL_TEMPLATES_ACTIVITY)
@@ -54,12 +57,14 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
 //                activity.showBLDownloadDialog(BaseActivity.BLOOM_DL_FEATURED_ACTIVITY)
 //                if (activity !is MainActivity)
 //                    activity.finish()   // replace this activity with Featured Bloom Book DL activity on top
+//                                        // but only if the current activity is not the Main Activity
 //            }
             3 -> {
                 val intent = Intent(MainActivity.mainActivity, BloomLibraryActivity::class.java)
                 MainActivity.mainActivity?.startActivity(intent)
                 if (activity !is MainActivity)
                     activity.finish()   // replace this activity with Bloom Library WebView activity on top
+                                        // but only if the current activity is not the Main Activity
             }
             4 -> {
                 if (activity !is WordLinksListActivity) {

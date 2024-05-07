@@ -76,8 +76,8 @@ const val FIRST_ACTIVITY_KEY = "first"
 
 open class RegistrationActivity : AppCompatActivity() {
 
-    private val sectionIds = intArrayOf(R.id.language_section, R.id.translator_section, R.id.consultant_section, R.id.trainer_section, R.id.archive_section)
-    private val headerIds = intArrayOf(R.id.language_header, R.id.translator_header, R.id.consultant_header, R.id.trainer_header, R.id.archive_header)
+    private val sectionIds = intArrayOf(R.id.language_section, R.id.translator_section, R.id.archive_section)
+    private val headerIds = intArrayOf(R.id.language_header, R.id.translator_header, R.id.archive_header)
     private val sectionViews = arrayOfNulls<View>(sectionIds.size)
     private val headerViews = arrayOfNulls<View>(headerIds.size)
     var resp: String? = null
@@ -368,17 +368,14 @@ open class RegistrationActivity : AppCompatActivity() {
 
         js["Key"] = getString(R.string.api_token)
         js["PhoneId"] = PhoneId
-        js["TranslatorEmail"] = reg.getString("translator_email", " ")
+        js["TranslatorName"] = reg.getString("translator_name", " ")
         js["TranslatorPhone"] = reg.getString("translator_phone", " ")
-        js["TranslatorLanguage"] = reg.getString("translator_languages", " ")
+        js["TranslatorEmail"] = reg.getString("translator_email", " ")
+        js["TranslatorOther"] = reg.getString("translator_other", " ")
         js["ProjectEthnoCode"] = reg.getString("ethnologue", " ")
         js["ProjectLanguage"] = reg.getString("language", " ")
         js["ProjectCountry"] = reg.getString("country", " ")
         js["ProjectMajorityLanguage"] = reg.getString("lwc", " ")
-        js["ConsultantEmail"] = reg.getString("consultant_email", " ")
-        js["ConsultantPhone"] = reg.getString("consultant_phone", " ")
-        js["TrainerEmail"] = reg.getString("trainer_email", " ")
-        js["TrainerPhone"] = reg.getString("trainer_phone", " ")
 
         Log.i("LOG_VOLLEY", js.toString())
         val req = object : StringRequest(Request.Method.POST, getString(R.string.url_register_phone), Response.Listener { response ->
@@ -460,10 +457,10 @@ open class RegistrationActivity : AppCompatActivity() {
         reg.putString("android_version", androidVersion)
 
         //Store whether remote or not
-        var isRemote: Boolean? = false
-        if (reg.getString("consultant_location_type", "") == "Remote")
-            isRemote = true
-        reg.putBoolean("isRemote", isRemote!!)
+//        var isRemote: Boolean? = false
+//        if (reg.getString("consultant_location_type", "") == "Remote")
+//            isRemote = true
+//        reg.putBoolean("isRemote", isRemote!!)
 
         reg.save(this)
     }
@@ -504,7 +501,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 .setMessage(fromHtml(getString(R.string.registration_exit_message),0))
                 .setNegativeButton(getString(R.string.no), null)
                 .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                    startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
+//                    startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
                     finish()
                 }.create()
 
@@ -523,7 +520,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 .setPositiveButton(getString(R.string.registration_later)) { _, _ ->
                     //TODO flush all click event prior to showing the registration screen so that this
                     // is not invoked if the user inadvertently clicks on the splash screen
-                    startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
+//                    startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
                     finish()
                 }.create()
 
@@ -531,7 +528,7 @@ open class RegistrationActivity : AppCompatActivity() {
     }
 
     private fun exitRegistrationActivity(){
-        startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
+//        startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
         finish()
     }
 
@@ -574,7 +571,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 .setPositiveButton(getString(R.string.yes)) { _, _ ->
                     Workspace.registration.complete = true
                     storeRegistrationInfo()
-                    postRegistrationInfo()
+//                    postRegistrationInfo()    // removed logging to azure cloud server
                     val saveToast = Toast.makeText(this@RegistrationActivity, R.string.registration_saved_successfully, Toast.LENGTH_LONG)
                     saveToast.show()
                     sendEmail()
@@ -604,7 +601,7 @@ open class RegistrationActivity : AppCompatActivity() {
 
         val message = formatRegistrationEmail()
 
-        val TO = arrayOf(reg.getString("database_email_1", ""), reg.getString("database_email_2", ""), reg.getString("database_email_3", ""), reg.getString("translator_email", ""), reg.getString("consultant_email", ""), reg.getString("trainer_email", ""))
+        val TO = arrayOf(reg.getString("database_email_1", ""), reg.getString("database_email_2", ""), reg.getString("database_email_3", ""), reg.getString("translator_email", ""))
 
         val emailIntent = Intent(Intent.ACTION_SEND)
         emailIntent.data = Uri.parse("mailto:")
@@ -678,7 +675,7 @@ open class RegistrationActivity : AppCompatActivity() {
         private fun formatRegistrationEmail(): String {
             // Gives the order for retrieval and printing
             // Empty strings ("") are used to separate sections in the printing phase
-            val keyListOrder = arrayOf("date", "", "language", "ethnologue", "country", "location", "town", "lwc", "orthography", "", "translator_name", "translator_education", "translator_languages", "translator_phone", "translator_email", "translator_communication_preference", "translator_location", "", "consultant_name", "consultant_languages", "consultant_phone", "consultant_email", "consultant_communication_preference", "consultant_location", "consultant_location_type", "", "trainer_name", "trainer_languages", "trainer_phone", "trainer_email", "trainer_communication_preference", "trainer_location", "", "manufacturer", "model", "android_version")
+            val keyListOrder = arrayOf("date", "language", "ethnologue", "country", "location", "lwc", "translator_name", "translator_phone", "translator_email", "translator_other", "translator_communication_preference", "manufacturer", "model", "android_version")
 
             val message = StringBuilder()
             var formattedKey: String
