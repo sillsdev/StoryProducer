@@ -49,7 +49,8 @@ class SlideViewModelBuilder(
             SlideType.FRONTCOVER, SlideType.ENDPAGE -> 32
             SlideType.LOCALCREDITS -> 0 // Not used, but needs to be here to cover reading of projects v3.0.2 & prior
             SlideType.COPYRIGHT -> 12
-            SlideType.NUMBEREDPAGE, SlideType.LOCALSONG, SlideType.NONE -> 12
+            SlideType.LOCALSONG -> 22
+            SlideType.NUMBEREDPAGE, SlideType.NONE -> 12
         }
         tOverlay.setFontSize(fontSize)
 
