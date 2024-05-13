@@ -10,8 +10,8 @@ import androidx.constraintlayout.widget.Guideline
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.controller.PopupHelpUtils
+import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Story
@@ -228,16 +228,18 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
             if (time < d) {
                 // if the current position is different or if the audio is not prepared
                 // then setup the story source audio (fixes notion bug 816)
-                if (i-1 != curPos || !narrationPlayer.isAudioPrepared) {
-                    curPos = i-1
-                    setPic(learnImageView!!, curPos)
-                    val narrationFile = Workspace.activeStory.slides[curPos].narrationFile
-                    if (narrationFile.isEmpty())
-                        narrationPlayer.setSource(this, Uri.fromFile(File(""))) // set empty source for dummy 2s audio playback
-                    else
-                        narrationPlayer.setStorySource(this, Workspace.activeStory.slides[curPos].narrationFile)
+                if (i > 0 && i <= Workspace.activeStory.slides.size) {
+                    if (i - 1 != curPos || !narrationPlayer.isAudioPrepared) {
+                        curPos = i - 1
+                        setPic(learnImageView!!, curPos)
+                        val narrationFile = Workspace.activeStory.slides[curPos].narrationFile
+                        if (narrationFile.isEmpty())
+                            narrationPlayer.setSource(this, Uri.fromFile(File(""))) // set empty source for dummy 2s audio playback
+                        else
+                            narrationPlayer.setStorySource(this, Workspace.activeStory.slides[curPos].narrationFile)
+                    }
+                    break
                 }
-                break
             }
             i++
         }
@@ -276,7 +278,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
     override fun onStartedToolbarMedia() {
         pauseStoryAudio()
         videoSeekBar!!.progress = 0
-        curPos = 0
+        curPos = -1
         //This gets the progress bar to show the right time.
         seekbarStartTime = System.currentTimeMillis()
     }

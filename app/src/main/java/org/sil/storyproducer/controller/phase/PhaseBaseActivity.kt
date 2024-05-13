@@ -243,6 +243,8 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
      * @param slideNum The slide number to grab the picture from the files.
      */
     fun setPic(slideImage: ImageView, slideNum: Int) {
+        if (slideNum >= Workspace.activeStory.slides.size)
+            return  // workaround a crash if called when not fully initialized
         val downSample = 2
         var slidePicture: Bitmap = slideService.getImage(slideNum, downSample, story)
         //scale down image to not crash phone from memory error from displaying too large an image
