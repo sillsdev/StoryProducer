@@ -3,6 +3,11 @@ package org.sil.storyproducer.controller
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -17,11 +22,14 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.*
+import org.sil.storyproducer.tools.file.copyToFilesDir
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import org.sil.storyproducer.tools.toolbar.MultiRecordRecordingToolbar
 import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 
 /**
@@ -140,6 +148,45 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
         }
     }
 
+    fun rotateImageIfRequired(imagePath: String) {
+        val bitmap = BitmapFactory.decodeFile(imagePath)
+        if (bitmap == null)
+            return
+        val exif = ExifInterface(imagePath)
+        val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+
+        val rotatedBitmap = when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> rotateImage(bitmap, 90f)
+            ExifInterface.ORIENTATION_ROTATE_180 -> rotateImage(bitmap, 180f)
+            ExifInterface.ORIENTATION_ROTATE_270 -> rotateImage(bitmap, 270f)
+            else -> bitmap
+        }
+
+        saveBitmapToFile(rotatedBitmap, imagePath)
+    }
+
+    fun rotateImage(img: Bitmap, degree: Float): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(degree)
+        return Bitmap.createBitmap(img, 0, 0, img.width, img.height, matrix, true)
+    }
+
+    fun saveBitmapToFile(bitmap: Bitmap, filePath: String) {
+        val file = File(filePath)
+        var out: FileOutputStream? = null
+        try {
+            out = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            try {
+                out?.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     /**
      * Change the picture behind the screen.
@@ -152,9 +199,20 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                 if (uri == null) uri = FileProvider.getUriForFile(requireContext(), "${BuildConfig.APPLICATION_ID}.fileprovider", tempPicFile!!)   //it was a camera intent
                 // SP422 - DKH 5/6/2022 Enable images on all the slides to be swapped out via the camera tool
                 // Put extension in a common place for use by others
+
+                // Task 838: rotate image if necessary
+                val rotateTempFolder = File(requireContext().filesDir, "temp_rotate")
+                rotateTempFolder.deleteRecursively()
+                rotateTempFolder.mkdirs()
+                val rotateTempFile = File(rotateTempFolder, "temp_picture_rotate.jpg")
+                copyToFilesDir(requireContext(), uri!!, rotateTempFile)
+                rotateImageIfRequired(rotateTempFile.absolutePath)
+
+                // Task: 838: now copying from rotated image 'rotateTempFile' instead of original uri
                 Workspace.activeStory.slides[slideNum].imageFile = "$PROJECT_DIR/${slideNum}${Workspace.activeStory.slides[slideNum].localSlideExtension}"
-                copyToWorkspacePath(requireContext(), uri!!,
+                copyToWorkspacePath(requireContext(), Uri.fromFile(rotateTempFile),
                         "${Workspace.activeStory.title}/${Workspace.activeStory.slides[slideNum].imageFile}")
+                rotateTempFile.delete()
                 tempPicFile?.delete()
                 setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
             }
