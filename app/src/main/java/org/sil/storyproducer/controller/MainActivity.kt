@@ -13,6 +13,7 @@ import android.view.MenuItem
 import android.webkit.WebView
 import android.widget.TextView
 import androidx.core.view.GravityCompat
+import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
@@ -57,6 +58,24 @@ class MainActivity : BaseActivity(), Serializable {
             }
         }
     }
+
+    var globalChipMsgCount = 0
+        get () {
+            val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+            val prefString = "PopupHelpGroup_chipMsgCountCount"
+            field = prefs.getInt(prefString, 0)
+            return field
+        }
+        set(value) {
+            if (field != value) {
+                val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(this).edit()
+                val prefString = "PopupHelpGroup_chipMsgCountCount"
+                preferencesEditor.putInt(prefString, value)
+                preferencesEditor.commit()
+                field = value
+            }
+        }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -152,7 +171,8 @@ class MainActivity : BaseActivity(), Serializable {
 
     // If only one or two stories are (auto) installed then display short
     // message to user to explain how to download more bloom templates
-    private fun checkDownloadStoriesMessage() {
+    override fun checkDownloadStoriesMessage() {
+        super.checkDownloadStoriesMessage()
         if (Workspace.storyFilesToScanOrUnzipOrMove().size <= 3) {
             val snackBar = Snackbar.make(
                     findViewById(R.id.drawer_layout),
@@ -163,6 +183,19 @@ class MainActivity : BaseActivity(), Serializable {
                 snackBar.view.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
             snackTextView.maxLines = 6  // allow 5 line snack-bar messages + 1 for large fonts wrapping
             snackBar.show()
+        } else if (Workspace.hasFilterToolbar()) {
+            if (globalChipMsgCount < 2) {
+                val snackBar = Snackbar.make(
+                    findViewById(R.id.drawer_layout),
+                    R.string.filter_chips_feature,
+                    20 * 1000   // display for 20 seconds
+                )
+                val snackTextView =
+                    snackBar.view.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+                snackTextView.maxLines = 7  // allow 6 line snack-bar messages + 1 for large fonts wrapping
+                snackBar.show()
+                globalChipMsgCount++
+            }
         }
     }
 
