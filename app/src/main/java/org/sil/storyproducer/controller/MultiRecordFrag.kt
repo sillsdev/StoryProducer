@@ -2,7 +2,9 @@ package org.sil.storyproducer.controller
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -11,6 +13,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +24,11 @@ import androidx.core.content.FileProvider
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.*
+import org.sil.storyproducer.model.PROJECT_DIR
+import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.SLIDE_NUM
+import org.sil.storyproducer.model.SlideType
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.copyToFilesDir
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import org.sil.storyproducer.tools.toolbar.MultiRecordRecordingToolbar
@@ -67,22 +74,44 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                     arrayOf(SlideType.FRONTCOVER, SlideType.LOCALSONG, SlideType.NUMBEREDPAGE)) {
                 val imageFab: ImageView = rootView!!.findViewById<View>(R.id.insert_image_view) as ImageView
                 imageFab.visibility = View.VISIBLE
-                imageFab.setOnClickListener {
+                imageFab.setOnClickListener {view ->
                     val chooser = Intent(Intent.ACTION_CHOOSER)
                     chooser.putExtra(Intent.EXTRA_TITLE, R.string.camera_select_from)
 
-                    val galleryIntent = Intent(Intent.ACTION_GET_CONTENT)
+                    tempPicFile = File.createTempFile("temp", ".jpg", activity?.getExternalFilesDir(Environment.DIRECTORY_PICTURES))
+                    val internalFileUri = FileProvider.getUriForFile(view.context, view.context.getApplicationContext().getPackageName().toString() + ".fileprovider", tempPicFile!!)
+
+                    val galleryIntent = Intent(Intent.ACTION_PICK)// ACTION_GET_CONTENT)
                     galleryIntent.type = "image/*"
+                    galleryIntent.putExtra(MediaStore.EXTRA_OUTPUT, internalFileUri)
                     chooser.putExtra(Intent.EXTRA_INTENT, galleryIntent)
 
                     val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                    cameraIntent.resolveActivity(activity!!.packageManager).also {
-                        tempPicFile = File.createTempFile("temp", ".jpg", activity?.getExternalFilesDir(Environment.DIRECTORY_PICTURES))
-                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(activity!!, "${BuildConfig.APPLICATION_ID}.fileprovider", tempPicFile!!))
-                    }
-                    chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, internalFileUri)
+//                    chooser.putExtra(Intent.EXTRA_INTENT, cameraIntent)
 
-                    startActivityForResult(chooser, ACTIVITY_SELECT_IMAGE)
+                    chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
+                    chooser.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+
+                    // grant access to all potential intent activities
+                    val resInfoList = view.context.packageManager.queryIntentActivities(
+                        chooser, PackageManager.MATCH_DEFAULT_ONLY)
+                    for (resolveInfo in resInfoList) {
+                        val packageName = resolveInfo.activityInfo.packageName
+                        view.context.grantUriPermission(packageName, internalFileUri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                    }
+
+                    // try and launch editor for our audio file
+                    try {
+
+                        startActivityForResult(chooser, ACTIVITY_SELECT_IMAGE)
+
+                    } catch (e: ActivityNotFoundException) {
+                        Log.e("cameraPicture", "intent error: ActivityNotFoundException")
+                    }
                 }
             }
         }
