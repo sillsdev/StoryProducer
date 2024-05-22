@@ -45,9 +45,6 @@ import java.io.IOException
 abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.ToolbarMediaListener {
     protected open var recordingToolbar: RecordingToolbar = MultiRecordRecordingToolbar()
 
-    private var tempPicFile: File? = null
-
-
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -319,5 +316,6 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
     
     companion object {
         private const val ACTIVITY_SELECT_IMAGE = 53
+        private var tempPicFile: File? = null
     }
 }
