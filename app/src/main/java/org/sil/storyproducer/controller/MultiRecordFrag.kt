@@ -267,10 +267,11 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
 
                 if (pictureSetErr.isNotEmpty()) {
                     Toast.makeText(context,"Error: $pictureSetErr",Toast.LENGTH_LONG).show()
+                    FirebaseCrashlytics.getInstance().log("Error: (ACTIVITY_SELECT_IMAGE) $pictureSetErr")
                 }
             }
         } catch (e:Exception) {
-            Toast.makeText(context,"Error Exception: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(context,"Error (ACTIVITY_SELECT_IMAGE) Exception: ${e.message}", Toast.LENGTH_LONG).show()
             FirebaseCrashlytics.getInstance().recordException(e)
         }
     }
