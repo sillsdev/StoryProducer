@@ -101,7 +101,7 @@
     <string name="consultant_incorrect_password_message">Incorrect Password</string>
     <string name="affirm_accuracy_check_title">Affirm Accuracy Check</string>
     <string name="affirm_accuracy_check_message">If this is a Bible story, has this story been checked for accuracy by someone with Bible knowledge?</string>
-    <string name="affirm_accuracy_check_NotaBibleStory">(this story is not a Bible story)</string>
+    <string name="affirm_accuracy_check_NotaBibleStory">&#xA0;&#xA0;this is not a Bible story&#xA0;&#xA0;</string>
     <string name="request_accuracy_check_message">Please have someone with Bible knowledge check this story for accuracy.</string>
     <string name="stories_not_found_title"></string><!-- intentionally blank for now, the body messages are ok alone -->
     <string name="stories_not_found_body">Now it\'s time to install some stories.&lt;br/>

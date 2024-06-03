@@ -41,4 +41,20 @@
         <item name="android:textAllCaps">false</item>
     </style>
 
+    <!-- Custom AlertDialog Theme -->
+        <style name="CustomAlertDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="buttonBarPositiveButtonStyle">@style/OutlinedButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/OutlinedButtonStyle</item>
+        <item name="buttonBarNeutralButtonStyle">@style/OutlinedButtonStyle</item>
+    </style>
+
+    <!-- Style for outlined buttons -->
+    <style name="OutlinedButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/outlined_button_inset</item>
+        <item name="android:textColor">@color/alert_affirmation_color</item>
+        <item name="strokeColor">?attr/colorOnSurface</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="cornerRadius">4dp</item>
+    </style>
+
 </resources>

@@ -195,7 +195,7 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
      */
     // SP645 - BW 06/15/2022 new Affirm Accuracy Check dialog for SIL Story Producer
     private fun showAffirmAccuracyCheckDialog() {
-        val affirmDialog = AlertDialog.Builder(requireContext())
+        val affirmDialog = AlertDialog.Builder(requireContext(), R.style.CustomAlertDialogTheme)
                 .setTitle(getString(R.string.affirm_accuracy_check_title))
                 .setMessage(getString(R.string.affirm_accuracy_check_message))
                 .setPositiveButton(getString(R.string.yes), null)
