@@ -22,5 +22,5 @@ interface BaseActivityView {
     fun showCancellingReadingTemplatesDialog()
     fun showDetailedHelp()
     fun showPopupHelp()
-
+    fun checkDownloadStoriesMessage()
 }

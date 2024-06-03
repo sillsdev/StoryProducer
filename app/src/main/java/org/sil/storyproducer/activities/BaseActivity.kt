@@ -368,6 +368,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
                 R.id.action_popup_help -> {
                     // Handle popup help option
                     showPopupHelp()
+                    checkDownloadStoriesMessage()
                     true
                 }
                 else -> false
@@ -395,6 +396,10 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
             mPopupHelpUtils?.dismissPopup()
             mPopupHelpUtils = null
         }
+    }
+
+    override fun checkDownloadStoriesMessage() {
+
     }
 
 }

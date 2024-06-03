@@ -39,4 +39,12 @@ enum class StoryPageTab(val nameId: Int,
     // Allow the story list to be dynamically generated each time
     // this allows the story to be updated
     abstract fun getStoryList() : List<Story>
+
+    fun hasFilterToolbar() : Boolean {
+        if (hasFilterToolbar) {
+            return Workspace.hasFilterToolbar()
+        }
+        return false
+    }
+
 }

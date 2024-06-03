@@ -758,4 +758,22 @@ object Workspace {
         Stories.sortBy { it.title }
     }
 
+    fun hasFilterToolbar() : Boolean {
+        var numOther = 0
+        var numNT = 0
+        var numOT = 0
+        Stories.forEach {
+            if (it.type == Story.StoryType.OTHER)
+                numOther++
+            if (it.type == Story.StoryType.OLD_TESTAMENT)
+                numOT++
+            if (it.type == Story.StoryType.NEW_TESTAMENT)
+                numNT++
+        }
+        return numOther + numOT + numNT > 8 &&
+            ((numOther > 0 && numOT > 0) ||
+            (numOther > 0 && numNT > 0) ||
+            (numOT > 0 && numNT > 0))
+    }
+
 }
