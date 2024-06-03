@@ -26,6 +26,9 @@ class VoiceStudioFrag : MultiRecordFrag() {
     private var slideText: EditText? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        checkAllMarked(requireContext())
+
         rootView = inflater.inflate(R.layout.fragment_dramatization, container, false)
 
         setPic(rootView?.findViewById<View>(R.id.fragment_image_view) as ImageView)

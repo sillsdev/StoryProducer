@@ -19,6 +19,7 @@ import android.widget.TextView
 import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.PopupHelpUtils
+import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
@@ -112,6 +113,9 @@ class FinalizeActivity : PhaseBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        SlidePhaseFrag.checkAllMarked(baseContext)
+
         setContentView(R.layout.activity_finalize)
         setupViews()
         invalidateOptionsMenu()

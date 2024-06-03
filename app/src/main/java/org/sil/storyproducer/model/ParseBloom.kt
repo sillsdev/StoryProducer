@@ -76,6 +76,8 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile, defaultLang : Stri
 
     val isSPAuthored = frontCoverSlideBuilder.isSPAuthored
 
+    story.isSPAuthored = isSPAuthored
+
     var slide: Slide
     val pages = soup.getElementsByAttributeValueContaining("class","numberedPage")
     if(pages.size <= 2) return null

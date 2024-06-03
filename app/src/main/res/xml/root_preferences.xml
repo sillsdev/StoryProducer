@@ -8,6 +8,29 @@
         android:summary="@string/settings_experimental"
         android:title="@string/settings_title" />
 
+    <PreferenceCategory app:title="@string/general">
+
+        <SwitchPreferenceCompat
+            app:key="accuracy_check_skip"
+            app:title="@string/skip_accuracy_check_phase"
+            app:summary="@string/skip_accuracy_check_summary"/>
+
+        <SwitchPreferenceCompat
+            app:key="show_wordlinks"
+            app:title="@string/show_wordlinks"
+            app:summary="@string/show_wordlinks_summary"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/bloom_import">
+
+        <EditTextPreference
+            app:key="bloom_alt_lwc"
+            app:title="@string/bloom_import_alt_lwc"
+            app:summary="@string/bloom_import_alt_lwc_summary"/>
+
+    </PreferenceCategory>
+
     <PreferenceCategory app:title="@string/video_creation">
 
         <SwitchPreferenceCompat
@@ -22,31 +45,5 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/bloom_import">
-
-        <EditTextPreference
-            app:key="bloom_alt_lwc"
-            app:title="@string/bloom_import_alt_lwc"
-            app:summary="@string/bloom_import_alt_lwc_summary"/>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory app:title="@string/general">
-
-        <SwitchPreferenceCompat
-            app:key="show_wordlinks"
-            app:title="@string/show_wordlinks"
-            app:summary="@string/show_wordlinks_summary"/>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory app:title="@string/accuracy_check"
-        app:isPreferenceVisible="false" >
-
-        <SwitchPreferenceCompat
-            app:key="accuracy_confirm_all"
-            app:title="@string/accuracy_check_approve_all" />
-
-    </PreferenceCategory>
 
 </PreferenceScreen>
