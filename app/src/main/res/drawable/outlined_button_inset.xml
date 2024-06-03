@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/outlined_button_background"
+    android:insetLeft="16dp"
+    android:insetTop="8dp"
+    android:insetRight="16dp"
+    android:insetBottom="8dp"/>
