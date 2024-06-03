@@ -396,9 +396,10 @@
     <string name="bloom_import_alt_lwc_summary">Use this to specify which language code to use when importing a manually-installed story template / Bloom book (for example, on an SD card). Only this language code will be imported into SP and the book must have content in that language. Normally, leave this blank to import the book’s default language.</string>
     <string name="bloom_import_bgimage_color">Background Image Color #</string>
     <string name="bloom_import_bgimage_color_summary">Enter a background color to use for scaled images and videos here as a hex value or color name.</string>
-    <string name="accuracy_check_approve_all">Approve All Slides</string>
     <string name="show_wordlinks">Show WordLinks</string>
     <string name="show_wordlinks_summary">(an app restart will be required)</string>
+    <string name="skip_accuracy_check_phase">Skip Accuracy Check</string>
+    <string name="skip_accuracy_check_summary">You may turn this on if you will be translating downloaded Bloom Books that do not have any Bible story content. Keep this off if you will be translating Bible story content.</string>
 
     <!-- Settings -->
     <string name="settings">Settings</string>

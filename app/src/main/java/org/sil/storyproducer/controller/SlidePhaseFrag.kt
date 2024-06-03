@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller
 
+import android.content.Context
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.text.SpannableStringBuilder
@@ -16,12 +17,14 @@ import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.Guideline
+import androidx.preference.PreferenceManager
 import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.Slide
+import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.model.stringToWordLink
@@ -55,6 +58,32 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
     protected var mPopupHelpUtils: PopupHelpUtils? = null
 
 
+    companion object {
+        /**
+         * Checks each slide of the story to see if all slides have been approved
+         * @return true if all approved, otherwise false
+         */
+        public fun checkAllMarked(context: Context): Boolean {
+            val prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            // confirm all if setting set and not a bible story
+            val confirmAll = prefs.getBoolean("accuracy_check_skip", false) and
+                    !Workspace.activeStory.isSPAuthored
+            for (slide in Workspace.activeStory.slides) {
+                if (!slide.isChecked && slide.slideType in
+                    arrayOf(SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE, SlideType.LOCALSONG)
+                ) {
+                    if (confirmAll)
+                        slide.isChecked = true
+                    else
+                        return false
+                }
+            }
+            if (confirmAll)
+                Workspace.activeStory.isApproved = true
+            return true
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,8 +103,8 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         super.onCreateView(inflater, container, savedInstanceState)
-        // The last two arguments ensure LayoutParams are inflated
-        // properly.
+
+        // The last two arguments ensure LayoutParams are inflated properly.
         rootView = inflater.inflate(R.layout.fragment_slide, container, false)
 
         setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)

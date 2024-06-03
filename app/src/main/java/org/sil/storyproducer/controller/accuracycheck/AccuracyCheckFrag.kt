@@ -42,7 +42,7 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
         greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
         grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
 
-        checkAllMarked()
+        checkAllMarked(requireContext())
 
         return inflater.inflate(R.layout.fragment_accuracy_check, container, false)?.apply {
             this@AccuracyCheckFrag.rootView = this
@@ -93,7 +93,7 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
             } else {
                 button.background = greenCheckmark
                 Workspace.activeStory.slides[slideNum].isChecked = true
-                if (checkAllMarked()) {
+                if (checkAllMarked(requireContext())) {
                     // SP645 - BW 06/15/2022 new Affirm Accuracy Check dialog for SIL Story Producer
                     // Other forks of story producer may want to keep the ConsultantPassword dialog instead.
                     // We could use a Feature Flags library to enable/choose the desired approach.
@@ -145,27 +145,6 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
         }
     }
 
-
-        /**
-     * Checks each slide of the story to see if all slides have been approved
-     * @return true if all approved, otherwise false
-     */
-    private fun checkAllMarked(): Boolean {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        val confirmAll = prefs.getBoolean("accuracy_confirm_all", false);
-        for (slide in Workspace.activeStory.slides) {
-            if (!slide.isChecked && slide.slideType in
-                    arrayOf(SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,SlideType.LOCALSONG)) {
-                if (confirmAll)
-                    slide.isChecked = true
-                else
-                    return false
-            }
-        }
-        if (confirmAll)
-            Workspace.activeStory.isApproved = true
-        return true
-    }
 
     /**
      * Launches a dialog for the consultant to enter a password once all slides approved

@@ -36,6 +36,7 @@ class Story(var title: String, var slides: List<Slide>){
     var storyToJasonTimeStamp = ""  // default value - no value available
 
     var isApproved: Boolean = false
+    var isSPAuthored = false
     var learnAudioFile = ""
     var wholeStoryBackTAudioFile = ""
     var activityLogs: MutableList<LogEntry> = ArrayList()
