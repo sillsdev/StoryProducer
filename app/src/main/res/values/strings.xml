@@ -382,6 +382,8 @@
     <string name="migrate_stories_message">Would you like to move your current projects to this folder? (recommended)</string>
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="lock_screen_text"><![CDATA[You cannot use this phase until you go back to the <b>Accuracy Check</b> phase and make sure each slide is approved by an accuracy checker. |]]></string>
+    <string name="title_video_created">Your video has been created.\nYou can play it now in the Share Phase.</string>
+    <string name="error_creating_video">Error creating video!</string>
 
     <!-- Preference Titles -->
     <string name="video_creation">Video Creation</string>

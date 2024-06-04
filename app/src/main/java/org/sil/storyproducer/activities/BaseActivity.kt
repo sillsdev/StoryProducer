@@ -55,6 +55,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     protected var mDrawerToggle: ActionBarDrawerToggle? = null
     protected var mAdapter: ArrayAdapter<String>? = null
     protected var mPopupHelpUtils: PopupHelpUtils? = null
+    protected var rootView: View? = null
 
 
     companion object {
