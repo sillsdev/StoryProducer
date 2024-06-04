@@ -16,6 +16,7 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.preference.PreferenceManager
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.model.Story
@@ -164,8 +165,15 @@ class ListAdapter(context: Context,
             val story = stories[position]
 
             holder.imgIcon.setOnLongClickListener {
-                MainActivity.mainActivity?.deleteStory(Workspace.Stories[position]);
-                true;
+                val prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                // check setting for long press to delete a story
+                val enableStoryDel = prefs.getBoolean("enable_story_deletion", false)
+                if (enableStoryDel) {
+                    MainActivity.mainActivity?.deleteStory(Workspace.Stories[position]);
+                    true
+                } else {
+                    false
+                }
             }
 
             holder.imgIcon.setOnClickListener {
