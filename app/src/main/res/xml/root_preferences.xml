@@ -11,6 +11,11 @@
     <PreferenceCategory app:title="@string/general">
 
         <SwitchPreferenceCompat
+            app:key="enable_story_deletion"
+            app:title="@string/enable_story_deletion_title"
+            app:summary="@string/enable_story_deletion_summary"/>
+
+        <SwitchPreferenceCompat
             app:key="accuracy_check_skip"
             app:title="@string/skip_accuracy_check_phase"
             app:summary="@string/skip_accuracy_check_summary"/>
