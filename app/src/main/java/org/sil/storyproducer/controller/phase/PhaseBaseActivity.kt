@@ -80,7 +80,7 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
     //Override setContentView to coerce into child view.
     override fun setContentView(id: Int) {
         val inflater = layoutInflater
-        inflater.inflate(id, mDrawerLayout)
+        rootView = inflater.inflate(id, mDrawerLayout)
         //Bring menu to front again.
         mDrawerList!!.bringToFront()
     }
