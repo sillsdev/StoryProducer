@@ -400,7 +400,7 @@
     <string name="bloom_import_bgimage_color_summary">Enter a background color to use for scaled images and videos here as a hex value or color name.</string>
     <string name="show_wordlinks">Show WordLinks</string>
     <string name="show_wordlinks_summary">(an app restart will be required)</string>
-    <string name="skip_accuracy_check_phase">Skip Accuracy Check</string>
+    <string name="skip_accuracy_check_phase">Skip Accuracy Check - Bloom Books</string>
     <string name="skip_accuracy_check_summary">You may turn this on if you will be translating downloaded Bloom Books that do not have any Bible story content. Keep this off if you will be translating Bible story content.</string>
     <string name="enable_story_deletion_title">Enable Story Deletion</string>
     <string name="enable_story_deletion_summary">When this feature is enabled… In the Story List, long press on a story’s thumbnail to delete that story. Story Deletion will delete any audio recordings you have made for that story.  Also, please note there is no undo or recycle bin available after deleting a Story.</string>

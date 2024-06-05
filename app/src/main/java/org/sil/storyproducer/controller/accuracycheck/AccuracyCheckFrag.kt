@@ -84,7 +84,7 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
         }
         button.setOnClickListener(View.OnClickListener {
             if (Workspace.activeStory.isApproved) {
-                Toast.makeText(context, "Story already approved", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Story already approved", Toast.LENGTH_SHORT).show()    // TODO: Add string to strings.xml
                 return@OnClickListener
             }
             if (Workspace.activeStory.slides[slideNum].isChecked) {
