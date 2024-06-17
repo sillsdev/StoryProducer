@@ -8,7 +8,6 @@ import android.media.MediaMuxer
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.ParcelFileDescriptor
-import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -124,20 +123,21 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
             mRecorder.prepare()
             mRecorder.start()
             isRecording = true  // only set isRecording if no exceptions
-        }
-        catch (e: RuntimeException) {
+        } catch (e: RuntimeException) {
             Toast.makeText(activity, R.string.recording_toolbar_error_start_recording, Toast.LENGTH_SHORT).show()
             Timber.e(e)
             FirebaseCrashlytics.getInstance().recordException(e)
-        }
-        catch (e: IllegalStateException) {
+        } catch (e: IllegalStateException) {
             Toast.makeText(activity, "IllegalStateException!", Toast.LENGTH_SHORT).show()
             Timber.e(e)
             FirebaseCrashlytics.getInstance().recordException(e)
-        }
-        catch (e: IOException) {
+        } catch (e: IOException) {
             Toast.makeText(activity, "IOException!", Toast.LENGTH_SHORT).show()
             Timber.e(e)
+            FirebaseCrashlytics.getInstance().recordException(e)
+        } catch (e: Exception) {
+            // I don't know what happened, so log to crashlytics
+            Timber.e(e, "Starting Voice recorder unknown exception!")
             FirebaseCrashlytics.getInstance().recordException(e)
         }
     }
@@ -153,15 +153,20 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
         } catch (e: RuntimeException) {
             if (mRecorderOutputPfd != null)
                 mRecorderOutputPfd?.close() // close any opened file descriptor on error
-            mRecorderOutputPfd = null   // there was nothing recorded if we get a RuntimeException on stop()
+            mRecorderOutputPfd = null   // if we get a RuntimeException on stop() it may be due to there being nothing recorded
             Toast.makeText(activity, R.string.recording_toolbar_error_stop_recording, Toast.LENGTH_SHORT).show()
-            Timber.e(e)
+            //Timber.i(e, "Error stopping recording")
             try {
                 mRecorder.reset()   // reset and release the recorder state - ready for next record
                 mRecorder.release()
             } catch (e: Exception) { }
         } catch (e: InterruptedException) {
-            Log.e(AUDIO_RECORDER, "Voice recorder interrupted!", e)
+            Timber.e(e, "Voice recorder interrupted!")
+            FirebaseCrashlytics.getInstance().recordException(e)
+        } catch (e: Exception) {
+            // I don't know what happened, so log to crashlytics
+            Timber.e(e, "Stopping Voice recorder unknown exception!")
+            FirebaseCrashlytics.getInstance().recordException(e)
         } finally {
             isRecording = false // always clear the recording flag
         }
