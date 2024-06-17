@@ -8,10 +8,10 @@ import android.media.MediaMuxer
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.ParcelFileDescriptor
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
@@ -21,6 +21,7 @@ import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 import org.sil.storyproducer.tools.media.story.StoryMaker
 import org.sil.storyproducer.tools.media.story.StoryPage
+import timber.log.Timber
 import java.io.File
 import java.io.IOException
 
@@ -112,23 +113,31 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
         mRecorder.setAudioChannels(AUDIO_CHANNELS)
     }
 
-    override fun startNewRecording(relPath: String){
+    override fun startNewRecording(relPath: String) {
+        if (isRecording) return // already recording so return
         initRecorder()
         mRecorderOutputPfd = getStoryParcelFileDescriptor(activity, relPath,"","w")
         if (mRecorderOutputPfd == null)
             return
         mRecorder.setOutputFile(mRecorderOutputPfd?.fileDescriptor)
-        isRecording = true
         try{
             mRecorder.prepare()
             mRecorder.start()
+            isRecording = true  // only set isRecording if no exceptions
+        }
+        catch (e: RuntimeException) {
+            Toast.makeText(activity, R.string.recording_toolbar_error_start_recording, Toast.LENGTH_SHORT).show()
+            Timber.e(e)
+            FirebaseCrashlytics.getInstance().recordException(e)
         }
         catch (e: IllegalStateException) {
             Toast.makeText(activity, "IllegalStateException!", Toast.LENGTH_SHORT).show()
+            Timber.e(e)
             FirebaseCrashlytics.getInstance().recordException(e)
         }
         catch (e: IOException) {
             Toast.makeText(activity, "IOException!", Toast.LENGTH_SHORT).show()
+            Timber.e(e)
             FirebaseCrashlytics.getInstance().recordException(e)
         }
     }
@@ -136,17 +145,25 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
     override fun stop() {
         if(!isRecording) return
         try {
+            mRecorder.stop()    // stop recording before closing file
             if (mRecorderOutputPfd != null)
                 mRecorderOutputPfd?.close()
-            mRecorder.stop()
             mRecorder.reset()
             mRecorder.release()
-            isRecording = false
-        } catch (stopException: RuntimeException) {
-            Toast.makeText(activity, R.string.recording_toolbar_error_recording, Toast.LENGTH_SHORT).show()
-            FirebaseCrashlytics.getInstance().recordException(stopException)
+        } catch (e: RuntimeException) {
+            if (mRecorderOutputPfd != null)
+                mRecorderOutputPfd?.close() // close any opened file descriptor on error
+            mRecorderOutputPfd = null   // there was nothing recorded if we get a RuntimeException on stop()
+            Toast.makeText(activity, R.string.recording_toolbar_error_stop_recording, Toast.LENGTH_SHORT).show()
+            Timber.e(e)
+            try {
+                mRecorder.reset()   // reset and release the recorder state - ready for next record
+                mRecorder.release()
+            } catch (e: Exception) { }
         } catch (e: InterruptedException) {
             Log.e(AUDIO_RECORDER, "Voice recorder interrupted!", e)
+        } finally {
+            isRecording = false // always clear the recording flag
         }
     }
 }
