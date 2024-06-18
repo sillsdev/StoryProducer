@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -31,6 +32,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.preference.PreferenceManager
 import org.sil.storyproducer.R
+import timber.log.Timber
 import kotlin.math.min
 
 class PopupItem(val anchorViewId: Int,
@@ -442,6 +444,9 @@ class PopupHelpUtils(private val parent: Any,
         // Set animation style - to show a fade in and out when the help popup appears and disappears
         popupWindow.animationStyle = R.style.PopupAnimation
 
+        var initialX = min(rootArrowTarget.x, boxDrawPoint.x)
+        var initialY = min(rootArrowTarget.y, boxDrawPoint.y)
+        Timber.e("first initialX = $initialX, first initialY = $initialY")
         // Show the popup window at the desired location using root coordinates
         popupWindow.showAtLocation(
             rootView,
@@ -449,9 +454,47 @@ class PopupHelpUtils(private val parent: Any,
                 Gravity.CENTER
             else
                 Gravity.NO_GRAVITY,
-            min(rootArrowTarget.x, boxDrawPoint.x),
-            min(rootArrowTarget.y, boxDrawPoint.y)
+            initialX,
+            initialY
         )
+        // Handle touch events for dragging
+        var lastX = 0
+        var lastY = 0
+        popupView.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    // Remember initial touch position
+                    lastX = event.rawX.toInt()
+                    lastY = event.rawY.toInt()
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    // Calculate the distance moved
+                    val dx = event.rawX.toInt() - lastX
+                    val dy = event.rawY.toInt() - lastY
+
+                    // Get current position
+                    val currentX = initialX + dx
+                    val currentY = initialY + dy
+//                    Timber.i("currentX = $currentX, currentY = $currentY")
+
+                    // Update the position of the PopupWindow
+                    popupWindow.update(currentX, currentY, -1, -1)
+                    true
+                }
+                MotionEvent.ACTION_UP -> {
+                    // Ensure accessibility events are handled
+                    val dx = event.rawX.toInt() - lastX
+                    val dy = event.rawY.toInt() - lastY
+                    initialX += dx
+                    initialY += dy
+
+                    v.performClick()
+                    true
+                }
+                else -> false
+            }
+        }
 
 // added code here to make sure there are no memory leaks
         popupWindow.setLifecycleOwner(activity!!)   // TODO: REMOVE? DOES THIS WORK?
