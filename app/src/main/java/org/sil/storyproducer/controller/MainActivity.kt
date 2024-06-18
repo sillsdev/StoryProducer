@@ -279,6 +279,11 @@ class MainActivity : BaseActivity(), Serializable {
                 showHelpContextMenu()
                 true
             }
+            R.id.helpResumeButton -> {
+                resumeShowingPopupHelp()
+                checkDownloadStoriesMessage()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

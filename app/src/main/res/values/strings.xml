@@ -657,7 +657,9 @@
     </string>
 
     <string name="help_menu_detailed">Show detailed help for this page</string>
-    <string name="help_menu_popup">Show Popup Help</string>
-    <string name="help_dismiss_message">If you want to turn Popup Help back on, tap the  Help button (?) on the toolbar at the top.</string>
+    <string name="help_menu_popup_restart">Restart Popup Help</string>
+    <string name="help_menu_popup_resume">Resume Popup Help</string>
+    <string name="help_dismiss_message">Tap the blue button in the toolbar to Resume Popup Help.</string>
+    <string name="help_no_more_message">No more popup help for this section.</string>
 
 </resources>
