@@ -131,10 +131,11 @@ class PopupHelpUtils(private val parent: Any,
     }
 
     fun stopShowingPopupHelp() {
-        currentHelpIndex = -1   // Stop showing popup help for the current Phase/Activity
+        if (currentHelpIndex >= 0)
+            currentHelpIndex = -currentHelpIndex -1   // Stop showing popup help for the current Phase/Activity (make it negative)
     }
 
-    fun reShowPopupHelp() {
+    fun restartShowingPopupHelp() {
         val prefString = "PopupHelpGroup_"
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         // Use the SharedPreferences editor to remove the preferences within the subgroup
@@ -151,19 +152,29 @@ class PopupHelpUtils(private val parent: Any,
         showNextPopupHelp()
     }
 
-    fun showNextPopupHelp() {
+    fun resumeShowingPopupHelp() {
+        if (currentHelpIndex < 0)
+            currentHelpIndex = -(currentHelpIndex + 1)   // Resume showing where we last stopped
+
+        globalCancelCount = 0
+        if (!showNextPopupHelp()) {
+            Toast.makeText(activity, activity?.getString(R.string.help_no_more_message), Toast.LENGTH_LONG).show()
+        }
+    }
+
+    fun showNextPopupHelp() :Boolean {
 
         if (globalCancelCount >= 2)
-            return  // help has been cancelled twice
+            return false  // help has been cancelled twice
 
         if (currentHelpIndex < 0)
-            return  // help has been turned off
+            return false  // help has been turned off
 
         if (currentHelpIndex >= popupItems.size)
-            return  // we have shown all our help
+            return false  // we have shown all our help
 
         if (context == null || activity == null)
-            return
+            return false
 
         var popupItem = popupItems[currentHelpIndex]
 
@@ -192,43 +203,59 @@ class PopupHelpUtils(private val parent: Any,
                         popupItem.bodyResId,
                         currentHelpIndex == popupItems.size-1   // show ok button for last message
                     )
-                    if (helpPopupWindow != null) {
+                    val buttonClose: ImageButton =
+                        helpPopupWindow!!.getContentView().findViewById(R.id.btnClose)
+                    buttonClose.setOnClickListener {
 
-                        val buttonClose: ImageButton =
-                            helpPopupWindow!!.getContentView().findViewById(R.id.btnClose)
-                        buttonClose.setOnClickListener {
+                        dismissPopup()
 
-                            dismissPopup()
+                        if (++globalCancelCount >= 2) // no more popups if cancelled twice (backed by preferences)
+                            Toast.makeText(
+                                activity,
+                                activity?.getString(R.string.help_dismiss_message),
+                                Toast.LENGTH_LONG
+                            ).show()
 
-                            if (++globalCancelCount >= 2) // no more popups if cancelled twice (backed by preferences)
-                                Toast.makeText(
-                                    activity,
-                                    activity?.getString(R.string.help_dismiss_message),
-                                    Toast.LENGTH_LONG
-                                ).show()
+                        stopShowingPopupHelp()
+                    }
+                    val buttonNext: Button =
+                        helpPopupWindow!!.getContentView().findViewById(R.id.btnNext)
+                    buttonNext.setOnClickListener {
 
-                            stopShowingPopupHelp()
+                        dismissPopup()
+
+                        currentHelpIndex++  // show next help popup next time (backed by preferences)
+                        globalCancelCount = 0 // reset cancelled count (backed by preferences)
+
+                        if (currentHelpIndex >= 0 && currentHelpIndex < popupItems.size) {
+                            val nextPopupItem = popupItems[currentHelpIndex]
+                            if (!nextPopupItem.waitForUi) {
+                                showNextPopupHelp()
+                            }
                         }
-                        val buttonNext: Button =
-                            helpPopupWindow!!.getContentView().findViewById(R.id.btnNext)
-                        buttonNext.setOnClickListener {
+                    }
+                    val buttonPrev: Button =
+                        helpPopupWindow!!.getContentView().findViewById(R.id.btnPrev)
+                    buttonPrev.visibility = if (currentHelpIndex > 0) View.VISIBLE else View.INVISIBLE
+                    buttonPrev.setOnClickListener {
 
-                            dismissPopup()
+                        dismissPopup()
 
-                            currentHelpIndex++  // show next help popup next time (backed by preferences)
-                            globalCancelCount = 0 // reset cancelled count (backed by preferences)
+                        currentHelpIndex--  // show previous help popup next time (backed by preferences)
+                        globalCancelCount = 0 // reset cancelled count (backed by preferences)
 
-                            if (currentHelpIndex >= 0 && currentHelpIndex < popupItems.size) {
-                                var nextPopupItem = popupItems[currentHelpIndex]
-                                if (!nextPopupItem.waitForUi) {
-                                    showNextPopupHelp()
-                                }
+                        if (currentHelpIndex >= 0 && currentHelpIndex < popupItems.size) {
+                            val nextPopupItem = popupItems[currentHelpIndex]
+                            if (!nextPopupItem.waitForUi) {
+                                showNextPopupHelp()
                             }
                         }
                     }
                 }
             }
+            return true // something was shown
         }
+        return false
     }
 
     // a PopupWindow that should enable resource deletion on destruction
@@ -314,6 +341,7 @@ class PopupHelpUtils(private val parent: Any,
             // the last popup in the series says "OK" rather than "Next"
             val textOkButton = popupView.findViewById<Button>(R.id.btnNext)
             textOkButton.text = context.getString(R.string.ok)
+            textOkButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0) // hide the next arrow
         }
 
         val usedPopupWidth = (rootDrawableBounds.width() * boxWidthFraction).toInt()

@@ -52,14 +52,42 @@
         android:textColor="@color/white"
         android:layout_weight="1" />
 
-    <Button
-        android:id="@+id/btnNext"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
+        android:orientation="horizontal"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_gravity="end"
-        android:text="Next" />
+        android:color="@color/transparent">
+
+        <Button
+            android:id="@+id/btnPrev"
+            android:visibility="visible"
+            android:layout_width="42dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginStart="8dp"
+            android:drawableStart="@drawable/ic_help_prev_arrow"
+            android:drawablePadding="4dp"
+            />
+
+        <View
+            android:layout_width="16dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/next"
+            android:drawableEnd="@drawable/ic_help_next_arrow"
+            android:drawablePadding="4dp"
+            />
+
+    </LinearLayout>
 
 </LinearLayout>

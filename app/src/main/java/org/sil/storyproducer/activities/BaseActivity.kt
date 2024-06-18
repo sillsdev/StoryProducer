@@ -366,9 +366,15 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
                     showDetailedHelp()
                     true
                 }
-                R.id.action_popup_help -> {
+                R.id.action_popup_help_restart -> {
                     // Handle popup help option
-                    showPopupHelp()
+                    restartShowingPopupHelp()
+                    checkDownloadStoriesMessage()
+                    true
+                }
+                R.id.action_popup_help_resume -> {
+                    // Handle popup help option
+                    resumeShowingPopupHelp()
                     checkDownloadStoriesMessage()
                     true
                 }
@@ -382,9 +388,14 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     override fun showDetailedHelp() {
     }
 
-    override fun showPopupHelp() {
+    override fun restartShowingPopupHelp() {
         if (mPopupHelpUtils != null)
-            mPopupHelpUtils?.reShowPopupHelp()
+            mPopupHelpUtils?.restartShowingPopupHelp()
+    }
+
+    override fun resumeShowingPopupHelp() {
+        if (mPopupHelpUtils != null)
+            mPopupHelpUtils?.resumeShowingPopupHelp()
     }
 
     fun setBasePopupHelpUtils(popupHelp: PopupHelpUtils) {
