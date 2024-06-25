@@ -156,6 +156,9 @@ class PopupHelpUtils(private val parent: Any,
         if (currentHelpIndex < 0)
             currentHelpIndex = -(currentHelpIndex + 1)   // Resume showing where we last stopped
 
+        if (currentHelpIndex >= popupItems.size && popupItems.size > 0)
+            currentHelpIndex = popupItems.size - 1  // show the last popup help in this series
+
         globalCancelCount = 0
         if (!showNextPopupHelp()) {
             Toast.makeText(activity, activity?.getString(R.string.help_no_more_message), Toast.LENGTH_LONG).show()
