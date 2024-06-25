@@ -168,7 +168,7 @@ class PopupHelpUtils(private val parent: Any,
     fun showNextPopupHelp() :Boolean {
 
         if (globalCancelCount >= 2)
-            return false  // help has been cancelled twice
+            return false  // help has been cancelled twice - don't show any more by default
 
         if (currentHelpIndex < 0)
             return false  // help has been turned off
@@ -212,7 +212,7 @@ class PopupHelpUtils(private val parent: Any,
 
                         dismissPopup()
 
-                        if (++globalCancelCount >= 2) // no more popups if cancelled twice (backed by preferences)
+                        if (++globalCancelCount >= 1) // show message how to resume popup help
                             Toast.makeText(
                                 activity,
                                 activity?.getString(R.string.help_dismiss_message),

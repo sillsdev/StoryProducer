@@ -1,14 +1,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/helpResumeButton"
-        android:icon="@drawable/baseline_live_help_24"
-        android:title="@string/help_menu_popup_resume"
-        app:showAsAction="ifRoom"/>
-    <item
         android:id="@+id/helpButton"
-        android:icon="@drawable/ic_help_white_24dp"
+        android:icon="@drawable/baseline_live_help_24"
         android:title="@string/help"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
 
 </menu>
