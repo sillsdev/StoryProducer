@@ -194,11 +194,11 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
                 showHelpContextMenu()
                 true
             }
-            R.id.helpResumeButton -> {
-                resumeShowingPopupHelp()
-                checkDownloadStoriesMessage()
-                true
-            }
+//            R.id.helpResumeButton -> {
+//                resumeShowingPopupHelp()
+//                checkDownloadStoriesMessage()
+//                true
+//            }
             else -> mDrawerToggle!!.onOptionsItemSelected(item)
         }
     }

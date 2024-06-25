@@ -8,10 +8,7 @@
         android:id="@+id/icon_logo"
         android:title="@string/menu_search"
         android:icon="@drawable/ic_mic_white_48dp"
-        app:showAsAction="always"
-        android:height="500dp"
-        android:width="500dp"
-        />
+        app:showAsAction="always" />
     <item
         android:id="@+id/spinner"
         android:icon="@drawable/ic_apps_white_24dp"
@@ -20,13 +17,8 @@
         app:showAsAction="always"
         android:checkable="false" />
     <item
-        android:id="@+id/helpResumeButton"
-        android:icon="@drawable/baseline_live_help_24"
-        android:title="@string/help_menu_popup_resume"
-        app:showAsAction="ifRoom"/>
-    <item
         android:id="@+id/helpButton"
-        android:icon="@drawable/ic_help_white_24dp"
+        android:icon="@drawable/baseline_live_help_24"
         android:title="@string/help"
         app:showAsAction="always"/>
 
