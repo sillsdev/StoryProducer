@@ -304,7 +304,7 @@
             android:id="@+id/archive_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/registration_archive_header"
+            android:text="@string/registration_additional_contacts"
             android:textSize="@dimen/header_text"
             android:textColor="@color/lightGray"
             android:gravity="center"

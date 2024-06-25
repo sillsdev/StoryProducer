@@ -144,7 +144,11 @@ class MainActivity : BaseActivity(), Serializable {
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.activity_main,
             -1, -1,
-            R.string.help_welcome_title, R.string.help_welcome_body)
+            R.string.welcome_to_story_producer, R.string.help_welcome_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+            R.id.activity_main,
+            -1, -1,
+            R.string.help_welcome_title2, R.string.help_welcome_body2)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.story_list_view,
             50, storyListViewPercent,

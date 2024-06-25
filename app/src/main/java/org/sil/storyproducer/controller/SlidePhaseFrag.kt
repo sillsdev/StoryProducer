@@ -220,7 +220,11 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
         setReferenceAudioButton()
 
         val slideNumberText = rootView?.findViewById<TextView>(R.id.slide_number_text)
-        slideNumberText?.text = slideNum.toString()
+        slideNumberText?.text = when (Workspace.activeStory.slides[slideNum].slideType) {
+            SlideType.FRONTCOVER -> getString(R.string.slide_type_title)
+            SlideType.LOCALSONG -> getString(R.string.slide_type_song)
+            else -> getString(R.string.slide_type_number) + " $slideNum"
+        }
     }
 
     private fun setReferenceAudioButton() {
