@@ -232,11 +232,11 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
             if (!storyRelPathExists(requireContext(),Workspace.activePhase.getReferenceAudioFile(slideNum))) {
                 // Now using an appropriate "no audio" string for all phases
                 if (Workspace.activePhase.phaseType == PhaseType.TRANSLATE_REVISE)
-                    Snackbar.make(rootView!!,
+                    SnackbarManager.show(rootView!!,
                             getString(R.string.translate_revise_playback_no_lwc_audio, Workspace.activeStory.langCode),
-                            Snackbar.LENGTH_LONG).show()    // Tell user Translate phase has no audio for this slide
+                            Snackbar.LENGTH_LONG)?.show()    // Tell user Translate phase has no audio for this slide
                 else
-                    Snackbar.make(rootView!!, R.string.other_playback_no_local_audio, Snackbar.LENGTH_LONG).show()
+                    SnackbarManager.show(rootView!!, getString(R.string.other_playback_no_local_audio), Snackbar.LENGTH_LONG)?.show()
             } else {
                 //stop other playback streams.
                 if (referenceAudioPlayer.isAudioPlaying) {

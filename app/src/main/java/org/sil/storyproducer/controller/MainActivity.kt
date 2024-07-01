@@ -11,11 +11,9 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.webkit.WebView
-import android.widget.TextView
 import androidx.core.view.GravityCompat
 import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.GlobalScope
@@ -178,26 +176,20 @@ class MainActivity : BaseActivity(), Serializable {
     override fun checkDownloadStoriesMessage() {
         super.checkDownloadStoriesMessage()
         if (Workspace.storyFilesToScanOrUnzipOrMove().size <= 3) {
-            val snackBar = Snackbar.make(
+            SnackbarManager.show(
                     findViewById(R.id.drawer_layout),
-                    R.string.more_story_templates,
-                    20 * 1000   // display for 20 seconds
+                    getString(R.string.more_story_templates),
+                    20 * 1000,   // display for 20 seconds
+                    6
             )
-            val snackTextView =
-                snackBar.view.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
-            snackTextView.maxLines = 6  // allow 5 line snack-bar messages + 1 for large fonts wrapping
-            snackBar.show()
         } else if (Workspace.hasFilterToolbar()) {
             if (globalChipMsgCount < 2) {
-                val snackBar = Snackbar.make(
+                SnackbarManager.show(
                     findViewById(R.id.drawer_layout),
-                    R.string.filter_chips_feature,
-                    20 * 1000   // display for 20 seconds
+                    getString(R.string.filter_chips_feature),
+                    20 * 1000,   // display for 20 seconds
+                    7
                 )
-                val snackTextView =
-                    snackBar.view.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
-                snackTextView.maxLines = 7  // allow 6 line snack-bar messages + 1 for large fonts wrapping
-                snackBar.show()
                 globalChipMsgCount++
             }
         }

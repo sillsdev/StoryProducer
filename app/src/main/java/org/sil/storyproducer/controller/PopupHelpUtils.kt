@@ -31,9 +31,43 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.preference.PreferenceManager
+import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
 import timber.log.Timber
 import kotlin.math.min
+
+public object SnackbarManager {
+
+    private var currentSnackbar: Snackbar? = null
+
+    fun show(view: View, message: String, duration: Int, maxLines: Int = 0) : Snackbar? {
+        // Dismiss the current Snackbar if it is showing
+        currentSnackbar?.dismiss()
+
+        // Create and show the new Snackbar
+        currentSnackbar = Snackbar.make(view, message, duration)
+        if (currentSnackbar != null) {
+            if (maxLines > 0) {
+                val snackTextView =
+                    currentSnackbar?.view?.findViewById(com.google.android.material.R.id.snackbar_text) as TextView?
+                snackTextView?.maxLines = maxLines
+            }
+            currentSnackbar?.show()
+        }
+        return currentSnackbar
+    }
+
+    fun dismissCurrentSnackbar() {
+        currentSnackbar?.dismiss()
+        currentSnackbar = null
+    }
+
+    fun saveNewSnackbar(snackbar: Snackbar) {
+        dismissCurrentSnackbar()
+        currentSnackbar = snackbar
+    }
+}
+
 
 class PopupItem(val anchorViewId: Int,
                 val percentX: Int,
@@ -212,12 +246,13 @@ class PopupHelpUtils(private val parent: Any,
 
                         dismissPopup()
 
-                        if (++globalCancelCount >= 1) // show message how to resume popup help
-                            Toast.makeText(
-                                activity,
-                                activity?.getString(R.string.help_dismiss_message),
-                                Toast.LENGTH_LONG
-                            ).show()
+                        ++globalCancelCount // increment global cancel count
+                        SnackbarManager.show(
+                            view2,
+                            context!!.getString(R.string.help_dismiss_message),
+                            6 * 1000,   // display for 6 seconds
+                            3
+                        )
 
                         stopShowingPopupHelp()
                     }

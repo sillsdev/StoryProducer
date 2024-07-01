@@ -17,10 +17,10 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.PopupHelpUtils
 import org.sil.storyproducer.controller.SlidePhaseFrag
+import org.sil.storyproducer.controller.SnackbarManager
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
@@ -88,8 +88,8 @@ class FinalizeActivity : PhaseBaseActivity() {
             stopExport()
             if(isSuccess && rootView != null) {
                 // Tell the user that the video was created
-                Snackbar.make(rootView!!, R.string.title_video_created, 30 * 1000)
-                    .setAction("Action", null).show()
+                SnackbarManager.show(rootView!!, getString(R.string.title_video_created), 30 * 1000)
+                    ?.setAction("Action", null)?.show()
             }
             else
                 Toast.makeText(baseContext, R.string.error_creating_video, Toast.LENGTH_LONG).show()

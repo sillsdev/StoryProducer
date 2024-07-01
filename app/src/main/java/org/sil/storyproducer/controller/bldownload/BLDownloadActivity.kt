@@ -24,6 +24,7 @@ import org.sil.bloom.reader.CommonUtilities
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
 import org.sil.storyproducer.controller.MainActivity
+import org.sil.storyproducer.controller.SnackbarManager
 import org.sil.storyproducer.databinding.ActivityBldownloadBinding
 import org.sil.storyproducer.model.BLBook
 import org.sil.storyproducer.model.Workspace
@@ -242,8 +243,8 @@ class BLDownloadActivity : AppCompatActivity() {
 
             if (numQueued > 0) {
                 // tell user that download(s) have started
-                Snackbar.make(view, getString(R.string.bloom_lib_download_started), 60 * 1000)
-                    .setAction("Action", null).show()
+                SnackbarManager.show(view, getString(R.string.bloom_lib_download_started), 60 * 1000)
+                    ?.setAction("Action", null)?.show()
             }
             else if (numAlreadyDownloaded > 0 || numDownloadsCompleted > 0) {
                 // a toast message is used so that it is visible in the Main Activity after this activity ends
@@ -259,13 +260,13 @@ class BLDownloadActivity : AppCompatActivity() {
             }
             else if (numAlreadyInstalled > 0) {
                 // warn the user 'already installed' and do nothing
-                Snackbar.make(view, getString(R.string.bloom_lib_already_installed), Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+                SnackbarManager.show(view, getString(R.string.bloom_lib_already_installed), Snackbar.LENGTH_LONG)
+                    ?.setAction("Action", null)?.show()
             }
             else {
                 // warn the user 'nothing selected' and do nothing
-                Snackbar.make(view, getString(R.string.bloom_lib_nothing_selected), Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+                SnackbarManager.show(view, getString(R.string.bloom_lib_nothing_selected), Snackbar.LENGTH_LONG)
+                    ?.setAction("Action", null)?.show()
             }
         }   // FAB binding.bldlFab.setOnClickListener() lambda ends here
 

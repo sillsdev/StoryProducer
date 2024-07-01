@@ -15,9 +15,9 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
+import org.sil.storyproducer.controller.SnackbarManager
 import org.sil.storyproducer.model.PHASE
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
@@ -31,25 +31,14 @@ import org.sil.storyproducer.model.Workspace.termToWordLinkMap
 class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
     private lateinit var recyclerView: RecyclerView
-    private var mSnackBar: Snackbar? = null
-
     private fun checkNoDatabaseMsg() {
         if (termToWordLinkMap.count() == 0) {
 
-            dismissNoDatabaseMsg()
-
-            mSnackBar = Snackbar.make(
-                findViewById(R.id.drawer_layout),
-                R.string.wordlinks_no_database_installed,
+            SnackbarManager.show(findViewById(R.id.drawer_layout),
+                getString(R.string.wordlinks_no_database_installed),
                 60 * 1000   // display for 60 seconds
             )
-            mSnackBar!!.show()
         }
-    }
-
-    private fun dismissNoDatabaseMsg() {
-        if (mSnackBar != null)
-            mSnackBar!!.dismiss()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
