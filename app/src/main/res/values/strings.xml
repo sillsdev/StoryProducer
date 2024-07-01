@@ -458,7 +458,7 @@
     <string name="help_welcome_body2">
         <![CDATA[• You can drag Popup Help out of the way whenever you wish.
 <br/>• Tap the <b>X</b> to hide Popup Help anytime.
-<br/>• Tap the blue help <b>(?)</b> button in the upper right to Resume displaying Popup Help.]]>
+<br/>• Tap the blue help <b>[?]</b> button in the upper right to Resume displaying Popup Help.]]>
     </string>
     <string name="help_main_screen_title"></string>
     <string name="help_main_screen_body">
@@ -491,11 +491,11 @@
     </string>
     <string name="help_learn_practice_title">Practice</string>
     <string name="help_learn_practice_body">
-        <![CDATA[Practice retelling the story in your local language several times. When you are ready, tap the microphone button and record it.]]>
+        <![CDATA[Practice retelling the story in your local language several times. When you are ready, tap the microphone button and record it.<br/>(Then tap the square to stop recording.)]]>
     </string>
     <string name="help_learn_listen2_title">Listen</string>
     <string name="help_learn_listen2_body">
-        <![CDATA[A playback button will appear here.<br/>Play it back to listen to your story.<br/>If you want, you may record it again.]]>
+        <![CDATA[A triangle "Play" button appears here. Tap it to listen to your story.<br/>If you want, you may record it again.]]>
     </string>
     <string name="help_learn_next_phase_title">Phases</string>
     <string name="help_learn_next_phase_body">
@@ -504,31 +504,39 @@
 
     <string name="help_translate_phase_title">Translate + Revise Phase</string>
     <string name="help_translate_phase_body">
-        <![CDATA[In this phase, your task is to translate each slide.]]>
+        <![CDATA[In this phase, your task is to translate each slide into your local language.]]>
     </string>
-    <string name="help_translate_title_title">Title Slide</string>
-    <string name="help_translate_title_body">
-        <![CDATA[Consider the title ideas below. Then tap the pencil to enter your translated title.]]>
+    <string name="help_translate_titleslide_title">Title Slide</string>
+    <string name="help_translate_titleslide_body">
+        <![CDATA[This first slide is the Title Slide. This label identifies the Title Slide.]]>
     </string>
-    <string name="help_translate_record_title">Record Your Translation</string>
+    <string name="help_translate_enter_title">Enter a Title</string>
+    <string name="help_translate_enter_body">
+        <![CDATA[Consider the title ideas below. Then tap the pencil to enter text for your translated title in your language.]]>
+    </string>
+    <string name="help_translate_record_title">Record the Title</string>
     <string name="help_translate_record_body">
-        <![CDATA[Tap the microphone to start recording audio of the translated title.]]>
+        <![CDATA[Tap the microphone to start recording audio for the translated title.<br/>(Then tap the square to stop recording.)]]>
     </string>
     <string name="help_translate_swipe_left_title">Swipe Left</string>
     <string name="help_translate_swipe_left_body">
         <![CDATA[When you are done on this Title slide, swipe left to go to the first slide of the story.<br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
     </string>
-    <string name="help_translate_play_title">Story Slide</string>
-    <string name="help_translate_play_body">
+    <string name="help_translate_storyslide_title">Story Slide</string>
+    <string name="help_translate_storyslide_body">
+    <![CDATA[This is a story slide. This label identifies the slide number.]]>
+    </string>
+    <string name="help_translate_listen_title">Listen</string>
+    <string name="help_translate_listen_body">
         <![CDATA[Listen to the audio for this slide carefully and think about how you could translate it accurately into your language.]]>
     </string>
     <string name="help_translate_record_slide_title">Record Your Translation</string>
     <string name="help_translate_record_slide_body">
         <![CDATA[Tap the microphone to start recording your translation.]]>
     </string>
-    <string name="help_translate_listen_title">Listen</string>
-    <string name="help_translate_listen_body">
-        <![CDATA[Play it back to listen to your translation.<br/>If you want, you may record it again.]]>
+    <string name="help_translate_review_title">Review</string>
+    <string name="help_translate_review_body">
+        <![CDATA[A triangle "Play" button appears here. Tap it to listen to your translation.<br/>If you want, you may record it again.]]>
     </string>
     <string name="help_translate_swipe_left2_title">Swipe Left</string>
     <string name="help_translate_swipe_left2_body">
@@ -538,9 +546,13 @@
     <string name="help_translate_song_slide_body">
         <![CDATA[Now that you have finished translating the story slides, you have the option to create a song to summarize the message of the story.]]>
     </string>
+    <string name="help_translate_songlabel_title">Story Slide</string>
+    <string name="help_translate_songlabel_body">
+    <![CDATA[This label identifies the song slide.]]>
+    </string>
     <string name="help_translate_record_song_title">Record Your Song</string>
     <string name="help_translate_record_song_body">
-        <![CDATA[Tap the microphone.]]>
+        <![CDATA[Tap the microphone to record.]]>
     </string>
     <string name="help_translate_song_title_title">Song Title</string>
     <string name="help_translate_song_title_body">
@@ -552,7 +564,7 @@
     </string>
     <string name="help_translate_navigation_title">Navigation</string>
     <string name="help_translate_navigation_body">
-        <![CDATA[When you are done, swipe left to go to the Title Slide &lt;&lt;&lt;&lt;&lt;&lt;,<br/><br/>Swipe up or tap here to go to the next phase, Community Work]]>
+        <![CDATA[When you are done, swipe left to go to the Title Slide &lt;&lt;&lt;&lt;&lt;&lt;<br/><br/>Swipe up or tap here to go to the next phase, Community Work]]>
     </string>
 
     <string name="help_community_phase_title">Community Work Phase</string>
@@ -624,19 +636,25 @@
     </string>
     <string name="help_finalize_credits_title">Credits</string>
     <string name="help_finalize_credits_body">
-        <![CDATA[This allows you to give appropriate credit to all who participated.]]>
+        <![CDATA[You must enter appropriate credit for all who participated.]]>
     </string>
     <string name="help_finalize_filename_title">Filename</string>
     <string name="help_finalize_filename_body">
-        <![CDATA[Type a short story name.]]>
+        <![CDATA[Type a short story name in your language, for use in the video filename.]]>
     </string>
+    <string name="help_finalize_options_title">Video Options</string>
+    <string name="help_finalize_options_body">
+        <![CDATA[We recommend the default options (Fx), (Px), and (Mv) for your first video.]]>
+    </string>
+    <!--
     <string name="help_finalize_song_title">Local Song</string>
     <string name="help_finalize_song_body">
         <![CDATA[If you have created a local song and you want it to play at the end of the story video, tick this option.]]>
     </string>
+    -->
     <string name="help_finalize_video_title">Create Video</string>
     <string name="help_finalize_video_body">
-        <![CDATA[Tap here, and wait on this screen until the video is created.]]>
+        <![CDATA[Tap here to create a video with the options selected.]]>
     </string>
 
     <string name="help_share_phase_title">Share Phase</string>

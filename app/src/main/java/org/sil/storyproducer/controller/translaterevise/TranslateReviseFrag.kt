@@ -11,7 +11,8 @@ import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.Workspace
 
 /**
- * The fragment for the Draft view. This is where a user can draft out the story slide by slide
+ * The fragment for the Translate + Revise phase.
+ * This is where a user can translate the story slide by slide
  */
 class TranslateReviseFrag : MultiRecordFrag() {
     
@@ -33,15 +34,19 @@ class TranslateReviseFrag : MultiRecordFrag() {
             mPopupHelpUtils = PopupHelpUtils(this, slideNumber)
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.toolbar,
-                50, 75,
+                50, 90,
                 R.string.help_translate_phase_title, R.string.help_translate_phase_body)
             mPopupHelpUtils?.addPopupHelpItem(
-                R.id.edit_text_view,
-                50, 50,
-                R.string.help_translate_title_title, R.string.help_translate_title_body)
+                R.id.seek_bar,
+                88, 70,
+                R.string.help_translate_titleslide_title, R.string.help_translate_titleslide_body)
+            mPopupHelpUtils?.addPopupHelpItem(
+                    R.id.edit_text_view,
+                    20, 90,
+                    R.string.help_translate_enter_title, R.string.help_translate_enter_body)
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.start_recording_button,
-                50, 50,
+                80, 10 ,
                 R.string.help_translate_record_title, R.string.help_translate_record_body)
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.phase_frame,
@@ -50,17 +55,21 @@ class TranslateReviseFrag : MultiRecordFrag() {
         } else if (Workspace.activeStory.slides[slideNumber].isNumberedPage()) {
             mPopupHelpUtils = PopupHelpUtils(this, 1)   // always use slide 1
             mPopupHelpUtils?.addPopupHelpItem(
+                    R.id.seek_bar,
+                    84, 70,
+                    R.string.help_translate_storyslide_title, R.string.help_translate_storyslide_body)
+            mPopupHelpUtils?.addPopupHelpItem(
                 R.id.fragment_reference_audio_button,
-                50, 50,
-                R.string.help_translate_play_title, R.string.help_translate_play_body)
+                80, 90,
+                R.string.help_translate_listen_title, R.string.help_translate_listen_body)
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.start_recording_button,
-                50, 50,
+                80, 10,
                 R.string.help_translate_record_slide_title, R.string.help_translate_record_slide_body)
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.play_recording_button,
-                50, 50,
-                R.string.help_translate_listen_title, R.string.help_translate_listen_body)
+                50, 10,
+                R.string.help_translate_review_title, R.string.help_translate_review_body)
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.phase_frame,
                 98, 50,
@@ -73,20 +82,24 @@ class TranslateReviseFrag : MultiRecordFrag() {
                 -1, -1,
                 R.string.help_translate_song_slide_title, R.string.help_translate_song_slide_body)
             mPopupHelpUtils?.addPopupHelpItem(
+                    R.id.seek_bar,
+                    84, 70,
+                    R.string.help_translate_song_slide_title, R.string.help_translate_songlabel_body)
+            mPopupHelpUtils?.addPopupHelpItem(
                 R.id.start_recording_button,
-                50, 50,
+                80, 10,
                 R.string.help_translate_record_song_title, R.string.help_translate_record_song_body)
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.edit_text_view,
-                50, 50,
+                20, 90,
                 R.string.help_translate_song_title_title, R.string.help_translate_song_title_body)
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.insert_image_view,
-                50, 50,
+                80, 90,
                 R.string.help_translate_song_camera_title, R.string.help_translate_song_camera_body)
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.toolbar,
-                50, 75,
+                50, 90,
                 R.string.help_translate_navigation_title, R.string.help_translate_navigation_body)
         }
 
