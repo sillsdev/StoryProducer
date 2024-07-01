@@ -458,7 +458,7 @@
     <string name="help_welcome_body2">
         <![CDATA[• You can drag Popup Help out of the way whenever you wish.
 <br/>• Tap the <b>X</b> to hide Popup Help anytime.
-<br/>• Tap the blue help <b>(?)</b> button in the upper right to Resume displaying Popup Help.]]>
+<br/>• Tap the blue help <b>[?]</b> button in the upper right to Resume displaying Popup Help.]]>
     </string>
     <string name="help_main_screen_title"></string>
     <string name="help_main_screen_body">
@@ -667,7 +667,7 @@
     <string name="help_menu_detailed">Show detailed help for this page</string>
     <string name="help_menu_popup_restart">Restart Popup Help</string>
     <string name="help_menu_popup_resume">Resume Popup Help</string>
-    <string name="help_dismiss_message">Tap the blue help <b>(?)</b> button in the toolbar to Resume Popup Help.</string>
+    <string name="help_dismiss_message">Tap the blue help <b>[?]</b> button in the toolbar to Resume Popup Help.</string>
     <string name="help_no_more_message">No more popup help for this section.</string>
 
 </resources>

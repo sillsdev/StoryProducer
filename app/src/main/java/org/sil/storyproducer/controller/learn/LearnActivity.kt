@@ -11,6 +11,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.PopupHelpUtils
+import org.sil.storyproducer.controller.SnackbarManager
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.SlideType
@@ -341,10 +342,10 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         playButton!!.setImageResource(R.drawable.ic_pause_white_48dp)
         val scriptureTextView = findViewById<TextView>(R.id.fragment_scripture_text)
         if (narrationPlayer.isDummyAudio) { // if this slide has dummy audio show missing audio message
-            Snackbar.make(findViewById(R.id.activity_learn),
+            SnackbarManager.show(findViewById(R.id.activity_learn),
                     getString(R.string.translate_revise_playback_no_lwc_audio, Workspace.activeStory.langCode),
                                 AudioPlayer.dummyDurationInMilliseconds.toInt() - 600)
-                    .setAction("Action", null).show()
+                    ?.setAction("Action", null)?.show()
             scriptureTextView.visibility = View.VISIBLE
             setScriptureText(scriptureTextView)
         } else {
@@ -372,6 +373,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
             snackBarView.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.lightWhite, null))
             val textView = snackBarView.findViewById<TextView>(R.id.snackbar_text)
             textView.setTextColor(ResourcesCompat.getColor(resources, R.color.darkGray, null))
+            SnackbarManager.saveNewSnackbar(snackbar)   // dismiss any existing snackbar and remember this one
             snackbar.show()
         }
         isWatchedOnce = true
