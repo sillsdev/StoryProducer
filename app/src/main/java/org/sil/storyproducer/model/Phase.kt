@@ -54,7 +54,7 @@ class Phase (val phaseType: PhaseType) {
             PhaseType.ACCURACY_CHECK   -> R.drawable.ic_school_white_48dp
             PhaseType.VOICE_STUDIO     -> R.drawable.ic_mic_box_48dp
             PhaseType.FINALIZE         -> R.drawable.ic_video_call_white_48dp
-            PhaseType.SHARE            -> R.drawable.ic_share_icon_v2_white
+            PhaseType.SHARE            -> R.drawable.ic_share_white_24dp
             else -> R.drawable.ic_mic_white_48dp
         }
     }
