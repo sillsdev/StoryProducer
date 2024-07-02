@@ -160,23 +160,27 @@ class FinalizeActivity : PhaseBaseActivity() {
 
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,
-            50, 75,
+            50, 90,
             R.string.help_finalize_phase_title, R.string.help_finalize_phase_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.button_local_credits,
-            50, 50,
+            50, 100,
             R.string.help_finalize_credits_title, R.string.help_finalize_credits_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.editText_export_title,
-            5, 50,
+            40, 80,
             R.string.help_finalize_filename_title, R.string.help_finalize_filename_body)
         mPopupHelpUtils?.addPopupHelpItem(
-            R.id.checkbox_export_song,
-            5, 50,
-            R.string.help_finalize_song_title, R.string.help_finalize_song_body)
+            R.id.button_export_start,
+            -1, -1,
+            R.string.help_finalize_options_title, R.string.help_finalize_options_body)
+//        mPopupHelpUtils?.addPopupHelpItem(
+//                R.id.checkbox_export_song,
+//                5, 50,
+//                R.string.help_finalize_song_title, R.string.help_finalize_song_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.button_export_start,
-            50, 50,
+            50, 0,
             R.string.help_finalize_video_title, R.string.help_finalize_video_body)
 
         mPopupHelpUtils?.showNextPopupHelp()

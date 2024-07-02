@@ -155,15 +155,15 @@ class MainActivity : BaseActivity(), Serializable {
             R.string.help_main_screen_title, R.string.help_main_screen_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,
-            90, 50,
+            88, 80,
             R.string.help_main_help_title, R.string.help_main_help_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,
-            10, 50,
+            12, 80,
             R.string.help_main_menus_settings_title, R.string.help_main_menus_settings_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,
-            10, 80,
+            12, 80,
             R.string.help_main_downloads_title, R.string.help_main_downloads_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.story_list_view,

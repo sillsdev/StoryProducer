@@ -201,27 +201,35 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
 
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,
-            50, 75,
+            50, 90,
             R.string.help_share_phase_title, R.string.help_share_phase_body)
         mPopupHelpUtils?.addPopupHelpItem(
+                R.id.videos_list,
+                -1,-1,
+                R.string.help_share_list_title, R.string.help_share_list_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+                R.id.videos_list,
+                65, 10,
+                R.string.help_share_codes_title, R.string.help_share_codes_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+                R.id.videos_list,
+                85, 24,
+                R.string.help_share_ext_title, R.string.help_share_ext_body)
+        mPopupHelpUtils?.addPopupHelpItem(
             R.id.videos_list,
-            5, 5,
+            5, 10,
             R.string.help_share_play_video_title, R.string.help_share_play_video_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.videos_list,
-            15, 5,
+            15, 10,
             R.string.help_share_share_video_title, R.string.help_share_share_video_body)
         mPopupHelpUtils?.addPopupHelpItem(
-            R.id.videos_list,
-            75, 5,
-            R.string.help_share_name_video_title, R.string.help_share_name_video_body)
-        mPopupHelpUtils?.addPopupHelpItem(
-            R.id.videos_list,
-            90, 5,
-            R.string.help_share_ext_video_title, R.string.help_share_ext_video_body)
+                R.id.toolbar,
+                -1, -1,
+                R.string.help_share_more_title, R.string.help_share_more_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,
-            10, 50,
+            12, 80,
             R.string.help_share_story_list_title, R.string.help_share_story_list_body)
 
         mPopupHelpUtils?.showNextPopupHelp()

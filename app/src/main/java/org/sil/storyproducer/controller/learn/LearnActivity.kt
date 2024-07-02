@@ -147,11 +147,11 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
 
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,
-            50, 75,
+            50, 90,
             R.string.help_learn_phase_title, R.string.help_learn_phase_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.fragment_reference_audio_button,
-            50, 50,
+            80, 30,
             R.string.help_learn_listen_title, R.string.help_learn_listen_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.start_recording_button,
@@ -163,7 +163,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
             R.string.help_learn_listen2_title, R.string.help_learn_listen2_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,
-            50, 75,
+            50, 90,
             R.string.help_learn_next_phase_title, R.string.help_learn_next_phase_body)
 
         mPopupHelpUtils?.showNextPopupHelp()
