@@ -661,21 +661,29 @@
     <string name="help_share_phase_body">
         <![CDATA[In this last phase, your task is to share your video with others.]]>
     </string>
+    <string name="help_share_list_title">Videos Created</string>
+    <string name="help_share_list_body">
+        <![CDATA[This screen shows a list of the video files you have created.]]>
+    </string>
+    <string name="help_share_codes_title">Naming Codes</string>
+    <string name="help_share_codes_body">
+        <![CDATA[The codes, Fx, Sg, Px, Mv, Tx in the filename represent the options you chose in the Finalize phase.]]>
+    </string>
+    <string name="help_share_ext_title">.mp4 or .3gp?</string>
+    <string name="help_share_ext_body">
+        <![CDATA[3gp is a low quality video for sharing with feature phones.<br/>Use the mp4 file for smartphones and other devices.]]>
+    </string>
     <string name="help_share_play_video_title">Play Video</string>
     <string name="help_share_play_video_body">
         <![CDATA[Watch your video to check it before you share it.]]>
     </string>
-    <string name="help_share_share_video_title"></string>
+    <string name="help_share_share_video_title">Share Video</string>
     <string name="help_share_share_video_body">
-        <![CDATA[Share your video.]]>
+        <![CDATA[Tap the Share icon and choose a sharing method.]]>
     </string>
-    <string name="help_share_name_video_title">Naming Code</string>
-    <string name="help_share_name_video_body">
-        <![CDATA[These letters represent all the options you chose in the Finalize phase.]]>
-    </string>
-    <string name="help_share_ext_video_title">.mp4 or .3gp?</string>
-    <string name="help_share_ext_video_body">
-        <![CDATA[3gp is the low quality video for sharing with feature phones.]]>
+    <string name="help_share_more_title"></string>
+    <string name="help_share_more_body">
+        <![CDATA[Do you want to create additional video files with different options? Go back to the Finalize phase and create them.]]>
     </string>
     <string name="help_share_story_list_title">Story List</string>
     <string name="help_share_story_list_body">
