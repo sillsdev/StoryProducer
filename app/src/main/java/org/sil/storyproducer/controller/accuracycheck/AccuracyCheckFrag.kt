@@ -255,7 +255,7 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
      * TODO: moving back to first slide is currently broken
      */
     private fun launchDramatizationPhase() {
-        Toast.makeText(context, "Congrats!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, R.string.voice_studio_move_time, Toast.LENGTH_LONG).show()
         //Move to voicestudio, slide 0.
         Workspace.activeSlideNum = 0
         (activity as PhaseBaseActivity).jumpToPhase(Phase(PhaseType.VOICE_STUDIO))

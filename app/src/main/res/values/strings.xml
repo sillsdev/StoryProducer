@@ -438,6 +438,7 @@
     <string name="slide_type_title">Title</string>
     <string name="slide_type_song">Song ♫</string>
     <string name="slide_type_number">Slide</string>
+    <string name="voice_studio_move_time">Now it’s time to record the final audio in the Voice Studio phase.</string>
 
     <!-- Strings from Bloom Library Reader Web Download pages  -->
     <string name="read_now">Read Now</string>
