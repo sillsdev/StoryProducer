@@ -360,20 +360,20 @@
     <string name="overwrite">Overwrite</string>
     <string name="title_activity_bldownload">Download Bible Story Templates</string>
     <string name="action_settings">Settings</string>
-    <string name="bloom_lib_download_started">Bloom Library: download started\nStay on this page for automatic install</string>
-    <string name="bloom_lib_already_installed">Bloom Library: already installed</string>
+    <string name="bloom_lib_download_started">Download started\nStay on this page for automatic install</string>
+    <string name="bloom_lib_already_installed">Already installed</string>
 
     <!-- Toast Messages -->
-    <string name="bloom_lib_download_complete">Bloom Library: download complete</string>
-    <string name="bloom_lib_already_downloaded">Bloom Library: already downloaded</string>
-    <string name="bloom_lib_nothing_selected">Bloom Library: nothing selected</string>
+    <string name="bloom_lib_download_complete">Download complete</string>
+    <string name="bloom_lib_already_downloaded">Already downloaded</string>
+    <string name="bloom_lib_nothing_selected">Nothing selected</string>
     <string name="workspace_not_mounted">Workspace not accessible, mount the SD card?</string>
     <string name="workspace_internal">Workspace created in app internal storage</string>
     <string name="workspace_external">Workspace created in app external storage</string>
     <string name="workspace_private">Workspace created in app private storage</string>
 
     <!-- Other Messages -->
-    <string name="bloom_lib_download">Bloom Library: download</string>
+    <string name="bloom_lib_download">Bible Story: download</string>
     <string name="bloom_lib_loading">Bloom Library loading...</string>
     <string name="bloom_lib_load_wait">please wait</string>
     <string name="bloom_lib_loading_failed">Bloom Library loading failed!</string>
