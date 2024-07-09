@@ -27,12 +27,17 @@ open class MultiRecordRecordingToolbar: PlayBackRecordingToolbar() {
         super.showInheritedToolbarButtons()
 
         multiRecordButton.visibility = View.VISIBLE
+        multiRecordButton.alpha = 1.0f
+        multiRecordButton.isEnabled = true
     }
 
-    override fun hideInheritedToolbarButtons() {
-        super.hideInheritedToolbarButtons()
+    override fun hideInheritedToolbarButtons(animated: Boolean) {
+        super.hideInheritedToolbarButtons(animated)
 
-        multiRecordButton.visibility = View.INVISIBLE
+        if (animated)
+            multiRecordButton.visibility = View.INVISIBLE   // hide when record flashing
+        multiRecordButton.alpha = 0.5f
+        multiRecordButton.isEnabled = false
     }
 
     override fun setToolbarButtonOnClickListeners() {

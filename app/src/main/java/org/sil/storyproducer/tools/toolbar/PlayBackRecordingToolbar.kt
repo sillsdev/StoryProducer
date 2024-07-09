@@ -114,7 +114,7 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
             showInheritedToolbarButtons()
         }
         else{
-            hideInheritedToolbarButtons()
+            hideInheritedToolbarButtons(false)
         }
     }
 
@@ -122,16 +122,28 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
         super.showInheritedToolbarButtons()
 
         playButton.visibility = View.VISIBLE
-        if (editButton != null)
+        playButton.alpha = 1.0f
+        playButton.isEnabled = true
+        if (editButton != null) {
             editButton?.visibility = View.VISIBLE
+            editButton?.alpha = 1.0f
+            editButton?.isEnabled = true
+        }
     }
 
-    override fun hideInheritedToolbarButtons() {
-        super.hideInheritedToolbarButtons()
+    override fun hideInheritedToolbarButtons(animated: Boolean) {
+        super.hideInheritedToolbarButtons(animated)
 
-        playButton.visibility = View.INVISIBLE
-        if (editButton != null)
-            editButton?.visibility = View.INVISIBLE
+        if (animated)
+            playButton.visibility = View.INVISIBLE  // hide when record flashing
+        playButton.alpha = 0.5f
+        playButton.isEnabled = false
+        if (editButton != null) {
+            if (animated)
+                editButton?.visibility = View.INVISIBLE // hide when record flashing
+            editButton?.alpha = 0.5f
+            editButton?.isEnabled = false
+        }
     }
 
     override fun setToolbarButtonOnClickListeners() {
