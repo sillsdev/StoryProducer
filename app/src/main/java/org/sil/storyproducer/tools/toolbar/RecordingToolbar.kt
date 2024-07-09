@@ -160,7 +160,7 @@ open class RecordingToolbar : Fragment() {
 
         micButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
         micButton.contentDescription = getString(R.string.rec_toolbar_stop_button)
-        hideInheritedToolbarButtons()
+        hideInheritedToolbarButtons(true)
 
         toolbarMediaListener.onStartedToolbarRecording()
 
@@ -228,7 +228,7 @@ open class RecordingToolbar : Fragment() {
 
     protected open fun showInheritedToolbarButtons(){}
 
-    protected open fun hideInheritedToolbarButtons(){}
+    protected open fun hideInheritedToolbarButtons(animated: Boolean){}
 
     /**
      * Enables the buttons to have the appropriate onClick listeners.

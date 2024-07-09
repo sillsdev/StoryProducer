@@ -2,8 +2,8 @@ package org.sil.storyproducer.controller.voicestudio
 
 import android.view.View
 import android.widget.ImageButton
-import org.sil.storyproducer.R
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.assignNewAudioRelPath
 import org.sil.storyproducer.tools.file.getChosenFilename
 import org.sil.storyproducer.tools.file.getTempAppendAudioRelPath
@@ -55,7 +55,9 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
         super.updateInheritedToolbarButtonVisibility()
 
         if(!isAppendingOn){
-            checkButton.visibility = View.INVISIBLE
+//            checkButton.visibility = View.INVISIBLE
+            checkButton.alpha = 0.5f
+            checkButton.isEnabled = false
         }
     }
 
@@ -63,14 +65,22 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
         super.showInheritedToolbarButtons()
 
         checkButton.visibility = View.VISIBLE
+        checkButton.alpha = 1.0f
+        checkButton.isEnabled = true
         sendAudioButton.visibility = View.VISIBLE
+        sendAudioButton.alpha = 1.0f
+        sendAudioButton.isEnabled = true
     }
 
-    override fun hideInheritedToolbarButtons() {
-        super.hideInheritedToolbarButtons()
+    override fun hideInheritedToolbarButtons(animated: Boolean) {
+        super.hideInheritedToolbarButtons(animated)
 
-        checkButton.visibility = View.INVISIBLE
-        sendAudioButton.visibility = View.INVISIBLE
+//        checkButton.visibility = View.INVISIBLE
+        checkButton.alpha = 0.5f
+        checkButton.isEnabled = false
+//        sendAudioButton.visibility = View.INVISIBLE
+        sendAudioButton.alpha = 0.5f
+        sendAudioButton.isEnabled = false
     }
 
     override fun setToolbarButtonOnClickListeners() {
@@ -109,6 +119,8 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
                 micButton.setBackgroundResource(R.drawable.ic_pause_white_48dp)
                 micButton.contentDescription = getString(R.string.rec_toolbar_pause_recording_button)
                 checkButton.visibility = View.VISIBLE
+                checkButton.alpha = 1.0f
+                checkButton.isEnabled = true
             }
         }
     }
@@ -131,8 +143,12 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
             micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
             micButton.contentDescription = getString(R.string.rec_toolbar_start_recording_button)
 
-            checkButton.visibility = View.INVISIBLE
+//            checkButton.visibility = View.INVISIBLE
+            checkButton.alpha = 0.5f
+            checkButton.isEnabled = false
             sendAudioButton.visibility = View.VISIBLE
+            sendAudioButton.alpha = 1.0f
+            sendAudioButton.isEnabled = true
         }
     }
 
