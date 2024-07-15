@@ -253,7 +253,7 @@ class PopupHelpUtils(private val parent: Any,
                         SnackbarManager.show(
                             view2,
                             context!!.getString(R.string.help_dismiss_message),
-                            6 * 1000,   // display for 6 seconds
+                            4 * 1000,   // display for 4 seconds
                             3
                         )
 

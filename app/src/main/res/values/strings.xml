@@ -453,29 +453,38 @@
 
     <!-- Strings for Help Popup views: titles and body  -->
     <string name="help_welcome_body">
-    <![CDATA[This blue Popup Help can be used as a quick tour of the current page, or as step-by-step guidance.<br/>Tap <b>Next</b> to begin.]]>
+    <![CDATA[This blue Popup Help gives you step-by-step guidance for the current page.<br/>Tap <b>Next</b> to begin.]]>
     </string>
     <string name="help_welcome_title2">How to Use Popup Help</string>
     <string name="help_welcome_body2">
-        <![CDATA[• You can drag Popup Help out of the way whenever you wish.
-<br/>• Tap the <b>X</b> to hide Popup Help anytime.
-<br/>• Tap the blue help <b>[?]</b> button in the upper right to Resume displaying Popup Help.]]>
+        <![CDATA[• You can drag Popup Help out of the way whenever you wish.<br/>• Try it now.]]>
     </string>
-    <string name="help_main_screen_title"></string>
+    <string name="help_main_help_title">Help</string>
+    <string name="help_main_help_body">
+        <![CDATA[You can tap on the blue <b>[?]</b> button anytime to get help for the current screen.
+<br/>Right now, tap Next...]]>
+    </string>
+    <string name="help_welcome_body3">
+        <![CDATA[• You can tap the <b>X</b> to hide Popup Help anytime.
+<br/>• Tap the blue help <b>[?]</b> button in the upper right to Resume displaying Popup Help.
+<br/>• Try them now.]]>
+    </string>
+    <string name="help_main_guidance_title">Guidance</string>
+    <string name="help_main_guidance_body">
+        <![CDATA[It’s important to keep Popup Help displayed, and follow its guidance step by step, until you’ve learned how to use each phase of Story Producer.]]>
+    </string>
+    <string name="help_main_screen_title">Story List</string>
     <string name="help_main_screen_body">
         <![CDATA[This main screen shows a list of the stories currently installed.]]>
-    </string>
-    <string name="help_main_help_title"></string>
-    <string name="help_main_help_body">
-        <![CDATA[Tap on the Help button anytime to get help for the current screen.]]>
     </string>
     <string name="help_main_menus_settings_title"></string>
     <string name="help_main_menus_settings_body">
         <![CDATA[Menu and Settings are available here.]]>
     </string>
-    <string name="help_main_downloads_title"></string>
+    <string name="help_main_downloads_title">Download Stories</string>
     <string name="help_main_downloads_body">
-        <![CDATA[You can download more stories using the menu.]]>
+        <![CDATA[When you are ready for more stories, you can download them using the menu.
+        <br/>For now, the \'Demo\' story is great for learning Story Producer. Tap Next…]]>
     </string>
     <string name="help_main_story_title"></string>
     <string name="help_main_story_body">
@@ -488,19 +497,21 @@
     </string>
     <string name="help_learn_listen_title">Listen</string>
     <string name="help_learn_listen_body">
-        <![CDATA[Play the story several times until you learn the story well enough to retell it.]]>
+        <![CDATA[Play the story several times until you learn the story well enough to retell it.
+        <br/>Go ahead, do it now.]]>
     </string>
     <string name="help_learn_practice_title">Practice</string>
     <string name="help_learn_practice_body">
-        <![CDATA[Practice retelling the story in your local language several times. When you are ready, tap the microphone button and record it.<br/>(Then tap the square to stop recording.)]]>
+        <![CDATA[Practice retelling the story in your local language several times. When you are ready, tap the microphone and start recording it.<br/>(Then tap the square to stop recording.)]]>
     </string>
     <string name="help_learn_listen2_title">Listen</string>
     <string name="help_learn_listen2_body">
-        <![CDATA[A triangle "Play" button appears here. Tap it to listen to your story.<br/>If you want, you may record it again.]]>
+        <![CDATA[Tap this button to play back your recorded story. Listen to it now.
+        <br/>If you want, you may record it again.]]>
     </string>
-    <string name="help_learn_next_phase_title">Phases</string>
+    <string name="help_learn_next_phase_title">Next Phase</string>
     <string name="help_learn_next_phase_body">
-        <![CDATA[When you finish the Learn Phase, tap here or swipe up to go to the next phase, Translate + Revise.]]>
+        <![CDATA[When you finish the Learn Phase, tap here to go to the next phase, Translate + Revise.]]>
     </string>
 
     <string name="help_translate_phase_title">Translate + Revise Phase</string>
@@ -509,19 +520,29 @@
     </string>
     <string name="help_translate_titleslide_title">Title Slide</string>
     <string name="help_translate_titleslide_body">
-        <![CDATA[This first slide is the Title Slide. This label identifies the Title Slide.]]>
+        <![CDATA[Every story begins with a Title slide. This label identifies it.]]>
+    </string>
+    <string name="help_translate_skiptitle_body">
+        <![CDATA[Initially we’re going to skip the Title Slide, and we’ll come back to it later.
+        <br/>If this is your first time in Translate + Revise, <b>swipe left now</b> which will move us to Story Slide 1.<br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
+    </string>
+    <string name="help_translate_resumetitle_title"></string>
+    <string name="help_translate_resumetitle_body">
+        <![CDATA[If you have translated the Story Slides, let\'s complete the Title slide now. Tap Next...]]>
     </string>
     <string name="help_translate_enter_title">Enter a Title</string>
     <string name="help_translate_enter_body">
-        <![CDATA[Consider the title ideas below. Then tap the pencil to enter text for your translated title in your language.]]>
+        <![CDATA[Consider the title ideas below and create a title for this story.
+        <br/>Tap the pencil to enter text for your story title in your language.]]>
     </string>
     <string name="help_translate_record_title">Record the Title</string>
     <string name="help_translate_record_body">
-        <![CDATA[Tap the microphone to start recording audio for the translated title.<br/>(Then tap the square to stop recording.)]]>
+        <![CDATA[Now tap the microphone to record audio for the title.<br/>(Then tap the square to stop recording.)]]>
     </string>
-    <string name="help_translate_swipe_left_title">Swipe Left</string>
-    <string name="help_translate_swipe_left_body">
-        <![CDATA[When you are done on this Title slide, swipe left to go to the first slide of the story.<br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
+    <string name="help_translate_nextphase_title">Next Phase</string>
+    <string name="help_translate_nextphase_body">
+        <![CDATA[When you are done on this Title slide and all the slides,
+        <br/>tap here (or swipe up) to go to the next phase, Community Work.]]>
     </string>
     <string name="help_translate_storyslide_title">Story Slide</string>
     <string name="help_translate_storyslide_body">
@@ -529,19 +550,25 @@
     </string>
     <string name="help_translate_listen_title">Listen</string>
     <string name="help_translate_listen_body">
-        <![CDATA[Listen to the audio for this slide carefully and think about how you could translate it accurately into your language.]]>
+        <![CDATA[Listen to the audio for this slide carefully and think about how you could translate it accurately into your language.
+        <br/>Listen to it now.]]>
     </string>
     <string name="help_translate_record_slide_title">Record Your Translation</string>
     <string name="help_translate_record_slide_body">
-        <![CDATA[Tap the microphone to start recording your translation.]]>
+        <![CDATA[When you are ready, tap the microphone and start recording your translation.<br/>(Then tap the square to stop recording.)]]>
     </string>
     <string name="help_translate_review_title">Review</string>
     <string name="help_translate_review_body">
-        <![CDATA[A triangle "Play" button appears here. Tap it to listen to your translation.<br/>If you want, you may record it again.]]>
+        <![CDATA[Tap this button to play back your recorded translation. Listen to it now.
+        <br/>If you want, you may record it again.]]>
     </string>
-    <string name="help_translate_swipe_left2_title">Swipe Left</string>
-    <string name="help_translate_swipe_left2_body">
-        <![CDATA[When you are done recording this slide, swipe left to go to the next slide and continue the translation process.<br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
+    <string name="help_translate_list_title">Recordings List</string>
+    <string name="help_translate_list_body">
+        <![CDATA[If you make multiple recordings, you can tap the List Play button to review them and select the best one.]]>
+    </string>
+    <string name="help_translate_nextslide_title">Swipe Left</string>
+    <string name="help_translate_nextslide_body">
+        <![CDATA[When you are done recording this slide, <b>swipe left</b> to move to the next slide, and continue the translation process.<br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
     </string>
     <string name="help_translate_song_slide_title">Song Slide</string>
     <string name="help_translate_song_slide_body">
@@ -553,28 +580,31 @@
     </string>
     <string name="help_translate_record_song_title">Record Your Song</string>
     <string name="help_translate_record_song_body">
-        <![CDATA[Tap the microphone to record.]]>
+        <![CDATA[Tap the microphone to record. For now, just try a few notes.]]>
     </string>
     <string name="help_translate_song_title_title">Song Title</string>
     <string name="help_translate_song_title_body">
-        <![CDATA[Tap here to enter a song title.]]>
+        <![CDATA[Tap the pencil to enter a song title.]]>
     </string>
     <string name="help_translate_song_camera_title">Camera</string>
     <string name="help_translate_song_camera_body">
         <![CDATA[Or you could add a photo of the singers or of something in your village.]]>
     </string>
-    <string name="help_translate_navigation_title">Navigation</string>
-    <string name="help_translate_navigation_body">
-        <![CDATA[When you are done, swipe left to go to the Title Slide &lt;&lt;&lt;&lt;&lt;&lt;<br/><br/>Swipe up or tap here to go to the next phase, Community Work]]>
+    <string name="help_translate_navigatesongdone_title">Navigating Slides</string>
+    <string name="help_translate_navigatesongdone_body">
+        <![CDATA[Note that you can <b>swipe left or right</b> at any time to move to a slide you want to work on next.
+        <br/>When you are done on this Song slide, swipe left (or right several times) and <b>move to the Title slide</b>.
+        <br/>&lt;&lt;&lt;&lt;&lt;&lt; &gt;&gt;&gt;&gt;&gt;&gt;]]>
     </string>
-
     <string name="help_community_phase_title">Community Work Phase</string>
     <string name="help_community_phase_body">
         <![CDATA[In this phase, your task is to gather community feedback on your translation.]]>
     </string>
     <string name="help_community_swipe_title"></string>
     <string name="help_community_swipe_body">
-        <![CDATA[If needed, swipe left or right to begin on the title slide.<br/>&lt;&lt;&lt;&lt;&lt;&lt; &gt;&gt;&gt;&gt;&gt;&gt;]]>
+        <![CDATA[We need to begin on the Title slide. If a different slide is showing,
+        swipe now left or right until the Title slide is showing.
+        <br/>&lt;&lt;&lt;&lt;&lt;&lt; &gt;&gt;&gt;&gt;&gt;&gt;]]>
     </string>
     <string name="help_community_play_title">Play Audio</string>
     <string name="help_community_play_body">
