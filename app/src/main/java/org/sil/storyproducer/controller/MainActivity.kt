@@ -148,13 +148,21 @@ class MainActivity : BaseActivity(), Serializable {
             -1, -1,
             R.string.help_welcome_title2, R.string.help_welcome_body2)
         mPopupHelpUtils?.addPopupHelpItem(
+                R.id.toolbar,
+                88, 80,
+                R.string.help_main_help_title, R.string.help_main_help_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+                R.id.activity_main,
+                -1, -1,
+                R.string.help_welcome_title2, R.string.help_welcome_body3)
+        mPopupHelpUtils?.addPopupHelpItem(
+                R.id.activity_main,
+                -1, -1,
+                R.string.help_main_guidance_title, R.string.help_main_guidance_body)
+        mPopupHelpUtils?.addPopupHelpItem(
             R.id.story_list_view,
             50, storyListViewPercent,
             R.string.help_main_screen_title, R.string.help_main_screen_body)
-        mPopupHelpUtils?.addPopupHelpItem(
-            R.id.toolbar,
-            88, 80,
-            R.string.help_main_help_title, R.string.help_main_help_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,
             12, 80,
