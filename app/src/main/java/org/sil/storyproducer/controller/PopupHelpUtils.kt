@@ -18,6 +18,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
@@ -238,7 +239,8 @@ class PopupHelpUtils(private val parent: Any,
                             (view2.height.toFloat()*popupItem.percentY/100).toInt()),
                         popupItem.titleResId,
                         popupItem.bodyResId,
-                        currentHelpIndex == popupItems.size-1   // show ok button for last message
+                        currentHelpIndex == popupItems.size-1,   // show ok button for last message
+                        currentHelpIndex == 0 && getDerivedClassName(parent) == "MainActivity"  // show logo for welcome help
                     )
                     val buttonClose: ImageButton =
                         helpPopupWindow!!.getContentView().findViewById(R.id.btnClose)
@@ -317,7 +319,7 @@ class PopupHelpUtils(private val parent: Any,
     }
 
     // Function to create and show a round corner polygon-shaped popup
-    private fun showHelpPopup2(context: Context, parentView: View, arrowTarget: Point, titleResId: Int, bodyResId: Int, showOk: Boolean = false)
+    private fun showHelpPopup2(context: Context, parentView: View, arrowTarget: Point, titleResId: Int, bodyResId: Int, showOk: Boolean = false, showSPIcon: Boolean = false)
             : PopupWindow {
 
         // local hard-coded settings
@@ -369,6 +371,9 @@ class PopupHelpUtils(private val parent: Any,
         val inflater = LayoutInflater.from(context)
         val popupView = inflater.inflate(R.layout.balloon_message_x, null)
 
+        // Update the popup SP icon for visibility
+        val helpImageIcon = popupView.findViewById<ImageView>(R.id.helpImageIcon)
+        helpImageIcon.visibility = if (showSPIcon) View.VISIBLE else View.GONE
         // Update the popup title and body text with the given string IDs
         val textTitleView = popupView.findViewById<TextView>(R.id.textTitle)
         textTitleView?.text = context.getString(titleResId)
