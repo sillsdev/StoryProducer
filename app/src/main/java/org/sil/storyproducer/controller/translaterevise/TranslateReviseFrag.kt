@@ -31,7 +31,7 @@ class TranslateReviseFrag : MultiRecordFrag() {
         }
 
         if (slideNumber == 0) {
-            mPopupHelpUtils = PopupHelpUtils(this, slideNumber)
+            mPopupHelpUtils = PopupHelpUtils(this, 0)
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.toolbar,
                 50, 90,
@@ -76,7 +76,7 @@ class TranslateReviseFrag : MultiRecordFrag() {
                 R.string.help_translate_swipe_left2_title, R.string.help_translate_swipe_left2_body)
 
         } else if (Workspace.activeStory.slides[slideNumber].isSongSlide()) {
-            mPopupHelpUtils = PopupHelpUtils(this, 1000000) // bug fix always use slide 1000000
+            mPopupHelpUtils = PopupHelpUtils(this, 2)
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.phase_frame,
                 -1, -1,
