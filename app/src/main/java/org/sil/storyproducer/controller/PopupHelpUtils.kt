@@ -80,7 +80,8 @@ class PopupItem(val anchorViewId: Int,
     var itemString = ""
 }
 class PopupHelpUtils(private val parent: Any,
-                     private val slideNumber: Int = 0) {
+                     private val helpSeriesIndex: Int = 0)    // used to allow two or more help sequences for this fragment/activity
+{
 
     private var helpPopupWindow: PopupWindow? = null
     private var popupItems: MutableList<PopupItem> = mutableListOf()
@@ -115,7 +116,7 @@ class PopupHelpUtils(private val parent: Any,
         get () {
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
             val activityClassName = getDerivedClassName(parent)
-            val prefString = "PopupHelpGroup_${activityClassName}_${slideNumber}"
+            val prefString = "PopupHelpGroup_${activityClassName}_${helpSeriesIndex}"
             field = prefs.getInt(prefString, 0)
             return field
         }
@@ -123,7 +124,7 @@ class PopupHelpUtils(private val parent: Any,
             if (field != value) {
                 val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(context).edit()
                 val activityClassName = getDerivedClassName(parent)
-                val prefString = "PopupHelpGroup_${activityClassName}_${slideNumber}"
+                val prefString = "PopupHelpGroup_${activityClassName}_${helpSeriesIndex}"
                 preferencesEditor.putInt(prefString, value)
                 preferencesEditor.commit()
                 field = value
@@ -236,7 +237,7 @@ class PopupHelpUtils(private val parent: Any,
                             Point(-1, -1)
                         else
                             Point((view2.width.toFloat()*popupItem.percentX/100).toInt(),
-                            (view2.height.toFloat()*popupItem.percentY/100).toInt()),
+                                    (view2.height.toFloat()*popupItem.percentY/100).toInt()),
                         popupItem.titleResId,
                         popupItem.bodyResId,
                         currentHelpIndex == popupItems.size-1,   // show ok button for last message

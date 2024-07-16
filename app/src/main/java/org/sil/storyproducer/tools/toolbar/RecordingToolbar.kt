@@ -63,6 +63,8 @@ open class RecordingToolbar : Fragment() {
     val isRecording : Boolean
         get() {return voiceRecorder?.isRecording == true}
 
+    var isAppendingOn = false
+
     private lateinit  var animationHandler: AnimationHandler
 
     private var editActivityFile : File? = null // temp audio file being edited by external app
@@ -119,6 +121,8 @@ open class RecordingToolbar : Fragment() {
         fun onStartedToolbarRecording(){
             onStartedToolbarMedia()
         }
+        fun onStoppedToolbarAppending(){}
+        fun onStartedToolbarAppending(){}
     }
 
     /**

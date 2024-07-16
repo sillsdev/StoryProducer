@@ -117,12 +117,20 @@ class VoiceStudioFrag : MultiRecordFrag() {
         }
     }
 
-
     override fun onResume() {
         super.onResume()
 
         addAndStartPopupMenus(slideNum)
+    }
 
+    override fun onStoppedToolbarAppending() {
+        super.onStoppedToolbarAppending()
+        addAndStartPopupMenus(slideNum)
+    }
+
+    override fun onStartedToolbarAppending() {
+        super.onStartedToolbarAppending()
+        addAndStartPopupMenus(slideNum)
     }
 
     private fun addAndStartPopupMenus(slideNumber: Int) {
@@ -130,29 +138,66 @@ class VoiceStudioFrag : MultiRecordFrag() {
         if (mPopupHelpUtils != null)
             mPopupHelpUtils?.dismissPopup()
 
-        mPopupHelpUtils = PopupHelpUtils(this)
+        if (!recordingToolbar.isAppendingOn) {
 
-        mPopupHelpUtils?.addPopupHelpItem(
-            R.id.toolbar,
-            50, 75,
-            R.string.help_voice_phase_title, R.string.help_voice_phase_body)
-        mPopupHelpUtils?.addPopupHelpItem(
-            R.id.fragment_reference_audio_button,
-            50, 50,
-            R.string.help_voice_listen_title, R.string.help_voice_listen_body)
-        mPopupHelpUtils?.addPopupHelpItem(
-            R.id.start_recording_button,
-            50, 50,
-            R.string.help_voice_record_title, R.string.help_voice_record_body)
-        mPopupHelpUtils?.addPopupHelpItem(
-            R.id.phase_frame,
-            95, 50,
-            R.string.help_voice_continue_title, R.string.help_voice_continue_body)
+            mPopupHelpUtils = PopupHelpUtils(this, 0)    // the main help for this fragment
 
+            mPopupHelpUtils?.addPopupHelpItem(
+                R.id.toolbar,
+                50, 75,
+                R.string.help_voice_phase_title, R.string.help_voice_phase_body
+            )
+            mPopupHelpUtils?.addPopupHelpItem(
+                R.id.fragment_reference_audio_button,
+                50, 50,
+                R.string.help_voice_listen_title, R.string.help_voice_listen_body
+            )
+            mPopupHelpUtils?.addPopupHelpItem(
+                R.id.start_recording_button,
+                50, 50,
+                R.string.help_voice_record_title, R.string.help_voice_record_body
+            )
+            mPopupHelpUtils?.addPopupHelpItem(
+                R.id.phase_frame,
+                95, 50,
+                R.string.help_voice_continue_title, R.string.help_voice_continue_body
+            )
+
+        } else {
+
+            mPopupHelpUtils = PopupHelpUtils(this, 1)    // the alternate help for this fragment
+
+            mPopupHelpUtils?.addPopupHelpItem(
+                R.id.phase_frame,
+                -1, -1,
+                R.string.help_paused_voice_phase_title, R.string.help_paused_voice_phase_body
+            )
+            mPopupHelpUtils?.addPopupHelpItem(
+                R.id.play_recording_button,
+                50, 10,
+                R.string.help_paused_voice_phase2_title, R.string.help_paused_voice_phase2_body
+            )
+            mPopupHelpUtils?.addPopupHelpItem(
+                R.id.fragment_reference_audio_button,
+                50, 50,
+                R.string.help_paused_voice_listen_title, R.string.help_paused_voice_listen_body
+            )
+            mPopupHelpUtils?.addPopupHelpItem(
+                R.id.start_recording_button,
+                50, 10,
+                R.string.help_paused_voice_record_title, R.string.help_paused_voice_record_body
+            )
+            mPopupHelpUtils?.addPopupHelpItem(
+                R.id.finish_recording_button,
+                50, 10,
+                R.string.help_paused_voice_stop_title, R.string.help_paused_voice_stop_body
+            )
+        }
+
+            // only update help popups display when not recording
         mPopupHelpUtils?.showNextPopupHelp()
 
         (requireActivity() as PhaseBaseActivity).setBasePopupHelpUtils(mPopupHelpUtils!!)
-
 
     }
 }

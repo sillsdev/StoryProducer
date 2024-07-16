@@ -26,12 +26,10 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
     
     private var enableSendAudioButton : Boolean = false
 
-    private var isAppendingOn = false
     private val audioTempName = getTempAppendAudioRelPath()
 
     override fun onPause() {
         isAppendingOn = false
-
         super.onPause()
     }
 
@@ -54,7 +52,7 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
     override fun updateInheritedToolbarButtonVisibility() {
         super.updateInheritedToolbarButtonVisibility()
 
-        if(!isAppendingOn){
+        if (!isAppendingOn) {
 //            checkButton.visibility = View.INVISIBLE
             checkButton.alpha = 0.5f
             checkButton.isEnabled = false
@@ -93,24 +91,29 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
     override fun micButtonOnClickListener(): View.OnClickListener {
         return View.OnClickListener {
             val wasRecording = voiceRecorder?.isRecording == true
+            val wasAppending = isAppendingOn
+            if (wasRecording)
+                isAppendingOn = wasRecording
 
             stopToolbarMedia()
 
             if (wasRecording) {
-                if (isAppendingOn) {
+                if (wasAppending) {
                     try {
                         AudioRecorder.concatenateAudioFiles(appContext, getChosenFilename(), audioTempName)
                     } catch (e: FileNotFoundException) {
                         FirebaseCrashlytics.getInstance().recordException(e)
                     }
-                } else {
-                    isAppendingOn = true
                 }
 
                 micButton.setBackgroundResource(R.drawable.ic_mic_plus_48dp)
                 micButton.contentDescription = getString(R.string.rec_toolbar_append_recording_button)
+
+                if (!wasAppending) {
+                    toolbarMediaListener.onStartedToolbarAppending()
+                }
             } else {
-                if (isAppendingOn) {
+                if (wasAppending) {
                     recordAudio(audioTempName)
                 } else {
                     recordAudio(assignNewAudioRelPath())
@@ -128,7 +131,9 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
     private fun checkButtonOnClickListener(): View.OnClickListener{
         return View.OnClickListener {
 
-            if (isAppendingOn && (voiceRecorder?.isRecording == true)) {
+            val wasAppending = isAppendingOn
+
+            if (wasAppending && (voiceRecorder?.isRecording == true)) {
                 stopToolbarMedia()
                 try {
                     AudioRecorder.concatenateAudioFiles(appContext, getChosenFilename(), audioTempName)
@@ -149,6 +154,10 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
             sendAudioButton.visibility = View.VISIBLE
             sendAudioButton.alpha = 1.0f
             sendAudioButton.isEnabled = true
+
+            if (wasAppending) {
+                toolbarMediaListener.onStoppedToolbarAppending()
+            }
         }
     }
 
