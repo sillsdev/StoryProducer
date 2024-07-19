@@ -80,7 +80,7 @@ class TranslateReviseFrag : MultiRecordFrag() {
                 R.string.help_translate_review_title, R.string.help_translate_review_body)
             mPopupHelpUtils?.addPopupHelpItem(
                     R.id.list_recordings_button,
-                    50, 10,
+                    20, 10,
                     R.string.help_translate_list_title, R.string.help_translate_list_body)
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.seek_bar,
