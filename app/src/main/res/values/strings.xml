@@ -650,40 +650,48 @@
     </string>
     <string name="help_voice_listen_title">Listen, Memorize</string>
     <string name="help_voice_listen_body">
-        <![CDATA[Internalize the audio until you are ready to say it fluently and dramatically]]>
+        <![CDATA[Practice saying as much of the translation as you can. Tap to pause or resume playback as necessary. Begin now.]]>
     </string>
     <string name="help_voice_record_title">Record Dramatically</string>
     <string name="help_voice_record_body">
-        <![CDATA[Record the audio with the appropriate drama.]]>
+        <![CDATA[Re-record the translation with a clear voice and dramatic expression.
+        <br/>(Then tap the pause button to pause recording, or tap the square to stop recording.)]]>
+    </string>
+    <string name="help_voice_replay_title">Replay Recording</string>
+    <string name="help_voice_replay_body">
+        <![CDATA[Listen to your dramatic re-recording now.
+        <br/>If you are not satisfied with the quality, repeat the listening and dramatic re-recording process.]]>
     </string>
     <string name="help_voice_continue_title">Continue</string>
     <string name="help_voice_continue_body">
-        <![CDATA[Record dramatized audio for each slide.]]>
+        <![CDATA[Re-record dramatized audio for each slide.
+         <br/>See the detailed help page <b>[?]</b> for additional guidance.]]>
     </string>
-
-
-    <string name="help_paused_voice_phase_title">Recording Paused</string>
-    <string name="help_paused_voice_phase_body">
+    <string name="help_voice_final_title">Final Check</string>
+    <string name="help_voice_final_body">
+        <![CDATA[Start at the Title slide and double check that you are satisfied with the dramatic audio volume and quality by replaying all of the slides one after the other.
+         <br/>Then move on to the Finalize phase.]]>
+    </string>
+    <string name="help_voice_paused_title">Recording Paused</string>
+    <string name="help_voice_paused_body">
         <![CDATA[This special mode can be helpful if you would like to record dramatically in smaller chunks. For example, if you want a different person to speak a character’s voice, or if you need to listen again to a long translation.]]>
     </string>
-    <string name="help_paused_voice_phase2_title">Recording Paused</string>
-    <string name="help_paused_voice_phase2_body">
+    <string name="help_voice_pausedreplay_title">Recording Paused</string>
+    <string name="help_voice_pausedreplay_body">
         <![CDATA[Tap to hear what has been recorded so far for this slide. Try it now.]]>
     </string>
-    <string name="help_paused_voice_listen_title">Listen, Memorize</string>
-    <string name="help_paused_voice_listen_body">
+    <string name="help_voice_pausedlisten_title">Recording Paused</string>
+    <string name="help_voice_pausedlisten_body">
         <![CDATA[Tap to resume listening and memorizing the next chunk of the translation.]]>
     </string>
-    <string name="help_paused_voice_record_title">Record Dramatically</string>
-    <string name="help_paused_voice_record_body">
+    <string name="help_voice_pausedrecord_title">Resume Recording</string>
+    <string name="help_voice_pausedrecord_body">
         <![CDATA[Tap the mic+ button to resume dramatic re-recording.]]>
     </string>
-    <string name="help_paused_voice_stop_title">Finalize</string>
-    <string name="help_paused_voice_stop_body">
+    <string name="help_voice_pausedstop_title">Finalize</string>
+    <string name="help_voice_pausedstop_body">
         <![CDATA[Or tap the square stop button to finalize the recording now.]]>
     </string>
-
-
     <string name="help_finalize_phase_title">Finalize Phase</string>
     <string name="help_finalize_phase_body">
         <![CDATA[In this phase, your task is to add credits and a short story name, and choose the options for your video.]]>

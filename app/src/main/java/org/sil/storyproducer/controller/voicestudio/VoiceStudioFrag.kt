@@ -149,18 +149,28 @@ class VoiceStudioFrag : MultiRecordFrag() {
             )
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.fragment_reference_audio_button,
-                50, 50,
+                80, 90,
                 R.string.help_voice_listen_title, R.string.help_voice_listen_body
             )
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.start_recording_button,
-                50, 50,
+                80, 10,
                 R.string.help_voice_record_title, R.string.help_voice_record_body
             )
             mPopupHelpUtils?.addPopupHelpItem(
-                R.id.phase_frame,
-                95, 50,
+                    R.id.play_recording_button,
+                    50, 10,
+                    R.string.help_voice_replay_title, R.string.help_voice_replay_body
+            )
+            mPopupHelpUtils?.addPopupHelpItem(
+                R.id.seek_bar,
+                86, 70,
                 R.string.help_voice_continue_title, R.string.help_voice_continue_body
+            )
+            mPopupHelpUtils?.addPopupHelpItem(
+                    R.id.seek_bar,
+                    -1, -1,
+                    R.string.help_voice_final_title, R.string.help_voice_final_body
             )
 
         } else {
@@ -170,27 +180,27 @@ class VoiceStudioFrag : MultiRecordFrag() {
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.phase_frame,
                 -1, -1,
-                R.string.help_paused_voice_phase_title, R.string.help_paused_voice_phase_body
+                R.string.help_voice_paused_title, R.string.help_voice_paused_body
             )
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.play_recording_button,
                 50, 10,
-                R.string.help_paused_voice_phase2_title, R.string.help_paused_voice_phase2_body
+                R.string.help_voice_pausedreplay_title, R.string.help_voice_pausedreplay_body
             )
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.fragment_reference_audio_button,
-                50, 50,
-                R.string.help_paused_voice_listen_title, R.string.help_paused_voice_listen_body
+                80, 90,
+                R.string.help_voice_pausedlisten_title, R.string.help_voice_pausedlisten_body
             )
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.start_recording_button,
-                50, 10,
-                R.string.help_paused_voice_record_title, R.string.help_paused_voice_record_body
+                80, 10,
+                R.string.help_voice_pausedrecord_title, R.string.help_voice_pausedrecord_body
             )
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.finish_recording_button,
-                50, 10,
-                R.string.help_paused_voice_stop_title, R.string.help_paused_voice_stop_body
+                20, 10,
+                R.string.help_voice_pausedstop_title, R.string.help_voice_pausedstop_body
             )
         }
 
