@@ -42,8 +42,12 @@ class TranslateReviseFrag : MultiRecordFrag() {
                 R.string.help_translate_titleslide_title, R.string.help_translate_titleslide_body)
             mPopupHelpUtils?.addPopupHelpItem(
                     R.id.seek_bar,
+                    -1, -1,
+                    R.string.help_translate_navigateslides_title, R.string.help_translate_navigateslides_body)
+            mPopupHelpUtils?.addPopupHelpItem(
+                    R.id.seek_bar,
                     86, 70,
-                    R.string.help_translate_titleslide_title, R.string.help_translate_skiptitle_body)
+                    R.string.help_translate_skiptitle_title, R.string.help_translate_skiptitle_body)
             mPopupHelpUtils?.addPopupHelpItem(
                     R.id.seek_bar,
                     -1, -1,

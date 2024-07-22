@@ -86,20 +86,20 @@ class CommunityWorkFrag : MultiRecordFrag() {
             50, 75,
             R.string.help_community_phase_title, R.string.help_community_phase_body)
         mPopupHelpUtils?.addPopupHelpItem(
-            R.id.phase_frame,
-            98, 50,
+            R.id.seek_bar,
+            82, 70,
             R.string.help_community_swipe_title, R.string.help_community_swipe_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.fragment_reference_audio_button,
-            50, 50,
+            80, 90,
             R.string.help_community_play_title, R.string.help_community_play_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.start_recording_button,
-            50, 50,
+            50, 10,
             R.string.help_community_record_title, R.string.help_community_record_body)
         mPopupHelpUtils?.addPopupHelpItem(
-            R.id.phase_frame,
-            98, 50,
+            R.id.seek_bar,
+            82, 70,
             R.string.help_community_continue_title, R.string.help_community_continue_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,

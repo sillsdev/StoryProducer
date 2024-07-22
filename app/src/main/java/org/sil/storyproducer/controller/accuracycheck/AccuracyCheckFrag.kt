@@ -302,19 +302,23 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
             R.string.help_accuracy_phase_title, R.string.help_accuracy_phase_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.concheck_logs_button,
-            50, 5,
+            60, 5,
             R.string.help_accuracy_history_title, R.string.help_accuracy_history_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.fragment_reference_audio_button,
-            50, 50,
+            80, 90,
             R.string.help_accuracy_play_title, R.string.help_accuracy_play_body)
         mPopupHelpUtils?.addPopupHelpItem(
+                R.id.toolbar,
+                50, 75,
+                R.string.help_accuracy_revise_title, R.string.help_accuracy_revise_body)
+        mPopupHelpUtils?.addPopupHelpItem(
             R.id.concheck_checkmark_button,
-            50, 5,
+            40, 5,
             R.string.help_accuracy_confirm_title, R.string.help_accuracy_confirm_body)
         mPopupHelpUtils?.addPopupHelpItem(
-            R.id.phase_frame,
-            98, 50,
+            R.id.seek_bar,
+            82, 70,
             R.string.help_accuracy_continue_title, R.string.help_accuracy_continue_body)
 
         mPopupHelpUtils?.showNextPopupHelp()
