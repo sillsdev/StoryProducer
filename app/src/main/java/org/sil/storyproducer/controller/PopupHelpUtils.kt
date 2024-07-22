@@ -241,7 +241,10 @@ class PopupHelpUtils(private val parent: Any,
                         popupItem.titleResId,
                         popupItem.bodyResId,
                         currentHelpIndex == popupItems.size-1,   // show ok button for last message
-                        currentHelpIndex == 0 && getDerivedClassName(parent) == "MainActivity"  // show logo for welcome help
+                        currentHelpIndex == 0 && getDerivedClassName(parent) == "MainActivity",  // show logo for welcome help
+                        if (popupItem.percentY in 0..50) CompassPoint.SOUTH else
+                            if (popupItem.percentY > 50) CompassPoint.NORTH else
+                            CompassPoint.NO_COMPASS_POINT   // give a hint for arrow direction based on position within the target view child item
                     )
                     val buttonClose: ImageButton =
                         helpPopupWindow!!.getContentView().findViewById(R.id.btnClose)
@@ -320,13 +323,20 @@ class PopupHelpUtils(private val parent: Any,
     }
 
     // Function to create and show a round corner polygon-shaped popup
-    private fun showHelpPopup2(context: Context, parentView: View, arrowTarget: Point, titleResId: Int, bodyResId: Int, showOk: Boolean = false, showSPIcon: Boolean = false)
+    private fun showHelpPopup2(context: Context,
+                               parentView: View,
+                               arrowTarget: Point,
+                               titleResId: Int,
+                               bodyResId: Int,
+                               showOk: Boolean = false,
+                               showSPIcon: Boolean = false,
+                               compassHint: CompassPoint = CompassPoint.NO_COMPASS_POINT)
             : PopupWindow {
 
         // local hard-coded settings
         val boxWidthFraction = 0.65f    // the screen width fraction to use for the width of a popup help message
         val sideWidthFraction = 0.04    // If closer than this width fraction to the edge then draw arrow East or West
-        var popupArrowLength = 200      // The length of the popup pointing arrow
+        var popupArrowLength: Int      // The length of the popup pointing arrow
 
         val rootView = parentView.rootView
         val rootDrawableBounds = Rect()
@@ -406,6 +416,7 @@ class PopupHelpUtils(private val parent: Any,
         var shiftBoxY = 0   // ditto for Y
 
         // need to determine where the arrow goes (north, east, south, west) and length of arrow
+        val popupArrowNSLength = (rootDrawableBounds.width() * sideWidthFraction * 2).toInt()
         val arrowDirection: CompassPoint
         if (displayCentral)
             arrowDirection = CompassPoint.NO_COMPASS_POINT
@@ -413,6 +424,10 @@ class PopupHelpUtils(private val parent: Any,
             arrowDirection = CompassPoint.EAST
         else if (rootArrowTarget.x < rootDrawableBounds.width() * sideWidthFraction)
             arrowDirection = CompassPoint.WEST
+        else if (compassHint == CompassPoint.SOUTH && popupBoxHeight + popupArrowNSLength < rootArrowTarget.y)
+            arrowDirection = CompassPoint.SOUTH
+        else if (compassHint == CompassPoint.NORTH && popupBoxHeight + popupArrowNSLength < rootDrawableBounds.height() - rootArrowTarget.y)
+            arrowDirection = CompassPoint.NORTH
         else if (rootArrowTarget.y > (rootDrawableBounds.top + rootDrawableBounds.bottom) / 2)
             arrowDirection = CompassPoint.SOUTH
         else
