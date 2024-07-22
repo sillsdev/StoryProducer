@@ -522,9 +522,16 @@
     <string name="help_translate_titleslide_body">
         <![CDATA[Every story begins with a Title slide. This label identifies it.]]>
     </string>
+    <string name="help_translate_navigateslides_title">Navigating Slides</string>
+    <string name="help_translate_navigateslides_body">
+        <![CDATA[Note that you can <b>swipe left or right</b> at any time to move to a different slide. But...
+        <br/>Right now, tap Next.]]>
+    </string>
+    <string name="help_translate_skiptitle_title">Skip Title Slide</string>
     <string name="help_translate_skiptitle_body">
         <![CDATA[Initially we’re going to skip the Title Slide, and we’ll come back to it later.
-        <br/>If this is your first time in Translate + Revise, <b>swipe left now</b> which will move us to Story Slide 1.<br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
+        <br/>If this is your first time in Translate + Revise...
+        <br/><b><i>Swipe Left Now</b></i> which will move us to Story Slide 1.<br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
     </string>
     <string name="help_translate_resumetitle_title"></string>
     <string name="help_translate_resumetitle_body">
@@ -592,7 +599,7 @@
     </string>
     <string name="help_translate_navigatesongdone_title">Navigating Slides</string>
     <string name="help_translate_navigatesongdone_body">
-        <![CDATA[Note that you can <b>swipe left or right</b> at any time to move to a slide you want to work on next.
+        <![CDATA[Remember, you can <b>swipe left or right</b> at any time to move to a slide you want to work on next.
         <br/>When you are done on this Song slide, swipe left (or right several times) and <b>move to the Title slide</b>.
         <br/>&lt;&lt;&lt;&lt;&lt;&lt; &gt;&gt;&gt;&gt;&gt;&gt;]]>
     </string>
@@ -629,19 +636,24 @@
     </string>
     <string name="help_accuracy_history_title">History Log</string>
     <string name="help_accuracy_history_body">
-        <![CDATA[The accuracy checker should tap here to review the work that has been done on this slide.]]>
+        <![CDATA[The accuracy checker may tap here to review the work that has been done on this slide.]]>
     </string>
     <string name="help_accuracy_play_title">Play Audio</string>
     <string name="help_accuracy_play_body">
-        <![CDATA[Allow the accuracy checker to play the translation for this slide.<br/>Is it accurate?<br/>Do the important words communicate the correct meaning?<br/>Are those words used consistently in the story?]]>
+        <![CDATA[Allow the accuracy checker to play the translation for this slide now.<br/>Is it accurate?<br/>Do the important words communicate the correct meaning?<br/>Are those words used consistently in the story?]]>
+    </string>
+    <string name="help_accuracy_revise_title">Revise</string>
+    <string name="help_accuracy_revise_body">
+        <![CDATA[If the accuracy checker feels that a change is best, go back to the Translate + Revise Phase to make the revisions.
+        <br/>Then return here to Accuracy Check to continue checking.]]>
     </string>
     <string name="help_accuracy_confirm_title">Confirm</string>
     <string name="help_accuracy_confirm_body">
-        <![CDATA[The accuracy checker should tap here if they approve this slide.]]>
+        <![CDATA[The accuracy checker should tap here if they approve this slide. A green checkmark indicates \"approved\".]]>
     </string>
     <string name="help_accuracy_continue_title">Continue</string>
     <string name="help_accuracy_continue_body">
-        <![CDATA[Swipe left to go to the next slide.<br/>Check each slide for accuracy.<br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
+        <![CDATA[Swipe left to go to the next slide.<br/>Check each slide for accuracy. Revise a slide\'s translation if necessary.<br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
     </string>
 
     <string name="help_voice_phase_title">Voice Studio Phase</string>
