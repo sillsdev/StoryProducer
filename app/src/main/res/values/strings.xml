@@ -471,7 +471,7 @@
     </string>
     <string name="help_main_guidance_title">Guidance</string>
     <string name="help_main_guidance_body">
-        <![CDATA[It’s important to keep Popup Help displayed, and follow its guidance step by step, until you’ve learned how to use each phase of Story Producer.]]>
+        <![CDATA[It’s important to keep Popup Help displayed, and perform each instruction when stated, until you’ve learned how to use each phase of Story Producer.]]>
     </string>
     <string name="help_main_screen_title">Story List</string>
     <string name="help_main_screen_body">
@@ -520,18 +520,19 @@
     </string>
     <string name="help_translate_titleslide_title">Title Slide</string>
     <string name="help_translate_titleslide_body">
-        <![CDATA[Every story begins with a Title slide. This label identifies it.]]>
+        <![CDATA[Every story begins with a Title Slide, followed by the Story Slides. This label identifies this slide.]]>
     </string>
     <string name="help_translate_navigateslides_title">Navigating Slides</string>
     <string name="help_translate_navigateslides_body">
         <![CDATA[Note that you can <b>swipe left or right</b> at any time to move to a different slide. But...
         <br/>Right now, tap Next.]]>
     </string>
-    <string name="help_translate_skiptitle_title">Skip Title Slide</string>
+    <string name="help_translate_skiptitle_title">Title Slide</string>
     <string name="help_translate_skiptitle_body">
-        <![CDATA[Initially we’re going to skip the Title Slide, and we’ll come back to it later.
-        <br/>If this is your first time in Translate + Revise...
-        <br/><b><i>Swipe Left Now</b></i> which will move us to Story Slide 1.<br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
+        <![CDATA[Initially it’s best to move ahead and translate the Story Slides first.
+        <br/>To begin doing that <b><i>Swipe Left Now</b></i> which will move us to Story Slide 1.
+        <br/>&lt;&lt;&lt;&lt;&lt;&lt;
+        <br/>If you have already translated all the story slides, tap Next now.]]>
     </string>
     <string name="help_translate_resumetitle_title"></string>
     <string name="help_translate_resumetitle_body">
@@ -571,7 +572,7 @@
     </string>
     <string name="help_translate_list_title">Recordings List</string>
     <string name="help_translate_list_body">
-        <![CDATA[If you make multiple recordings, you can tap the List Play button to review them and select the best one.]]>
+        <![CDATA[This List Play button can be used if you need to review multiple recordings. Much of the time you don’t need this.]]>
     </string>
     <string name="help_translate_nextslide_title">Swipe Left</string>
     <string name="help_translate_nextslide_body">
