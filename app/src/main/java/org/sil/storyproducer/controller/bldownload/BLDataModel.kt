@@ -5,6 +5,7 @@ class BLDataModel(var title: String,    // The title for the Bloom Library story
                   var lang: String,     // The source language code for the story
                   var imageId: Int,     // TODO: This is currently an app resource id but needs to be a downloaded .jpg string for a story thumbnail
                   var downloadUri: String,  // The Url to use to download the story (zipped with a .bloomSource file extension)
+                  var thumbnailUri: String, // The Url to use to download the thumbnail image
                   var isInWorkspace: Boolean = false,   // This is true if the story has already been installed
                   var isInBLDLDir: Boolean = false,   // This is true if the story archive has already been downloaded
                   var isChecked: Boolean = false,       // This is checked by the UI to indicate the story should be downloaded
@@ -21,5 +22,6 @@ class BLDataModel(var title: String,    // The title for the Bloom Library story
 
     val isEnabled : Boolean
     get() { return !isInWorkspace && !isInBLDLDir && (downloadId == BLDataModel.DOWNLOAD_NOT_REQUESTED) }
+    var thumbnailDownloaded: Boolean = false // The thumbnail has successfully downloaded and been parsed
 
 }

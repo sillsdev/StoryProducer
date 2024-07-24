@@ -3,8 +3,11 @@ package org.sil.storyproducer.controller.storylist
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
+import android.os.ParcelFileDescriptor
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +25,8 @@ import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.service.SlideService
+import org.sil.storyproducer.tools.file.getWorkspaceUri
+import timber.log.Timber
 
 
 /**
@@ -203,9 +208,24 @@ class ListAdapter(context: Context,
                 else -> holder.txtTitle.text = story.localTitle + "   "  // add 3 spaces for uniqueness
             }
 
-            //TODO put th number 8 in some configuration.  What if the images are different sizes?
-            //Use the "second" image, because the first is just for the title screen.
-            holder.imgIcon.setImageBitmap(SlideService(context).getFirstImage(story))
+            var thumbnailImage: Bitmap? = null
+            try {
+                val thumbnailUri = getWorkspaceUri("${story.title}/thumbnail-256.png")
+                if (thumbnailUri != null) {
+                    val ipfd = context.contentResolver.openFileDescriptor(thumbnailUri, "r")
+                    val iStream = ParcelFileDescriptor.AutoCloseInputStream(ipfd)
+                     thumbnailImage = BitmapFactory.decodeStream(iStream)
+                }
+            } catch (e: Exception) {
+                Timber.i(e.message)
+            }
+            if (thumbnailImage != null) {
+                holder.imgIcon.setImageBitmap(thumbnailImage)
+            } else {
+                //Use the "second" image, because the first is just for the title screen.
+                holder.imgIcon.setImageBitmap(SlideService(context).getFirstImage(story))
+            }
+
             holder.txtSubTitle.text = story.slides[0].subtitle
             holder.txtLangCode.text = story.langCode
 

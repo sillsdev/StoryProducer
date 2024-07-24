@@ -11,10 +11,9 @@
 
     <ImageView
         android:id="@+id/story_list_image"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:background="@color/white"
         android:contentDescription="@string/story_picture"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

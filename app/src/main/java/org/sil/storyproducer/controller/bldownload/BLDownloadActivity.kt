@@ -27,6 +27,7 @@ import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.SnackbarManager
 import org.sil.storyproducer.databinding.ActivityBldownloadBinding
 import org.sil.storyproducer.model.BLBook
+import org.sil.storyproducer.model.BLBookList
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.bloomSourceAutoDLDir
 import org.sil.storyproducer.model.bloomSourceZipExt
@@ -34,6 +35,8 @@ import org.sil.storyproducer.model.parseOPDSfile
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import java.io.File
 import java.util.Locale
+import java.util.Timer
+import java.util.TimerTask
 
 // This class implements the code for the BLDownloadActivity which shows the UI to download a story
 // automatically from the Bloom Library.  This UI consists of a list of CardView widgets each
@@ -143,9 +146,12 @@ class BLDownloadActivity : AppCompatActivity() {
         lateinit var recyclerView: RecyclerView
         lateinit var downloadManager: DownloadManager
         var selectedLangFilterIndex = 0
-        private var selectedLangFilter = ""
+        var selectedLangFilter = ""
         var lastItemClicked = -1    // last checked story download item - used for toggling
         var lastItemCheckedTitle = ""   // for automatically unchecking items if more than one clicked on
+
+        var thumbnailTimer: Timer? = null
+
     }
 
     lateinit var blOnClickListener: BLOnClickListener
@@ -183,6 +189,7 @@ class BLDownloadActivity : AppCompatActivity() {
             var numAlreadyDownloaded = 0
             var numAlreadyInstalled = 0
             val fileDownloadDir = bloomSourceAutoDLDir()
+            var filteredIndex = 0
             for (i in 0 until  data[bldlActivityIndex].size)
             {
                 val dataItem = data[bldlActivityIndex][i]
@@ -218,7 +225,7 @@ class BLDownloadActivity : AppCompatActivity() {
                     Workspace.logDownloadEvent(view.context, Workspace.DOWNLOAD_TEMPLATE_TYPE.BIBLE_STORY, Workspace.DOWNLOAD_EVENT.START,
                         dataItem.downloadId, dmStatus, dataItem.downloadUri, "", dataItem.lang)
 
-                    adapter.notifyItemChanged(i)    // update the display of this card to be grayed out
+                    adapter.notifyItemChanged(filteredIndex)    // notify filtered card ui update to gray
 
                     numQueued++
                 }
@@ -238,6 +245,9 @@ class BLDownloadActivity : AppCompatActivity() {
                     dataItem.isInWorkspace)
                 {   // Already download somehow but also already installed
                     numAlreadyInstalled++
+                }
+                if (selectedLangFilter.isEmpty() || primaryLang(dataItem.lang) == selectedLangFilter) {
+                    filteredIndex++
                 }
             }
 
@@ -290,7 +300,32 @@ class BLDownloadActivity : AppCompatActivity() {
 
             blShowLangFilter(blDataList)
 
+            startThumbnailDownloadTimer()
         }
+    }
+
+    private fun startThumbnailDownloadTimer() {
+        if (thumbnailTimer == null) {
+            thumbnailTimer = Timer()
+            thumbnailTimer?.schedule(object : TimerTask() {
+                override fun run() {
+                    // Do something every second
+                    runOnUiThread {
+                        // but do it on the ui thread (to avoid two threads accessing the same data)
+                        if (BLBookList.checkForThumbnailDownloads(bldlActivityIndex)) {
+                            thumbnailTimer?.cancel()    // all done
+                            thumbnailTimer = null
+                        }
+                    }
+                }
+            }, 0, 1000) // delay of 0ms, and repeat every 1000ms (1 second)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        thumbnailTimer?.cancel()
+        thumbnailTimer = null
     }
 
     // When called for the first time it adds new BLDataModel items to the 'data' model list
@@ -307,12 +342,12 @@ class BLDownloadActivity : AppCompatActivity() {
             val blItem = blDataList[i]
             // Check if the file has already been downloaded
             val isFileDownloaded =
-                File(fileDownloadDir + "/" + convertToSafeFilename(blItem.Title) + bloomSourceZipExt()).exists()
+                File(fileDownloadDir + "/" + convertToSafeFilename(blItem.title) + bloomSourceZipExt()).exists()
             // Check if the title is already in the workspace
-            var isInWorkspace = workspaceRelPathExists(this, convertToSafeFilename(blItem.Title))
+            var isInWorkspace = workspaceRelPathExists(this, convertToSafeFilename(blItem.title))
             if (!isInWorkspace)
-                isInWorkspace = workspaceRelPathExists(this, convertToSafeFilename(blItem.Title + ".lang_${primaryLang(blItem.LangCode)}"))
-            val blItemFound = data[bldlActivityIndex].find { it -> it.title == blItem.Title }
+                isInWorkspace = workspaceRelPathExists(this, convertToSafeFilename(blItem.title + ".lang_${primaryLang(blItem.langCode)}"))
+            val blItemFound = data[bldlActivityIndex].find { it -> it.title == blItem.title }
             if (blItemFound != null) {
                 blItemFound.isInWorkspace = isInWorkspace
                 blItemFound.isInBLDLDir = isFileDownloaded
@@ -343,13 +378,14 @@ class BLDownloadActivity : AppCompatActivity() {
                 data[bldlActivityIndex].add(
                     // Add a new data model item passing in the correct values to the constructor
                     BLDataModel(
-                        blItem.Title,
-                        blItem.LangCode,
+                        blItem.title,
+                        blItem.langCode,
 //                        if (blItem.Title == "001 The Widow’s Offering")
 //                            R.drawable.temp_001_widdows_offering_thumbnail // TODO: example image - just testing appearance
 //                        else
                         bldlImageId[bldlActivityIndex],
-                        blItem.BloomSourceURL,
+                        blItem.bloomSourceURL,
+                        blItem.thumbnailURL,
                         isInWorkspace,      // makes it grayed out
                         isFileDownloaded,   // remember if already downloaded
                         isFileDownloaded,   // makes it checked
@@ -430,6 +466,9 @@ class BLDownloadActivity : AppCompatActivity() {
         }
         binding.textViewLoading.visibility = View.INVISIBLE  // hide loading messages
         binding.textViewWait.visibility = View.INVISIBLE
+
+        startThumbnailDownloadTimer()
+
     }
 
     // get the UI display name for a bloom language codes if known by Android
@@ -446,7 +485,7 @@ class BLDownloadActivity : AppCompatActivity() {
 
         val langCodes: MutableList<Pair<String, String>> = mutableListOf()
         bookList.forEach { it ->
-            val plang = primaryLang(it.LangCode)
+            val plang = primaryLang(it.langCode)
             if (plang.isNotEmpty()) {
                 if (langCodes.find { it.first == plang } == null) {
                     langCodes.add(Pair(plang, nativeLanguageName(plang)))
@@ -486,6 +525,7 @@ class BLDownloadActivity : AppCompatActivity() {
                 }
                 selectedLangFilter = selectedItem
                 selectedLangFilterIndex = position
+                startThumbnailDownloadTimer()
 
                     // persist the language filter code for next time
                 val prefs = PreferenceManager.getDefaultSharedPreferences(view?.context)

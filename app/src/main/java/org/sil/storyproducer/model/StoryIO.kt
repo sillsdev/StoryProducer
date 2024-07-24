@@ -241,6 +241,7 @@ fun migrateStory(context: Context, story: Story): Story? {
 }
 
 fun bloomSourceAutoDLDir() : String {return App.appContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.path!!}
+fun thumbnailsAutoDLDir() : String {return App.appContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.path!! + "/thumbnails/"}
 
 fun bloomSourceZipExt() : String {return ".bloomSource"}
 
