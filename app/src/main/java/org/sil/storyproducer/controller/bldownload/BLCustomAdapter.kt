@@ -1,5 +1,7 @@
 package org.sil.storyproducer.controller.bldownload
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +11,10 @@ import androidx.recyclerview.widget.RecyclerView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.bldownload.BLCustomAdapter.BLViewHolder
 import org.sil.storyproducer.controller.bldownload.BLDownloadActivity.Companion.primaryLang
+import org.sil.storyproducer.model.BLBookList
+import org.sil.storyproducer.model.thumbnailsAutoDLDir
+import timber.log.Timber
+import java.io.File
 
 // This class implements a RecyclerView.Adapter for the Bloom Library card list UI
 // The child class BLViewHolder is used to hold the UI widgets that make the card item
@@ -48,7 +54,6 @@ class BLCustomAdapter(bldata: ArrayList<BLDataModel>, langFilter : String) : Rec
     override fun onBindViewHolder(holder: BLViewHolder, listPosition: Int) {
         holder.textViewTitle.text = dataSet[listPosition].title
         holder.textViewLang.text = dataSet[listPosition].lang
-        holder.imageViewThumbnailIcon.setImageResource(dataSet[listPosition].imageId)
 
         // show check box is visible or not by setting alpha (transparency) property
         holder.imageViewCheckBox.alpha = if (dataSet[listPosition].isChecked)  1.0F else 0.0F
@@ -56,6 +61,27 @@ class BLCustomAdapter(bldata: ArrayList<BLDataModel>, langFilter : String) : Rec
         // show grayed-out (disabled) or not by setting alpha (transparency) property
         // 0.5 is grayed-out (since background is black)
         holder.imageViewCardParent.alpha = if (dataSet[listPosition].isEnabled) 1.0F else 0.5F
+
+        // now we have to display the thumbnail image if it has been downloaded
+        var downloadedImage: Bitmap? = null
+        if (dataSet[listPosition].thumbnailDownloaded) {
+            val id = BLBookList.extractThumbnailId(dataSet[listPosition].thumbnailUri)
+            if (!id.isNullOrEmpty()) {
+                try {
+                    val downloadedThumbnail = thumbnailsAutoDLDir() + "${id}.png"
+                    if (File(downloadedThumbnail).exists())
+                        downloadedImage = BitmapFactory.decodeFile(downloadedThumbnail)
+                } catch (e: Exception) {
+                    Timber.w("Exception loading downloaded thumbnail: $id, error: ${e.message}")
+                    e.printStackTrace()
+                }
+            }
+        }
+        if (downloadedImage != null)
+            holder.imageViewThumbnailIcon.setImageBitmap(downloadedImage)
+        else
+            holder.imageViewThumbnailIcon.setImageResource(dataSet[listPosition].imageId)
+
     }
 
     override fun getItemCount(): Int {

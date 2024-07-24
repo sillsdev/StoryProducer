@@ -6,9 +6,12 @@ import android.util.Base64
 import android.util.Xml
 import org.sil.storyproducer.App
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.bldownload.BLDataModel
 import org.sil.storyproducer.controller.bldownload.BLDownloadActivity
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
@@ -20,10 +23,10 @@ import javax.crypto.spec.SecretKeySpec
 
 
 class BLBook(
-    val Title: String,
-    val LangCode: String,
-    val ThumbnailURL: String,
-    val BloomSourceURL: String)
+    val title: String,
+    val langCode: String,
+    val thumbnailURL: String,
+    val bloomSourceURL: String)
 
 /**
  * BLBookList is used as a collection of books available to download from BloomLibrary
@@ -33,26 +36,101 @@ open class BLBookList(var dateUpdated: Date) {
     companion object {
 
         var booklistLoading = false
-        var booklist : Array<List<BLBook>?> = Array<List<BLBook>?>(2) { ArrayList<BLBook>() }
+        var booklist: Array<List<BLBook>?> = Array<List<BLBook>?>(2) { ArrayList<BLBook>() }
         private const val fallbackResourceBucket = "sil-storyproducer-resources"
         private const val fallbackResourceDomain = "s3.amazonaws.com"
         private const val fallbackResourceKey0 = "bl1/bl_samples.xml"
         private const val fallbackResourceKey1 = "bl1/bl_samples_feat.xml"
+        private val fallbackResourceAddr: Array<String> = arrayOf<String>(
+            "https://${fallbackResourceBucket}.${fallbackResourceDomain}/${fallbackResourceKey0}",
+            "https://${fallbackResourceBucket}.${fallbackResourceDomain}/${fallbackResourceKey1}"
+        )
 
         const val WIFI = "Wi-Fi"
         const val ANY = "Any"
 
         // Whether there is a Wi-Fi connection.
         private var wifiConnected = true//false
+
         // Whether there is a mobile connection.
         private var mobileConnected = true//false
 
         // The user's current network preference setting.
         var sPref: String? = ANY
 
-        private val fallbackResourceAddr: Array<String> = arrayOf<String>(
-                "https://${fallbackResourceBucket}.${fallbackResourceDomain}/${fallbackResourceKey0}",
-                "https://${fallbackResourceBucket}.${fallbackResourceDomain}/${fallbackResourceKey1}")
+        // list of tasks for downloading thumbnails
+        private var thumbnailDLTasks = mutableMapOf<String, DownloadThumbnailTask>()
+
+        private val thumbnailIdRegex = """/harvest/([^/]+)/""".toRegex()
+
+        fun extractThumbnailId(thumbnailUri: String): String? {
+            // e.g.: `snGo0EtqI5` from: https://api.bloomlibrary.org/v1/fs/harvest/snGo0EtqI5/thumbnails/thumbnail-256.png?version=2022-10-26T16:50:56.875Z&ref=sil-spapp
+            val matchResult = thumbnailIdRegex.find(thumbnailUri)
+            return matchResult?.groups?.get(1)?.value
+        }
+
+        fun checkForThumbnailDownloads(bldlActivityIndex: Int): Boolean {
+            if (bldlActivityIndex < 0)
+                return false
+            if (BLDownloadActivity.data[bldlActivityIndex].size == 0)
+                return false
+            var allDownloaded = true
+            // Check if a thumbnail download is needed on the main thread
+            var filteredIndex = 0
+            for (i in 0 until BLDownloadActivity.data[bldlActivityIndex].size) {
+                val dataItem = BLDownloadActivity.data[bldlActivityIndex][i]
+                if (BLDownloadActivity.selectedLangFilter.isEmpty() ||
+                        BLDownloadActivity.primaryLang(dataItem.lang) == BLDownloadActivity.selectedLangFilter) {
+                    // Check if the file has already been downloaded or removed somehow since last checked
+                    if (dataItem.thumbnailUri.isNotEmpty() && !dataItem.thumbnailDownloaded) {   // thumbnailUri is set to "" after downloaded
+                        allDownloaded = false
+                        checkAndStartThumbnailDownload(dataItem, bldlActivityIndex, filteredIndex)
+                    }
+                    filteredIndex++
+                }
+            }
+            return allDownloaded
+        }
+
+        private fun checkAndStartThumbnailDownload(
+            dataItem: BLDataModel,
+            bldlActivityIndex: Int,
+            filteredIndex: Int
+        ) {
+            if (BLDownloadActivity.thumbnailTimer == null)
+                return  // only download when the download activity is active
+
+            val id = extractThumbnailId(dataItem.thumbnailUri)
+            if (id.isNullOrEmpty())
+                return
+            val thumbnailsDownloadDir = thumbnailsAutoDLDir()
+            File(thumbnailsDownloadDir).mkdirs()    // make sure the dir exists
+            val downloadedFile = File(thumbnailsDownloadDir + "${id}.png")
+            if (downloadedFile.exists()) {
+                dataItem.thumbnailDownloaded = true
+                BLDownloadActivity.adapter.notifyItemChanged(filteredIndex)    // update the display of this card
+                return
+            }
+            if (thumbnailDLTasks.size >= 3) // max three tasks for downloading
+                return
+
+            // launch a task for this card thumbnail
+            addThumbnailDLTask(bldlActivityIndex, dataItem.thumbnailUri, id)
+        }
+
+        private fun addThumbnailDLTask(bldlActivityIndex: Int, uri: String, taskId: String) {
+            if (thumbnailDLTasks.containsKey(taskId))
+                return
+            val task = DownloadThumbnailTask(uri, taskId) { id ->
+                // Remove the task from the map when it's complete
+                thumbnailDLTasks.remove(id)
+                checkForThumbnailDownloads(bldlActivityIndex)   // check again so we can notify card of new image
+            }
+            thumbnailDLTasks[taskId] = task
+            task.execute()
+        }
+
+
     }
 
     //
@@ -60,12 +138,13 @@ open class BLBookList(var dateUpdated: Date) {
     //
 
     // Implementation of AsyncTask used to download XML feed from the bloom catalog url.
-    private class DownloadXmlTask(private var bldlActivityIndex: Int) : AsyncTask<String, Void, String>() {
+    private class DownloadXmlTask(private var bldlActivityIndex: Int) :
+        AsyncTask<String, Void, String>() {
 
         val resources: Resources = App.appContext.resources
 
         private lateinit var requestDate: String
-        private lateinit var authValue : String
+        private lateinit var authValue: String
 
         val accessKey = "AWS_ACCESS_KEY_ID"
         private val secretKey = "AWS_SECRET_ACCESS_KEY"
@@ -76,12 +155,12 @@ open class BLBookList(var dateUpdated: Date) {
         private val resourceDomain = "s3.amazonaws.com"
 
 
-    // We don't use namespaces
+        // We don't use namespaces
         private val ns: String? = null
 
         // parse xml from inputStream
         @Throws(XmlPullParserException::class, IOException::class)
-        fun parse(inputStream: InputStream) : List<BLBook> {
+        fun parse(inputStream: InputStream): List<BLBook> {
             inputStream.use { inStream ->
                 val parser: XmlPullParser = Xml.newPullParser()
                 parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
@@ -99,18 +178,21 @@ open class BLBookList(var dateUpdated: Date) {
             requestDate = dateFormat.format(calendar.time)
         }
 
-        private fun createAuthValue()  {
-            val message = "GET\n\n\n${requestDate}\n/${resourceBucket}/${resourceKey[bldlActivityIndex]}"
+        private fun createAuthValue() {
+            val message =
+                "GET\n\n\n${requestDate}\n/${resourceBucket}/${resourceKey[bldlActivityIndex]}"
             val mac = Mac.getInstance("HmacSHA1")
             val secret = SecretKeySpec(secretKey.toByteArray(), "HmacSHA1")
             mac.init(secret)
-            val encoded = Base64.encodeToString(mac.doFinal(message.toByteArray()), Base64.DEFAULT).trimEnd()
+            val encoded =
+                Base64.encodeToString(mac.doFinal(message.toByteArray()), Base64.DEFAULT).trimEnd()
             authValue = "AWS ${accessKey}:${encoded}"
         }
 
         private fun getCatalogStream(): InputStream? {
 
-            val url = URL("https://${resourceBucket}.${resourceDomain}/${resourceKey[bldlActivityIndex]}")
+            val url =
+                URL("https://${resourceBucket}.${resourceDomain}/${resourceKey[bldlActivityIndex]}")
             with(url.openConnection() as HttpURLConnection) {
                 requestMethod = "GET"
                 addRequestProperty("Date", requestDate)
@@ -161,7 +243,9 @@ open class BLBookList(var dateUpdated: Date) {
                             langCode += " "
                         langCode += readLanguage(parser)
                     }
-                    "link" -> { numLink++
+
+                    "link" -> {
+                        numLink++
                         if (numLink == 1)
                         // this relies on the thumbnail link being the first of the two
                             thumbLink = readThumbnailLink(parser)
@@ -169,6 +253,7 @@ open class BLBookList(var dateUpdated: Date) {
                         // this relies on the bloom book link being the second of the two
                             bookLink = readBLBookLink(parser)
                     }
+
                     else -> skip(parser)
                 }
             }
@@ -297,7 +382,7 @@ open class BLBookList(var dateUpdated: Date) {
             }
         }
 
-        override fun doInBackground(vararg urls: String) : String {
+        override fun doInBackground(vararg urls: String): String {
             return try {
                 loadXmlFromNetwork(urls[0])
                 return ""
@@ -315,8 +400,7 @@ open class BLBookList(var dateUpdated: Date) {
 
             if (result.isEmpty()) {
                 BLDownloadActivity.bldlActivity.onDownloadXmlBloomCatalogSuccess()
-            }
-            else {
+            } else {
                 BLDownloadActivity.bldlActivity.onDownloadXmlBloomCatalogFailure(result)
             }
         }
@@ -332,9 +416,68 @@ open class BLBookList(var dateUpdated: Date) {
             // show error
         }
     }
+
+    class DownloadThumbnailTask(
+        private val thumbnailUri: String,
+        private val id: String,
+        private val onComplete: (String) -> Unit
+    ) : AsyncTask<Void, Void, String>() {
+
+        val resources: Resources = App.appContext.resources
+
+        override fun doInBackground(vararg p0: Void?): String {
+            return try {
+                downloadAndSaveImage(thumbnailUri, id)
+                return ""
+            } catch (e: IOException) {
+                resources.getString(R.string.bloom_connection_error)
+            } catch (e: XmlPullParserException) {
+                resources.getString(R.string.bloom_xml_error)
+            }
+        }
+
+        override fun onPostExecute(result: String) {
+            super.onPostExecute(result)
+
+            val thumbnailsDownloadDir = thumbnailsAutoDLDir()
+            File(thumbnailsDownloadDir).mkdirs()    // make sure the dir exists
+            val downloadedThumbnail = thumbnailsDownloadDir + "${id}.png"
+            val partialThumbnail = thumbnailsDownloadDir + "${id}.downloading"
+
+            // rename the file on the main thread once downloaded
+            File(partialThumbnail).renameTo(File(downloadedThumbnail))
+
+            // Notify that the task is complete
+            onComplete(id)
+        }
+
+        private fun downloadAndSaveImage(url: String, id: String) {
+            val urlConnection: HttpURLConnection?
+            try {
+
+                val thumbnailsDownloadDir = thumbnailsAutoDLDir()
+                File(thumbnailsDownloadDir).mkdirs()    // make sure the dir exists
+                val partialThumbnail = thumbnailsDownloadDir + "${id}.downloading"
+                val outputFile = File(partialThumbnail)
+
+                val uri = URL(url)
+                urlConnection = uri.openConnection() as HttpURLConnection
+                urlConnection.doInput = true
+                urlConnection.connect()
+                val inputStream: InputStream = urlConnection.inputStream
+                val fileOutputStream = FileOutputStream(outputFile)
+                inputStream.copyTo(fileOutputStream)
+                inputStream.close()
+                fileOutputStream.close()
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 }
 
-    // returns any existing book list - otherwise launches the network xml loading code
+// returns any existing book list - otherwise launches the network xml loading code
 fun parseOPDSfile(bldlActivityIndex: Int): MutableList<BLBook>? {
     if (BLBookList.booklist[bldlActivityIndex]?.isNotEmpty() == true) {
         return (BLBookList.booklist[bldlActivityIndex] as MutableList<BLBook>?)!!;
