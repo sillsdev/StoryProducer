@@ -105,6 +105,10 @@ class CommunityWorkFrag : MultiRecordFrag() {
             R.id.toolbar,
             50, 75,
             R.string.help_community_revise_title, R.string.help_community_revise_body)
+        mPopupHelpUtils?.addPopupHelpItem(
+                R.id.toolbar,
+                60, 75,
+                R.string.help_community_nextphase_title, R.string.help_community_nextphase_body)
 
         mPopupHelpUtils?.showNextPopupHelp()
 

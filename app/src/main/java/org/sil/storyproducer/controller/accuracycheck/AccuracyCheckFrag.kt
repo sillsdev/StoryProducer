@@ -301,6 +301,10 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
             50, 75,
             R.string.help_accuracy_phase_title, R.string.help_accuracy_phase_body)
         mPopupHelpUtils?.addPopupHelpItem(
+                R.id.seek_bar,
+                82, 70,
+                R.string.help_community_swipe_title, R.string.help_community_swipe_body)
+        mPopupHelpUtils?.addPopupHelpItem(
             R.id.concheck_logs_button,
             60, 5,
             R.string.help_accuracy_history_title, R.string.help_accuracy_history_body)
