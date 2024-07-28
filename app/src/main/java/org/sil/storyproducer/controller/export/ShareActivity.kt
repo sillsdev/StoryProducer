@@ -213,7 +213,7 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
                 R.string.help_share_codes_title, R.string.help_share_codes_body)
         mPopupHelpUtils?.addPopupHelpItem(
                 R.id.videos_list,
-                85, 24,
+                80, 24,
                 R.string.help_share_ext_title, R.string.help_share_ext_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.videos_list,

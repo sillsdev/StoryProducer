@@ -171,8 +171,8 @@ class FinalizeActivity : PhaseBaseActivity() {
             40, 80,
             R.string.help_finalize_filename_title, R.string.help_finalize_filename_body)
         mPopupHelpUtils?.addPopupHelpItem(
-            R.id.button_export_start,
-            -1, -1,
+            R.id.checkbox_export_soundtrack,
+            40, 10,
             R.string.help_finalize_options_title, R.string.help_finalize_options_body)
 //        mPopupHelpUtils?.addPopupHelpItem(
 //                R.id.checkbox_export_song,
