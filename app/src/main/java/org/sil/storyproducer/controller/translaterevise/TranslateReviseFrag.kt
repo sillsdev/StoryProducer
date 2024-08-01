@@ -8,6 +8,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.PopupHelpUtils
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 
 /**
@@ -54,17 +55,23 @@ class TranslateReviseFrag : MultiRecordFrag() {
                     R.string.help_translate_resumetitle_title, R.string.help_translate_resumetitle_body)
              **/
             mPopupHelpUtils?.addPopupHelpItem(
-                    R.id.fragment_scripture_text,
-                    25, 2,
-                    R.string.help_translate_pick_title, R.string.help_translate_pick_body)
+                R.id.fragment_scripture_text,
+                25, 2,
+                R.string.help_translate_pick_title, R.string.help_translate_pick_body)
             mPopupHelpUtils?.addPopupHelpItem(
-                    R.id.edit_text_view,
-                    20, 90,
-                    R.string.help_translate_enter_title, R.string.help_translate_enter_body)
+                R.id.edit_text_view,
+                20, 90,
+                R.string.help_translate_enter_title, R.string.help_translate_enter_body) {
+                    Workspace.activeSlide?.let { it.slideType == SlideType.FRONTCOVER && it.translatedContent.isNotEmpty() } ?: false
+            }
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.start_recording_button,
                 80, 10 ,
-                R.string.help_translate_record_title, R.string.help_translate_record_body)
+                R.string.help_translate_record_title, R.string.help_translate_record_body) {
+                    Workspace.activeSlide?.let {
+                        it.slideType == SlideType.FRONTCOVER && it.translateReviseAudioFiles.isNotEmpty() &&
+                                !recordingToolbar.isRecording } ?: false
+            }
             mPopupHelpUtils?.addPopupHelpItem(
                     R.id.seek_bar,
                     86, 90,
@@ -83,7 +90,11 @@ class TranslateReviseFrag : MultiRecordFrag() {
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.start_recording_button,
                 80, 10,
-                R.string.help_translate_record_slide_title, R.string.help_translate_record_slide_body)
+                R.string.help_translate_record_slide_title, R.string.help_translate_record_slide_body) {
+                    Workspace.activeSlide?.let {
+                        it.slideType == SlideType.NUMBEREDPAGE && it.translateReviseAudioFiles.isNotEmpty() &&
+                                !recordingToolbar.isRecording } ?: false
+            }
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.play_recording_button,
                 50, 10,

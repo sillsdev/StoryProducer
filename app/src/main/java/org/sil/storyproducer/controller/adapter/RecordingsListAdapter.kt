@@ -3,9 +3,6 @@ package org.sil.storyproducer.controller.adapter
 import android.app.AlertDialog
 import android.content.Context
 import android.media.MediaPlayer
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.RecyclerView
-import androidx.appcompat.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,13 +10,23 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
-import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.file.deleteAudioFileFromList
+import org.sil.storyproducer.tools.file.deleteWLAudioFileFromList
+import org.sil.storyproducer.tools.file.getChosenDisplayName
+import org.sil.storyproducer.tools.file.getRecordedAudioFiles
+import org.sil.storyproducer.tools.file.getRecordedDisplayNames
+import org.sil.storyproducer.tools.file.setChosenFileIndex
+import org.sil.storyproducer.tools.file.storyRelPathExists
+import org.sil.storyproducer.tools.file.updateDisplayName
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
@@ -271,10 +278,10 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
                 }
                 else {
                     setChosenFileIndex(-1)
-                    toolbar?.updateInheritedToolbarButtonVisibility()
                     dialog?.dismiss()
                 }
             }
+            toolbar?.updateInheritedToolbarButtonVisibility()
         }
 
         override fun onRenameClick(position: Int, newName: String) {

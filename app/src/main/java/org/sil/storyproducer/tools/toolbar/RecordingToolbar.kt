@@ -228,11 +228,11 @@ open class RecordingToolbar : Fragment() {
     /**
      * This function sets the visibility of any inherited buttons
      */
-    open fun updateInheritedToolbarButtonVisibility(){}
+    open fun updateInheritedToolbarButtonVisibility() {}
 
-    protected open fun showInheritedToolbarButtons(){}
+    protected open fun showInheritedToolbarButtons() {}
 
-    protected open fun hideInheritedToolbarButtons(animated: Boolean){}
+    protected open fun hideInheritedToolbarButtons(animated: Boolean) {}
 
     /**
      * Enables the buttons to have the appropriate onClick listeners.

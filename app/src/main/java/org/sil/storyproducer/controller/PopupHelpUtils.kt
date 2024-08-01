@@ -9,6 +9,8 @@ import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -35,6 +37,7 @@ import androidx.preference.PreferenceManager
 import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
 import timber.log.Timber
+import kotlin.concurrent.fixedRateTimer
 import kotlin.math.min
 
 public object SnackbarManager {
@@ -75,13 +78,12 @@ class PopupItem(val anchorViewId: Int,
                 val percentY: Int,
                 val titleResId: Int,
                 val bodyResId: Int,
-                val waitForUi: Boolean = false) {
-
-    var itemString = ""
+                val isTaskAccomplished: (() -> Boolean)? = null) {
 }
 class PopupHelpUtils(private val parent: Any,
-                     private val helpSeriesIndex: Int = 0)    // used to allow two or more help sequences for this fragment/activity
+                     private val helpSeriesIndex: Int = 0)  // used to allow two or more help sequences for this fragment/activity
 {
+
 
     private var helpPopupWindow: PopupWindow? = null
     private var popupItems: MutableList<PopupItem> = mutableListOf()
@@ -161,8 +163,9 @@ class PopupHelpUtils(private val parent: Any,
                     percentY: Int,
                     titleResId: Int,
                     bodyResId: Int,
-                         waitForUi: Boolean = false) {
-        val newPopup = PopupItem(anchorViewId, percentX, percentY, titleResId, bodyResId, waitForUi)
+                    isTaskAccomplished: (() -> Boolean)? = null) {
+
+        val newPopup = PopupItem(anchorViewId, percentX, percentY, titleResId, bodyResId, isTaskAccomplished)
         popupItems.add(newPopup)
     }
 
@@ -215,8 +218,10 @@ class PopupHelpUtils(private val parent: Any,
         if (context == null || activity == null)
             return false
 
-        var popupItem = popupItems[currentHelpIndex]
-
+        val popupItem = popupItems[currentHelpIndex]
+        var showNextGrayed = false
+        if ((popupItem.isTaskAccomplished != null) && !popupItem.isTaskAccomplished.invoke())
+             showNextGrayed = true
         val view = activity?.findViewById<View>(popupItem.anchorViewId)
         if (view != null) {
             view.post {
@@ -233,6 +238,7 @@ class PopupHelpUtils(private val parent: Any,
                         // we are now using the view2.rootView.context and a separate style in styles.xml
                         view2.rootView.context,//context!!,
                         view2,
+                        popupItem,
                         if (popupItem.percentX == -1)
                             Point(-1, -1)
                         else
@@ -240,7 +246,9 @@ class PopupHelpUtils(private val parent: Any,
                                     (view2.height.toFloat()*popupItem.percentY/100).toInt()),
                         popupItem.titleResId,
                         popupItem.bodyResId,
-                        currentHelpIndex == popupItems.size-1,   // show ok button for last message
+                        currentHelpIndex != popupItems.size-1,   // show next button for all but last message
+                        showNextGrayed,
+                        currentHelpIndex == 0,  // show close (x) button for first message only
                         currentHelpIndex == 0 && getDerivedClassName(parent) == "MainActivity",  // show logo for welcome help
                         if (popupItem.percentY in 0..50) CompassPoint.SOUTH else
                             if (popupItem.percentY > 50) CompassPoint.NORTH else
@@ -272,10 +280,7 @@ class PopupHelpUtils(private val parent: Any,
                         globalCancelCount = 0 // reset cancelled count (backed by preferences)
 
                         if (currentHelpIndex >= 0 && currentHelpIndex < popupItems.size) {
-                            val nextPopupItem = popupItems[currentHelpIndex]
-                            if (!nextPopupItem.waitForUi) {
-                                showNextPopupHelp()
-                            }
+                            showNextPopupHelp()
                         }
                     }
                     val buttonPrev: Button =
@@ -289,10 +294,7 @@ class PopupHelpUtils(private val parent: Any,
                         globalCancelCount = 0 // reset cancelled count (backed by preferences)
 
                         if (currentHelpIndex >= 0 && currentHelpIndex < popupItems.size) {
-                            val nextPopupItem = popupItems[currentHelpIndex]
-                            if (!nextPopupItem.waitForUi) {
-                                showNextPopupHelp()
-                            }
+                            showNextPopupHelp()
                         }
                     }
                 }
@@ -303,10 +305,21 @@ class PopupHelpUtils(private val parent: Any,
     }
 
     // a PopupWindow that should enable resource deletion on destruction
-    class CustomPopupWindow(contentView: View, width: Int, height: Int) :
+    class CustomPopupWindow(
+        private val popupItem: PopupItem,
+        private val contentView: View,
+        width: Int, height: Int) :
             PopupWindow(contentView, width, height) {
 
+        private var doneIt = false
+        private var allowedNext = false
         private lateinit var lifecycleOwner: LifecycleOwner
+        private val handler = Handler(Looper.getMainLooper())
+        private val timer = fixedRateTimer(initialDelay = 1000, period = 500) {
+            handler.post {
+                updateUI()
+            }
+        }
 
         fun setLifecycleOwner(owner: LifecycleOwner) {
             this.lifecycleOwner = owner
@@ -320,15 +333,35 @@ class PopupHelpUtils(private val parent: Any,
                 }
             })
         }
+
+        private fun updateUI() {
+            // UI update code here to be run on the UI thread
+            if (!doneIt && popupItem.isTaskAccomplished != null && popupItem.isTaskAccomplished.invoke())
+                doneIt = true
+            if (doneIt && !allowedNext) {
+                val textNextButton = contentView.findViewById<Button>(R.id.btnNext)
+                textNextButton.alpha = 1.0f
+                textNextButton.isEnabled = true
+                allowedNext = true
+            }
+        }
+
+        fun dismissPopup() {    // TODO: IS THIS BEING CALLED???
+            timer.cancel() // Stop the timer when the popup is dismissed
+            dismiss()
+        }
     }
 
     // Function to create and show a round corner polygon-shaped popup
     private fun showHelpPopup2(context: Context,
                                parentView: View,
+                               popupItem: PopupItem,
                                arrowTarget: Point,
                                titleResId: Int,
                                bodyResId: Int,
-                               showOk: Boolean = false,
+                               showNext: Boolean = true,
+                               showNextGrayed: Boolean = true,
+                               showClose: Boolean = true,
                                showSPIcon: Boolean = false,
                                compassHint: CompassPoint = CompassPoint.NO_COMPASS_POINT)
             : PopupWindow {
@@ -391,11 +424,22 @@ class PopupHelpUtils(private val parent: Any,
         val textBodyView = popupView.findViewById<TextView>(R.id.textBody)
         val bodyString = context.getString(bodyResId)
         textBodyView.text = HtmlCompat.fromHtml(bodyString, HtmlCompat.FROM_HTML_MODE_LEGACY)
-        if (showOk) {
-            // the last popup in the series says "OK" rather than "Next"
-            val textOkButton = popupView.findViewById<Button>(R.id.btnNext)
-            textOkButton.text = context.getString(R.string.ok)
-            textOkButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0) // hide the next arrow
+        val textNextButton = popupView.findViewById<Button>(R.id.btnNext)
+        if (showNext) {
+            if (showNextGrayed) {
+                textNextButton.alpha = 0.5f
+                textNextButton.isEnabled = false
+            }
+        } else {
+                // the last popup in the series says "Got it" rather than "Next"
+            textNextButton.text = context.getString(R.string.gotIt)
+            textNextButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0) // hide the next arrow
+        }
+        val textCloseButton = popupView.findViewById<ImageButton>(R.id.btnClose)
+        if (showClose) {
+            textCloseButton.visibility = View.VISIBLE
+        } else {
+            textCloseButton.visibility = View.GONE
         }
 
         val usedPopupWidth = (rootDrawableBounds.width() * boxWidthFraction).toInt()
@@ -520,7 +564,7 @@ class PopupHelpUtils(private val parent: Any,
         val shiftedView = ShiftedView(context, null, 0, popupView)
         shiftedView.setShift(shiftBoxX, shiftBoxY) // Shift the child view by given amount
 
-        val popupWindow = CustomPopupWindow(shiftedView, popupBoxWidth, popupBoxHeight)
+        val popupWindow = CustomPopupWindow(popupItem, shiftedView, popupBoxWidth, popupBoxHeight)
 //        popupWindow.setTouchModal(true)   // not working? (needs API 29 anyway)
 
         // use a background drawing class to draw the box and arrow

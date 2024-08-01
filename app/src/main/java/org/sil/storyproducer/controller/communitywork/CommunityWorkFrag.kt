@@ -9,6 +9,9 @@ import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.PopupHelpUtils
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.SlideType
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 /**
@@ -88,11 +91,17 @@ class CommunityWorkFrag : MultiRecordFrag() {
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.seek_bar,
             82, 70,
-            R.string.help_community_swipe_title, R.string.help_community_swipe_body)
+            R.string.help_community_swipe_title, R.string.help_community_swipe_body, {
+                Workspace.activeStory.slides[slideNum].slideType == SlideType.FRONTCOVER
+            })
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.fragment_reference_audio_button,
             80, 90,
-            R.string.help_community_play_title, R.string.help_community_play_body)
+            R.string.help_community_play_title, R.string.help_community_play_body, {
+                Workspace.activeStory.activityLogs.firstOrNull {
+                    it.phase.phaseType == PhaseType.COMMUNITY_WORK && it.description.contains("Draft Playback")  // TODO: LOCALIZATION: Temp string
+                } != null
+            })
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.start_recording_button,
             50, 10,

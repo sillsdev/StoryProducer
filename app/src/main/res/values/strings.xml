@@ -5,6 +5,7 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="ok">OK</string>
+    <string name="gotIt">Got it</string>
     <string name="cancel">Cancel</string>
     <string name="next">Next</string>
     <string name="help">Help</string>
@@ -501,7 +502,7 @@
     <string name="help_learn_listen_title">Listen</string>
     <string name="help_learn_listen_body">
         <![CDATA[Play the story several times until you learn the story well enough to retell it.
-        <br/>Go ahead, do it now.]]>
+        <br/><b>Go ahead</b>, try it now.]]>
     </string>
     <string name="help_learn_practice_title">Practice</string>
     <string name="help_learn_practice_body">
