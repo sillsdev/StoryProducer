@@ -303,7 +303,9 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
         mPopupHelpUtils?.addPopupHelpItem(
                 R.id.seek_bar,
                 82, 70,
-                R.string.help_community_swipe_title, R.string.help_community_swipe_body)
+                R.string.help_community_swipe_title, R.string.help_community_swipe_body, {
+                    Workspace.activeStory.slides[slideNum].slideType == SlideType.FRONTCOVER
+                })
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.concheck_logs_button,
             60, 5,
@@ -319,7 +321,11 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.concheck_checkmark_button,
             40, 5,
-            R.string.help_accuracy_confirm_title, R.string.help_accuracy_confirm_body)
+            R.string.help_accuracy_confirm_title, R.string.help_accuracy_confirm_body, {
+//            true    // TODO: Maybe don't force confirm of a slide just for the tutorial
+                Workspace.activeStory.slides.firstOrNull {
+                    it.slideType in arrayOf(SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE, SlideType.LOCALSONG) && it.isChecked } != null
+            })
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.seek_bar,
             82, 70,
