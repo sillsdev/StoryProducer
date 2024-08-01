@@ -7,7 +7,8 @@ import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.GregorianCalendar
+import java.util.Locale
 
 @JsonClass(generateAdapter = true)
 class LogEntry(var dateTimeString: String,
@@ -27,7 +28,7 @@ class LogEntry(var dateTimeString: String,
 
 fun saveLearnLog(context: Context, startSlide: Int, endSlide: Int, duration: Long, isRecording: Boolean = false){
     val mResources = context.resources
-    var ret = if(isRecording){"Record "}else{"Playback "}
+    var ret = if(isRecording){"Record "}else{"Playback "}   // TODO: LOCALIZATION:
 
     ret += if (startSlide == endSlide) {
         mResources.getQuantityString(R.plurals.logging_numSlides, 1) + " " + (startSlide)

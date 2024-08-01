@@ -148,7 +148,7 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
                 val builder: AlertDialog.Builder = AlertDialog.Builder(this)
                 builder.setMessage("${getString(R.string.view_video_folder_message)}\n${videoFileUriStr}")
                     .setCancelable(false)
-                    .setPositiveButton("OK") { _, _ -> }
+                    .setPositiveButton(getString(R.string.ok)) { _, _ -> }
                 val alert: AlertDialog = builder.create()
                 alert.show()
             }
