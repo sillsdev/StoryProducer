@@ -69,6 +69,7 @@ class TranslateReviseFrag : MultiRecordFrag() {
                     R.id.seek_bar,
                     86, 90,
                 R.string.help_translate_nextslide1_title, R.string.help_translate_nextslide1_body)
+
         } else if (Workspace.activeStory.slides[slideNumber].isNumberedPage()) {
             mPopupHelpUtils = PopupHelpUtils(this, 1)   // always use slide 1
             mPopupHelpUtils?.addPopupHelpItem(
@@ -95,7 +96,11 @@ class TranslateReviseFrag : MultiRecordFrag() {
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.seek_bar,
                 82, 70,
-                R.string.help_translate_nextslide2_title, R.string.help_translate_nextslide2_body)
+                R.string.help_translate_nextslide1_title, R.string.help_translate_nextslide2_body)
+            mPopupHelpUtils?.addPopupHelpItem(
+                    R.id.seek_bar,
+                    82, 70,
+                    R.string.help_translate_continue_title, R.string.help_translate_continue_body)
 
         } else if (Workspace.activeStory.slides[slideNumber].isSongSlide()) {
             mPopupHelpUtils = PopupHelpUtils(this, 2)

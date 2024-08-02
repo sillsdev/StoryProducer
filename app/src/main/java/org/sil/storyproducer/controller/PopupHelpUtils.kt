@@ -197,7 +197,7 @@ class PopupHelpUtils(private val parent: Any,
 
         globalCancelCount = 0
         if (!showNextPopupHelp()) {
-            Toast.makeText(activity, activity?.getString(R.string.help_no_more_message), Toast.LENGTH_LONG).show()
+            Toast.makeText(activity, activity?.getString(R.string.help_tutor_no_more_pages), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -255,7 +255,7 @@ class PopupHelpUtils(private val parent: Any,
                         ++globalCancelCount // increment global cancel count
                         SnackbarManager.show(
                             view2,
-                            context!!.getString(R.string.help_dismiss_message),
+                            context!!.getString(R.string.help_tutor_dismiss_message),
                             4 * 1000,   // display for 4 seconds
                             3
                         )

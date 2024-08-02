@@ -451,28 +451,29 @@
     <string name="del_story_title">Story Deletion</string>
     <string name="del_story_message">Do you want to delete the story \"%1$s\" from your device? Deleting this story will delete any audio recordings you have made in this story.</string>
 
-    <!-- Strings for Help Popup views: titles and body  -->
-    <string name="help_welcome_body">
-    <![CDATA[This blue Popup Help gives you step-by-step guidance for the current page.<br/>Tap <b>Next</b> to begin.]]>
+    <!-- Strings for Help Tutorial views: titles and body  -->
+    <string name="help_main_welcome_body">
+    <![CDATA[This blue Tutorial window gives you step-by-step guidance to complete your first Bible story video.<br/>Tap <b>Next</b> to begin.]]>
     </string>
-    <string name="help_welcome_title2">How to Use Popup Help</string>
-    <string name="help_welcome_body2">
-        <![CDATA[• You can drag Popup Help out of the way whenever you wish.<br/>• Try it now.]]>
+    <string name="help_main_drag_title"></string>
+    <string name="help_main_drag_body">
+        <![CDATA[• You can drag the blue tutorial window out of the way whenever you need to.<br/>• Try it now.]]>
     </string>
-    <string name="help_main_help_title">Help</string>
+    <string name="help_main_help_title">Help Menu</string>
     <string name="help_main_help_body">
-        <![CDATA[You can tap on the blue <b>[?]</b> button anytime to get help for the current screen, or to restart Popup Help.
-<br/>Right now, tap Next...]]>
+        <![CDATA[You can tap on the blue <b>[?]</b> button anytime to get help for the current screen, or to restart the tutorial.
+        <br/>Right now, tap Next...]]>
     </string>
     <!--<string name="help_welcome_body3">
-        <![CDATA[• You can tap the <b>X</b> to hide Popup Help anytime.
-<br/>• Tap the blue help <b>[?]</b> button in the upper right to Resume displaying Popup Help.
+        <![CDATA[• You can tap the <b>X</b> to hide the tutorial anytime.
+<br/>• Tap the blue help <b>[?]</b> button in the upper right to Resume displaying the tutorial.
 <br/>• Try them now.]]>
     </string>
     -->
     <string name="help_main_guidance_title">Guidance</string>
     <string name="help_main_guidance_body">
-        <![CDATA[It’s important to keep Popup Help displayed, and perform each instruction when stated, until you’ve learned how to use each phase of Story Producer.]]>
+        <![CDATA[This tutorial will be displayed throughout your first walkthrough of Story Producer.
+        <b>Perform each instruction when stated</b> before moving on to the next step.]]>
     </string>
     <string name="help_main_screen_title">Story List</string>
     <string name="help_main_screen_body">
@@ -582,11 +583,13 @@
         <![CDATA[This List Play button can be used if you need to review multiple recordings. Much of the time you don’t need this.]]>
     </string>
     -->
-    <string name="help_translate_nextslide2_title">Continue</string>
     <string name="help_translate_nextslide2_body">
-        <![CDATA[When you are done recording this slide, <b>swipe left</b> to move to the next slide.
-        <br/>&lt;&lt;&lt;&lt;&lt;&lt;
-        <br/>Continue the translation process on each Story Slide.]]>
+        <![CDATA[When you are done recording this slide, swipe left to move to the next slide.
+        <br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
+    </string>
+    <string name="help_translate_continue_title">Translate</string>
+    <string name="help_translate_continue_body">
+        <![CDATA[Do the Listen, Translate, Record, Review process on each Story Slide.]]>
     </string>
     <string name="help_translate_song_slide_title">Song Slide</string>
     <string name="help_translate_song_slide_body">
@@ -640,9 +643,9 @@
     <string name="help_community_record_body">
         <![CDATA[Ask people to give feedback directly or by recording their comments using the microphone button.]]>
     </string>
-    <string name="help_community_continue_title">Continue</string>
+    <string name="help_community_continue_title">Gather Feedback</string>
     <string name="help_community_continue_body">
-        <![CDATA[Swipe left to go to the next slide.<br/>Gather community feedback on every slide.<br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
+        <![CDATA[Go to each slide.&ensp;&lt;&lt;&lt;&lt;&lt;&lt;<br/>Gather community feedback for every slide.]]>
     </string>
     <string name="help_community_revise_title">Revise</string>
     <string name="help_community_revise_body">
@@ -677,9 +680,9 @@
     <string name="help_accuracy_confirm_body">
         <![CDATA[The accuracy checker should tap here if they approve this slide. A green checkmark indicates \"approved\".]]>
     </string>
-    <string name="help_accuracy_continue_title">Continue</string>
+    <string name="help_accuracy_continue_title">Continue Checking</string>
     <string name="help_accuracy_continue_body">
-        <![CDATA[Swipe left to go to the next slide.<br/>Check each slide for accuracy. Revise a slide\'s translation if necessary.<br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
+        <![CDATA[Go to each slide.&ensp;&lt;&lt;&lt;&lt;&lt;&lt;<br/>Check each slide for accuracy. Revise a slide\'s translation if necessary.]]>
     </string>
 
     <string name="help_voice_phase_title">Voice Studio Phase</string>
@@ -784,7 +787,8 @@
     </string>
     <string name="help_share_more_title"></string>
     <string name="help_share_more_body">
-        <![CDATA[Do you want to create additional video files with different options? Go back to the Finalize phase and create them.]]>
+        <![CDATA[Do you want to create additional video files with different options? Include the song?
+        Go back to the Finalize phase and create them.]]>
     </string>
     <string name="help_share_story_list_title">Story List</string>
     <string name="help_share_story_list_body">
@@ -792,9 +796,9 @@
     </string>
 
     <string name="help_menu_detailed">Show detailed help for this page</string>
-    <string name="help_menu_popup_restart">Restart Popup Help</string>
-    <string name="help_menu_popup_resume">Resume Popup Help</string>
-    <string name="help_dismiss_message">Tap the blue help <b>[?]</b> button in the toolbar to Resume Popup Help.</string>
-    <string name="help_no_more_message">No more popup help for this section.</string>
+    <string name="help_menu_tutor_restart">Restart Tutorial</string>
+    <string name="help_menu_tutor_resume">Resume Tutorial</string>
+    <string name="help_tutor_dismiss_message">Tap the blue help <b>[?]</b> button in the toolbar to Resume the Tutorial.</string>
+    <string name="help_tutor_no_more_pages">No more tutorial pages for this section.</string>
 
 </resources>
