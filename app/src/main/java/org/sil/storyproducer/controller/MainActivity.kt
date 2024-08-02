@@ -142,11 +142,11 @@ class MainActivity : BaseActivity(), Serializable {
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.activity_main,
             -1, -1,
-            R.string.welcome_to_story_producer, R.string.help_welcome_body)
+            R.string.welcome_to_story_producer, R.string.help_main_welcome_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.activity_main,
             -1, -1,
-            R.string.help_welcome_title2, R.string.help_welcome_body2)
+            R.string.help_main_drag_title, R.string.help_main_drag_body)
         mPopupHelpUtils?.addPopupHelpItem(
                 R.id.toolbar,
                 88, 80,

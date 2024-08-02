@@ -9,9 +9,9 @@
     <item
         android:icon="@drawable/ic_help_reset"
         android:id="@+id/action_popup_help_restart"
-        android:title="@string/help_menu_popup_restart" />
+        android:title="@string/help_menu_tutor_restart" />
     <item
         android:icon="@drawable/baseline_live_help_24"
         android:id="@+id/action_popup_help_resume"
-        android:title="@string/help_menu_popup_resume" />
+        android:title="@string/help_menu_tutor_resume" />
 </menu>
