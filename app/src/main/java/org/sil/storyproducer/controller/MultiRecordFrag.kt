@@ -160,15 +160,16 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
         // If we have a numbered page, only show the restore on the Translate_Revise Phase
         if(slideType == SlideType.NUMBEREDPAGE && Workspace.activePhase.phaseType == PhaseType.TRANSLATE_REVISE) {
 
-            val editFab = rootView!!.findViewById<View>(R.id.restore_image_view) as ImageView?
-            editFab?.visibility = View.VISIBLE
-            editFab?.setOnClickListener {
+            val restoreImageFab = rootView!!.findViewById<View>(R.id.restore_image_view) as ImageView?
+            restoreImageFab?.visibility = if (Workspace.activeStory.slides[slideNum].imageFile == "${slideNum}.jpg") View.INVISIBLE else View.VISIBLE
+            restoreImageFab?.setOnClickListener {
                 val dialog = AlertDialog.Builder(context)
                         .setTitle(R.string.camera_revert_title)
                         .setMessage(R.string.camera_revert_message)
                         .setNegativeButton(R.string.no, null)
                         .setPositiveButton(R.string.yes) { _, _ ->
                             Workspace.activeStory.slides[slideNum].imageFile = "${slideNum}.jpg"
+                            restoreImageFab?.visibility = View.INVISIBLE
                             setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
                         }
                         .create()
@@ -262,6 +263,9 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                     tempPicFile = null
 
                     setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
+
+                    val restoreImageFab = rootView!!.findViewById<View>(R.id.restore_image_view) as ImageView?
+                    restoreImageFab?.visibility = View.VISIBLE
 
                 } while (false)
 
