@@ -121,28 +121,37 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
     override fun showInheritedToolbarButtons() {
         super.showInheritedToolbarButtons()
 
-        playButton.visibility = View.VISIBLE
-        playButton.alpha = 1.0f
-        playButton.isEnabled = true
-        if (editButton != null) {
-            editButton?.visibility = View.VISIBLE
-            editButton?.alpha = 1.0f
-            editButton?.isEnabled = true
+        if (totalPhaseRecordings() > 0) {
+            playButton.visibility = View.VISIBLE
+            playButton.alpha = 1.0f
+            playButton.isEnabled = true
+            if (editButton != null) {
+                editButton?.visibility = View.VISIBLE
+                editButton?.alpha = 1.0f
+                editButton?.isEnabled = true
+            }
+        } else {
+            playButton.visibility = View.INVISIBLE
+            if (editButton != null)
+                editButton?.visibility = View.INVISIBLE
         }
     }
 
     override fun hideInheritedToolbarButtons(animated: Boolean) {
         super.hideInheritedToolbarButtons(animated)
 
-        if (animated)
-            playButton.visibility = View.INVISIBLE  // hide when record flashing
-        playButton.alpha = 0.5f
-        playButton.isEnabled = false
-        if (editButton != null) {
-            if (animated)
-                editButton?.visibility = View.INVISIBLE // hide when record flashing
-            editButton?.alpha = 0.5f
-            editButton?.isEnabled = false
+        if (!animated && totalPhaseRecordings() > 0) {
+            playButton.visibility = View.VISIBLE
+            playButton.alpha = 0.5f
+            playButton.isEnabled = false
+            if (editButton != null) {
+                editButton?.alpha = 0.5f
+                editButton?.isEnabled = false
+            }
+        } else {
+            playButton.visibility = View.INVISIBLE
+            if (editButton != null)
+                editButton?.visibility = View.INVISIBLE
         }
     }
 
@@ -182,4 +191,12 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
             }
         }
     }
+
+    protected fun totalPhaseRecordings() : Int {
+        val slideNum = this.requireArguments().getInt(SLIDE_NUM)
+        if (slideNum > -1 && slideNum < Workspace.activeStory.slides.count())
+            return Workspace.activePhase.getCombNames(slideNum)?.count() ?: 0
+        return 0
+    }
+
 }

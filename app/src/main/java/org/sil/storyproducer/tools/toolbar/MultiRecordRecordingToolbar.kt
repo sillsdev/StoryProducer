@@ -4,7 +4,10 @@ import android.view.View
 import android.widget.ImageButton
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
+import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.tools.file.getChosenFilename
+import org.sil.storyproducer.tools.file.storyRelPathExists
 
 /**
  * A class responsible for listing recorded audio files from a recording toolbar.
@@ -64,10 +67,9 @@ open class MultiRecordRecordingToolbar: PlayBackRecordingToolbar() {
         }
     }
 
-    private fun totalPhaseRecordings() : Int {
-        val activeSlideNum = Workspace.activeSlideNum
-        if (activeSlideNum > -1 && activeSlideNum < Workspace.activeStory.slides.count())
-            return Workspace.activePhase.getCombNames(activeSlideNum)?.count() ?: 0
-        return 0
+    override fun updateInheritedToolbarButtonVisibility() {
+        super.updateInheritedToolbarButtonVisibility()
+        showInheritedToolbarButtons()
     }
+
 }

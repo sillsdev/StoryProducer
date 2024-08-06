@@ -53,7 +53,7 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
         super.updateInheritedToolbarButtonVisibility()
 
         if (!isAppendingOn) {
-//            checkButton.visibility = View.INVISIBLE
+            checkButton.visibility = View.INVISIBLE
             checkButton.alpha = 0.5f
             checkButton.isEnabled = false
         }
@@ -73,7 +73,7 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
     override fun hideInheritedToolbarButtons(animated: Boolean) {
         super.hideInheritedToolbarButtons(animated)
 
-//        checkButton.visibility = View.INVISIBLE
+        checkButton.visibility = View.INVISIBLE
         checkButton.alpha = 0.5f
         checkButton.isEnabled = false
 //        sendAudioButton.visibility = View.INVISIBLE
@@ -148,7 +148,7 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
             micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
             micButton.contentDescription = getString(R.string.rec_toolbar_start_recording_button)
 
-//            checkButton.visibility = View.INVISIBLE
+            checkButton.visibility = View.INVISIBLE
             checkButton.alpha = 0.5f
             checkButton.isEnabled = false
             sendAudioButton.visibility = View.VISIBLE
