@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.TransitionDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -92,10 +94,8 @@ open class RecordingToolbar : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.toolbar_for_recording, container, false) as LinearLayout
 
-        val initialColor: Int = Color.rgb(67, 179, 230)
-        val targetColor: Int = Color.rgb(255, 0, 0)
-        animationHandler = AnimationHandler(initialColor, targetColor)
-        rootView?.background = animationHandler.transitionDrawable
+        animationHandler = AnimationHandler()
+        rootView?.background = animationHandler.transitionDrawable  // start initial blue color, ready for blue-red transition
 
         setupToolbarButtons()
         updateInheritedToolbarButtonVisibility()
@@ -141,6 +141,9 @@ open class RecordingToolbar : Fragment() {
         
         animationHandler.stopAnimation()
 
+        animationHandler = AnimationHandler()
+        rootView?.background = animationHandler.transitionDrawable  // reset color to blue, ready for next blue-red transition
+
         micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
         micButton.contentDescription = getString(R.string.rec_toolbar_start_recording_button)
         showInheritedToolbarButtons()
@@ -153,6 +156,13 @@ open class RecordingToolbar : Fragment() {
 
         if(isAnimationEnabled()){
             animationHandler.startAnimation()
+            rootView?.postDelayed({
+                // change to pulsing red after initial blue to red transition
+                animationHandler.stopAnimation()
+                animationHandler = AnimationHandler(Color.rgb(255, 0, 0), Color.rgb(128, 0, 0))
+                rootView?.background = animationHandler.transitionDrawable
+                animationHandler.startAnimation()
+            }, AnimationHandler.ANIMATION_DURATION.toLong())
         }
 
         //TODO: make this logging more robust and encapsulated
