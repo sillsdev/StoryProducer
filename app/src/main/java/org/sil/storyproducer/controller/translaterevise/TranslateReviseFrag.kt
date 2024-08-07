@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.SeekBar
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.PopupHelpUtils
@@ -22,6 +24,7 @@ class TranslateReviseFrag : MultiRecordFrag() {
 
         setHasOptionsMenu(true)
 
+        showHideReferenceAudioPlay()
     }
 
     private fun addAndStartPopupMenus(slideNumber: Int) {
@@ -157,12 +160,32 @@ class TranslateReviseFrag : MultiRecordFrag() {
         super.onResume()
 
         addAndStartPopupMenus(slideNum)
+
+        showHideReferenceAudioPlay()
+    }
+
+    private fun showHideReferenceAudioPlay() {
+        val playButton = view?.findViewById<ImageButton>(R.id.fragment_reference_audio_button)
+        val videoSeekBar = view?.findViewById<SeekBar>(R.id.videoSeekBar)
+        if (Workspace.activeStory.slides[slideNum].slideType == SlideType.LOCALSONG) {
+            playButton?.alpha = 0.5f
+            playButton?.isEnabled = false
+            videoSeekBar?.alpha = 0.5f
+            videoSeekBar?.isEnabled = false
+        } else {
+            playButton?.alpha = 1.0f
+            playButton?.isEnabled = true
+            videoSeekBar?.alpha = 1.0f
+            videoSeekBar?.isEnabled = true
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         setScriptureText(null, rootView!!.findViewById(R.id.fragment_scripture_text))
         setReferenceText(rootView!!.findViewById(R.id.fragment_reference_text))
+
+        showHideReferenceAudioPlay()
 
         return rootView
     }
