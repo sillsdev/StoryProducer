@@ -145,7 +145,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         if (mPopupHelpUtils != null)
             mPopupHelpUtils?.dismissPopup()
 
-        mPopupHelpUtils = PopupHelpUtils(this, 0)
+        mPopupHelpUtils = PopupHelpUtils(this)
 
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,
@@ -154,17 +154,17 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.fragment_reference_audio_button,
             80, 90,
-            R.string.help_learn_listen_title, R.string.help_learn_listen_body, {
+            R.string.help_learn_listen_title, R.string.help_learn_listen_body) {
                 Workspace.activeStory.activityLogs.firstOrNull {
                     it.phase.phaseType == PhaseType.LEARN && it.description.contains("Playback Slide")  // TODO: LOCALIZATION: Temp string
-                } != null
-            })
+            } != null
+        }
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.start_recording_button,
             50, 10,
-            R.string.help_learn_practice_title, R.string.help_learn_practice_body, {
+            R.string.help_learn_practice_title, R.string.help_learn_practice_body) {
                 Workspace.activeStory.learnAudioFile.isNotEmpty() && !recordingToolbar.isRecording
-            })
+        }
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.play_recording_button,
             50, 10,

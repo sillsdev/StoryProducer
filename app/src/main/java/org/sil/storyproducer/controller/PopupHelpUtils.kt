@@ -329,7 +329,7 @@ class PopupHelpUtils(private val parent: Any,
                 @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
                 fun onDestroy() {
                     // Dismiss the PopupWindow when the associated LifecycleOwner is destroyed
-                    dismiss()
+                    dismissPopup()
                 }
             })
         }
@@ -346,7 +346,7 @@ class PopupHelpUtils(private val parent: Any,
             }
         }
 
-        fun dismissPopup() {    // TODO: IS THIS BEING CALLED???
+        fun dismissPopup() {
             timer.cancel() // Stop the timer when the popup is dismissed
             dismiss()
         }
@@ -436,11 +436,7 @@ class PopupHelpUtils(private val parent: Any,
             textNextButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0) // hide the next arrow
         }
         val textCloseButton = popupView.findViewById<ImageButton>(R.id.btnClose)
-        if (showClose) {
-            textCloseButton.visibility = View.VISIBLE
-        } else {
-            textCloseButton.visibility = View.GONE
-        }
+        textCloseButton.visibility = if (showClose) View.VISIBLE else View.GONE
 
         val usedPopupWidth = (rootDrawableBounds.width() * boxWidthFraction).toInt()
         // Set the width we are allowed to use as the width of the inflated view

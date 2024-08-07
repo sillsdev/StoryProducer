@@ -195,7 +195,8 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
     protected fun totalPhaseRecordings() : Int {
         val slideNum = this.requireArguments().getInt(SLIDE_NUM)
         if (slideNum > -1 && slideNum < Workspace.activeStory.slides.count())
-            return Workspace.activePhase.getCombNames(slideNum)?.count() ?: 0
+            return Workspace.activePhase.getCombNames(slideNum)?.count() ?:
+                if (getChosenFilename().isNotEmpty()) 1 else 0  // NB: one audio file for learn phase
         return 0
     }
 

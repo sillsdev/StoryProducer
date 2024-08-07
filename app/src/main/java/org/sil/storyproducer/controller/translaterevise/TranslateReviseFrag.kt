@@ -35,7 +35,7 @@ class TranslateReviseFrag : MultiRecordFrag() {
         }
 
         if (slideNumber == 0) {
-            mPopupHelpUtils = PopupHelpUtils(this, 0)
+            mPopupHelpUtils = PopupHelpUtils(this)
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.toolbar,
                 50, 90,

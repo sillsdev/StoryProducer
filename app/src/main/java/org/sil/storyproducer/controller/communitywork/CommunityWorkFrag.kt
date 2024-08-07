@@ -9,7 +9,6 @@ import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.PopupHelpUtils
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
-import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
@@ -91,17 +90,18 @@ class CommunityWorkFrag : MultiRecordFrag() {
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.seek_bar,
             82, 70,
-            R.string.help_community_swipe_title, R.string.help_community_swipe_body, {
-                Workspace.activeStory.slides[slideNum].slideType == SlideType.FRONTCOVER
-            })
+            R.string.help_community_swipe_title, R.string.help_community_swipe_body) {
+            Workspace.activeStory.slides[slideNum].slideType == SlideType.FRONTCOVER
+        }
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.fragment_reference_audio_button,
             80, 90,
-            R.string.help_community_play_title, R.string.help_community_play_body, {
-                Workspace.activeStory.activityLogs.firstOrNull {
-                    it.phase.phaseType == PhaseType.COMMUNITY_WORK && it.description.contains("Draft Playback")  // TODO: LOCALIZATION: Temp string
-                } != null
-            })
+            R.string.help_community_play_title, R.string.help_community_play_body) {
+//                Workspace.activeStory.activityLogs.firstOrNull {
+//                    it.phase.phaseType == PhaseType.COMMUNITY_WORK && it.description.contains("Draft Playback")  // TODO: LOCALIZATION: Temp string
+//                } != null
+                true    // Always show next for community play action in case there is not recorded audio for this slide
+            }
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.start_recording_button,
             50, 10,
