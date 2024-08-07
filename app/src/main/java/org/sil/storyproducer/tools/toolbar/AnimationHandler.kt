@@ -5,7 +5,6 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Handler
 
-private const val ANIMATION_DURATION = 1500
 
 /**
  * Handles the animation between two colors.
@@ -14,8 +13,13 @@ private const val ANIMATION_DURATION = 1500
  *
  * The transitionDrawable property can be set to a color property of some element of the UI.
  */
-class AnimationHandler(initialColor: Int = Color.rgb(0, 0, 255),
+class AnimationHandler(initialColor: Int = Color.rgb(67, 179, 230),
                        targetColor: Int = Color.rgb(255, 0, 0)) {
+
+    companion object {
+        const val ANIMATION_DURATION = 1000
+    }
+
     val transitionDrawable: TransitionDrawable = TransitionDrawable(arrayOf(ColorDrawable(initialColor), ColorDrawable(targetColor)))
     private var colorHandler: Handler = Handler()
     private var colorHandlerRunnable: Runnable
