@@ -168,7 +168,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                         .setMessage(R.string.camera_revert_message)
                         .setNegativeButton(R.string.no, null)
                         .setPositiveButton(R.string.yes) { _, _ ->
-                            Workspace.activeStory.slides[slideNum].imageFile = "${slideNum}.jpg"
+                            Workspace.activeStory.slides[slideNum].imageFile = "${slideNum}.jpg"    // TODO: THIS ONLY WORKS FOR CURATED BIBLE STORIES
                             restoreImageFab?.visibility = View.INVISIBLE
                             setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
                         }

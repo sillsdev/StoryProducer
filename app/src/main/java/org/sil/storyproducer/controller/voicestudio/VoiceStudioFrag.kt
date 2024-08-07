@@ -156,7 +156,7 @@ class VoiceStudioFrag : MultiRecordFrag() {
                 R.id.start_recording_button,
                 80, 10,
                 R.string.help_voice_record_title, R.string.help_voice_record_body) {
-                Workspace.activeSlide?.let { it.chosenVoiceStudioFile.isNotEmpty() } ?: false
+                    Workspace.activeSlide?.let { it.chosenVoiceStudioFile.isNotEmpty() } ?: false
             }
             mPopupHelpUtils?.addPopupHelpItem(
                     R.id.play_recording_button,

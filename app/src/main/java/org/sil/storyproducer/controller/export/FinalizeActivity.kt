@@ -165,15 +165,15 @@ class FinalizeActivity : PhaseBaseActivity() {
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.button_local_credits,
             50, 100,
-            R.string.help_finalize_credits_title, R.string.help_finalize_credits_body, {
-                Workspace.isLocalCreditsChanged(this)
-            })
+            R.string.help_finalize_credits_title, R.string.help_finalize_credits_body) {
+            Workspace.isLocalCreditsChanged(this)
+        }
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.editText_export_title,
             40, 80,
-            R.string.help_finalize_filename_title, R.string.help_finalize_filename_body, {
-                mEditTextTitle.text.isNotEmpty()
-            })
+            R.string.help_finalize_filename_title, R.string.help_finalize_filename_body) {
+            mEditTextTitle.text.isNotEmpty()
+        }
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.checkbox_export_soundtrack,
             40, 10,
