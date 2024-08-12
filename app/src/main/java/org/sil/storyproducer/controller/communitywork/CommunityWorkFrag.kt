@@ -73,10 +73,10 @@ class CommunityWorkFrag : MultiRecordFrag() {
     override fun onResume() {
         super.onResume()
 
-        addAndStartPopupMenus(slideNum)
+        addAndStartPopupTutorials(slideNum)
     }
 
-    private fun addAndStartPopupMenus(slideNumber: Int) {
+    private fun addAndStartPopupTutorials(slideNumber: Int) {
 
         if (mPopupHelpUtils != null)
             mPopupHelpUtils?.dismissPopup()

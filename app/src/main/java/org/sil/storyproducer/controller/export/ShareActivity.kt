@@ -189,10 +189,10 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
     override fun onResume() {
         super.onResume()
 
-        addAndStartPopupMenus()
+        addAndStartPopupTutorials()
     }
 
-    private fun addAndStartPopupMenus() {
+    private fun addAndStartPopupTutorials() {
 
         if (mPopupHelpUtils != null)
             mPopupHelpUtils?.dismissPopup()
