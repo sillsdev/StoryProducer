@@ -147,11 +147,11 @@ class FinalizeActivity : PhaseBaseActivity() {
         mCheckboxText.setOnCheckedChangeListener { _, _ -> toggleVisibleElements(mCheckboxText) }
         mCheckboxSong.setOnCheckedChangeListener { _, _ -> toggleVisibleElements(mCheckboxSong) }
 
-        addAndStartPopupMenus()
+        addAndStartPopupTutorials()
 
     }
 
-    private fun addAndStartPopupMenus() {
+    private fun addAndStartPopupTutorials() {
 
         if (mPopupHelpUtils != null)
             mPopupHelpUtils?.dismissPopup()

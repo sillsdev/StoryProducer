@@ -134,13 +134,13 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
 
         invalidateOptionsMenu()
 
-        addAndStartPopupMenus()
+        addAndStartPopupTutorials()
 
     }
 
 
 
-    private fun addAndStartPopupMenus() {
+    private fun addAndStartPopupTutorials() {
 
         if (mPopupHelpUtils != null)
             mPopupHelpUtils?.dismissPopup()
@@ -225,7 +225,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         setSlideFromSeekbar()
 
 //        Moved to OnCreate() to fix double display on new install permissions request
-//        addAndStartPopupMenus()
+//        addAndStartPopupTutorials()
     }
 
 

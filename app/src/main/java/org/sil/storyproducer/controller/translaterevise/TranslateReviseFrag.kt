@@ -27,7 +27,7 @@ class TranslateReviseFrag : MultiRecordFrag() {
         showHideReferenceAudioPlay()
     }
 
-    private fun addAndStartPopupMenus(slideNumber: Int) {
+    private fun addAndStartPopupTutorials(slideNumber: Int) {
 
         if (mPopupHelpUtils != null) {
             mPopupHelpUtils?.dismissPopup()
@@ -159,7 +159,7 @@ class TranslateReviseFrag : MultiRecordFrag() {
     override fun onResume() {
         super.onResume()
 
-        addAndStartPopupMenus(slideNum)
+        addAndStartPopupTutorials(slideNum)
 
         showHideReferenceAudioPlay()
     }

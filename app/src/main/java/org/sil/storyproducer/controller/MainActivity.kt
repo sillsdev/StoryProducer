@@ -122,12 +122,9 @@ class MainActivity : BaseActivity(), Serializable {
                 this@MainActivity.applicationContext.registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
             }
         }
-
-        checkDownloadStoriesMessage()
-
     }
 
-    private fun addAndStartPopupMenus() {
+    private fun addAndStartPopupTutorials() {
 
         if (mPopupHelpUtils != null)
             mPopupHelpUtils?.dismissPopup()
@@ -186,12 +183,14 @@ class MainActivity : BaseActivity(), Serializable {
     override fun checkDownloadStoriesMessage() {
         super.checkDownloadStoriesMessage()
         if (Workspace.storyFilesToScanOrUnzipOrMove().size <= 3) {
-            SnackbarManager.show(
+            if (mPopupHelpUtils == null || mPopupHelpUtils?.isShowingPopupWindow() != true) {
+                SnackbarManager.show(
                     findViewById(R.id.drawer_layout),
                     getString(R.string.more_story_templates),
                     20 * 1000,   // display for 20 seconds
                     6
-            )
+                )
+            }
         } else if (Workspace.hasFilterToolbar()) {
             if (globalChipMsgCount < 2) {
                 SnackbarManager.show(
@@ -208,9 +207,9 @@ class MainActivity : BaseActivity(), Serializable {
     override fun onResume() {
         super.onResume()
 
-        checkDownloadStoriesMessage()
+        addAndStartPopupTutorials()
 
-        addAndStartPopupMenus()
+        checkDownloadStoriesMessage()
     }
 
     override fun onStart() {

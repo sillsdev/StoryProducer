@@ -86,6 +86,7 @@ class PopupHelpUtils(private val parent: Any,
 
 
     private var helpPopupWindow: PopupWindow? = null
+    private var aboutToShowHelpPopup = false
     private var popupItems: MutableList<PopupItem> = mutableListOf()
     private var context: Context? = null
     private var activity: ComponentActivity? = null
@@ -100,10 +101,15 @@ class PopupHelpUtils(private val parent: Any,
     }
 
     fun dismissPopup() {
+        aboutToShowHelpPopup = false
         if (helpPopupWindow != null) {
             helpPopupWindow?.dismiss()
             helpPopupWindow = null
         }
+    }
+
+    fun isShowingPopupWindow() : Boolean {
+        return aboutToShowHelpPopup
     }
 
     private fun getDerivedClassName(obj: Any): String {
@@ -222,6 +228,7 @@ class PopupHelpUtils(private val parent: Any,
         var showNextGrayed = false
         if ((popupItem.isTaskAccomplished != null) && !popupItem.isTaskAccomplished.invoke())
              showNextGrayed = true
+        aboutToShowHelpPopup = true
         val view = activity?.findViewById<View>(popupItem.anchorViewId)
         if (view != null) {
             view.post {
