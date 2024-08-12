@@ -88,7 +88,7 @@ class FinalizeActivity : PhaseBaseActivity() {
             stopExport()
             if(isSuccess && rootView != null) {
                 // Tell the user that the video was created
-                SnackbarManager.show(rootView!!, getString(R.string.title_video_created), 30 * 1000)
+                SnackbarManager.show(rootView!!, getString(R.string.title_video_created), 600 * 1000)
                     ?.setAction("Action", null)?.show()
             }
             else
