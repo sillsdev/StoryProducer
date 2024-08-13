@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
@@ -417,7 +418,11 @@ class BLDownloadActivity : AppCompatActivity() {
 
     private fun registerBLBroadcastReceiver(blBroadCastReceiver: BroadcastReceiver, filter: IntentFilter) {
         if (!blReceiverRegistered) {
-            registerReceiver(blBroadCastReceiver, filter)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                registerReceiver(blBroadCastReceiver, filter, RECEIVER_EXPORTED)
+            } else {
+                registerReceiver(blBroadCastReceiver, filter)
+            }
             blReceiverRegistered = true
         }
     }

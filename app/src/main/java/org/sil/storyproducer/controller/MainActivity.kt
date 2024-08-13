@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -119,7 +120,11 @@ class MainActivity : BaseActivity(), Serializable {
         // AudioUpload.java & BackTranslationUpload.java
         GlobalScope.launch {
             runOnUiThread {
-                this@MainActivity.applicationContext.registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    this@MainActivity.applicationContext.registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION), RECEIVER_EXPORTED)
+                } else {
+                    this@MainActivity.applicationContext.registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+                }
             }
         }
     }

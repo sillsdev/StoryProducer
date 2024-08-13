@@ -1,5 +1,6 @@
 package org.sil.bloom.reader;
 
+import static android.content.Context.RECEIVER_EXPORTED;
 import static org.sil.bloom.reader.BloomLibraryActivity.mBloomActivity;
 import static org.sil.storyproducer.tools.file.FileIO.workspaceRelPathExists;
 
@@ -10,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +35,8 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.Workspace;
 
 import android.os.Environment;
+
+import androidx.core.content.ContextCompat;
 
 import kotlin.text.MatchResult;
 import kotlin.text.Regex;
@@ -345,7 +349,11 @@ public class DownloadsView extends LinearLayout {
 
         //set filter to only when download is complete and register broadcast receiver
         IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-        getContext().registerReceiver(mDownloadReceiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getContext().registerReceiver(mDownloadReceiver, filter, RECEIVER_EXPORTED);
+        } else {
+            getContext().registerReceiver(mDownloadReceiver, filter);
+        }
     }
 
     public void updateUItoCurrentState() {
