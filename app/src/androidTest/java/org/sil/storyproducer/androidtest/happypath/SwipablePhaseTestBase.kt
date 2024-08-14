@@ -46,11 +46,14 @@ abstract class SwipablePhaseTestBase(sharedBase: SharedBase) : PhaseTestBase() {
 
     protected fun findCurrentSlideNumber(): Int {
         val slideNumberTextView = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatTextView>(base.getSlideNumberId())
-        return Integer.parseInt(slideNumberTextView!!.text.toString())
+        if (slideNumberTextView?.text == "Title") return 0
+        return Integer.parseInt(slideNumberTextView!!.text.split(" ")[1])
     }
 
     private fun expectToBeOnSlide(originalSlideNumber: Int) {
-        Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(base.getSlideNumberId()), ViewMatchers.withText(originalSlideNumber.toString()))).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(base.getSlideNumberId()), ViewMatchers.withText(
+            if (originalSlideNumber == 0) "Title" else "Slide $originalSlideNumber"
+        ))).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
 
     private fun expectToBeOnPhase(phase: String) {
