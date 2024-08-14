@@ -8,13 +8,12 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Matcher
 import org.junit.Assert
+import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.happypath.PlayerPhaseTestBase
 import org.sil.storyproducer.androidtest.happypath.base.SharedBase
-import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
@@ -71,6 +70,7 @@ class VoiceStudioPhaseBase(sharedBase: SharedBase) : PlayerPhaseTestBase(sharedB
 
     private fun verifyThatRecordingMultipleSnippetsDoesNotCreateMultipleClips(): Int? {
         // record a snippet of audio to the clip
+        recordAVoiceStudioTranslationItem() // record an initial item first so that recordings list gets displayed later
         recordAVoiceStudioTranslationSnippet()
         openRecordingsListDialog()
         val countOfClipsAfterRecordingFirstSnippet = getCurrentCountOfClips()
@@ -134,6 +134,16 @@ class VoiceStudioPhaseBase(sharedBase: SharedBase) : PlayerPhaseTestBase(sharedB
             pressMicButton()
             Thread.sleep(Constants.durationToRecordVoiceStudioClip)
             pressMicButton()
+            Thread.sleep(1000)
+        }
+    }
+
+    private fun recordAVoiceStudioTranslationItem() {
+        AnimationsToggler.withoutCustomAnimations {
+            pressMicButton()
+            Thread.sleep(Constants.durationToRecordVoiceStudioClip)
+            pressStopButton()
+            Thread.sleep(1000)
         }
     }
 
