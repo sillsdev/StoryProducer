@@ -237,6 +237,19 @@ class PopupHelpUtils(private val parent: Any,
                 if (view2 != null) {
                     if (helpPopupWindow != null)
                         helpPopupWindow?.dismiss()
+                    var compassHint = CompassPoint.NO_COMPASS_POINT
+                    var targetPercentX = popupItem.percentX
+                    var targetPercentY = popupItem.percentY
+                    if (popupItem.percentY < 0) {
+                        targetPercentY = -popupItem.percentY
+                        compassHint = CompassPoint.NORTH
+                    } else if (targetPercentY in 0..50)
+                        compassHint = CompassPoint.SOUTH
+                    else if (targetPercentY > 50)
+                        compassHint = CompassPoint.NORTH
+                    else
+                        compassHint = CompassPoint.NO_COMPASS_POINT   // give a hint for arrow direction based on position within the target view child item
+
                     helpPopupWindow = showHelpPopup2(
                         // using the class context seems to give a different style to
                         // using view2.rootView.context which seems to be the expected style
@@ -249,17 +262,15 @@ class PopupHelpUtils(private val parent: Any,
                         if (popupItem.percentX == -1)
                             Point(-1, -1)
                         else
-                            Point((view2.width.toFloat()*popupItem.percentX/100).toInt(),
-                                    (view2.height.toFloat()*popupItem.percentY/100).toInt()),
+                            Point((view2.width.toFloat()*targetPercentX/100).toInt(),
+                                    (view2.height.toFloat()*targetPercentY/100).toInt()),
                         popupItem.titleResId,
                         popupItem.bodyResId,
                         currentHelpIndex != popupItems.size-1,   // show next button for all but last message
                         showNextGrayed,
                         currentHelpIndex == 0,  // show close (x) button for first message only
                         currentHelpIndex == 0 && getDerivedClassName(parent) == "MainActivity",  // show logo for welcome help
-                        if (popupItem.percentY in 0..50) CompassPoint.SOUTH else
-                            if (popupItem.percentY > 50) CompassPoint.NORTH else
-                            CompassPoint.NO_COMPASS_POINT   // give a hint for arrow direction based on position within the target view child item
+                        compassHint
                     )
                     val buttonClose: ImageButton =
                         helpPopupWindow!!.getContentView().findViewById(R.id.btnClose)
