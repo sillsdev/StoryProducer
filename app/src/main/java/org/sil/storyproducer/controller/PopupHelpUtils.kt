@@ -9,6 +9,7 @@ import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
@@ -36,7 +37,6 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.preference.PreferenceManager
 import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
-import timber.log.Timber
 import kotlin.concurrent.fixedRateTimer
 import kotlin.math.min
 
@@ -568,8 +568,9 @@ class PopupHelpUtils(private val parent: Any,
         shiftedView.setShift(shiftBoxX, shiftBoxY) // Shift the child view by given amount
 
         val popupWindow = CustomPopupWindow(popupItem, shiftedView, popupBoxWidth, popupBoxHeight)
-//        popupWindow.setTouchModal(true)   // not working? (needs API 29 anyway)
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            popupWindow.setIsClippedToScreen(true)  // allow dragging half off screen (Android 10+ only)
+        }
         // use a background drawing class to draw the box and arrow
         val customBackgroundDrawable =
             CustomBackgroundDrawable(context, arrowDirection, popupArrowLength, pointDrawOffset)
@@ -580,14 +581,16 @@ class PopupHelpUtils(private val parent: Any,
 
         var initialX = min(rootArrowTarget.x, boxDrawPoint.x)
         var initialY = min(rootArrowTarget.y, boxDrawPoint.y)
-        Timber.e("first initialX = $initialX, first initialY = $initialY")
+        if (arrowDirection == CompassPoint.NO_COMPASS_POINT) {
+            // calculate the centred x and y initial positions
+            initialX = rootDrawableBounds.width() / 2 - popupWindow.width / 2
+            initialY = rootDrawableBounds.top + rootDrawableBounds.height() / 2 - popupWindow.height / 2
+        }
+//        Timber.i("first initialX = $initialX, first initialY = $initialY")
         // Show the popup window at the desired location using root coordinates
         popupWindow.showAtLocation(
             rootView,
-            if (arrowDirection == CompassPoint.NO_COMPASS_POINT)
-                Gravity.CENTER
-            else
-                Gravity.NO_GRAVITY,
+            Gravity.NO_GRAVITY,
             initialX,
             initialY
         )
@@ -608,9 +611,21 @@ class PopupHelpUtils(private val parent: Any,
                     val dy = event.rawY.toInt() - lastY
 
                     // Get current position
-                    val currentX = initialX + dx
-                    val currentY = initialY + dy
+                    var currentX = initialX + dx
+                    var currentY = initialY + dy
 //                    Timber.i("currentX = $currentX, currentY = $currentY")
+
+                    // don't allow position to go over half way off screen
+                    if (currentX > rootDrawableBounds.right - popupWindow.width/2)
+                        currentX = rootDrawableBounds.right - popupWindow.width/2
+                    if (currentX < rootDrawableBounds.left - popupWindow.width/2)
+                        currentX = rootDrawableBounds.left - popupWindow.width/2
+                    if (currentY > rootDrawableBounds.bottom - popupWindow.height/2)
+                        currentY = rootDrawableBounds.bottom - popupWindow.height/2
+                    if (currentY < rootDrawableBounds.top - popupWindow.height/2)
+                        currentY = rootDrawableBounds.top - popupWindow.height/2
+                    initialX = currentX - dx    // update initial values if needed
+                    initialY = currentY - dy    // ditto
 
                     // Update the position of the PopupWindow
                     popupWindow.update(currentX, currentY, -1, -1)
