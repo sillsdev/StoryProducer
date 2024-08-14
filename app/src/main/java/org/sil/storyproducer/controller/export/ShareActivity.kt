@@ -209,19 +209,19 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
                 R.string.help_share_list_title, R.string.help_share_list_body)
         mPopupHelpUtils?.addPopupHelpItem(
                 R.id.videos_list,
-                65, 10,
+                65, -10,    // negative percentY is a hint to point north
                 R.string.help_share_codes_title, R.string.help_share_codes_body)
         mPopupHelpUtils?.addPopupHelpItem(
                 R.id.videos_list,
-                80, 24,
+                80, -24,    // negative percentY is a hint to point north
                 R.string.help_share_ext_title, R.string.help_share_ext_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.videos_list,
-            5, 10,
+            5, -10, // negative percentY is a hint to point north
             R.string.help_share_play_video_title, R.string.help_share_play_video_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.videos_list,
-            15, 10,
+            15, -10,    // negative percentY is a hint to point north
             R.string.help_share_share_video_title, R.string.help_share_share_video_body)
         mPopupHelpUtils?.addPopupHelpItem(
                 R.id.toolbar,
