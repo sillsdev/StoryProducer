@@ -164,7 +164,7 @@ class MainActivity : BaseActivity(), Serializable {
                 R.string.help_main_guidance_title, R.string.help_main_guidance_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.story_list_view,
-            50, storyListViewPercent,
+            50, -storyListViewPercent,  // negative percentY is a hint to point north
             R.string.help_main_screen_title, R.string.help_main_screen_body)
         /**mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,
@@ -177,7 +177,7 @@ class MainActivity : BaseActivity(), Serializable {
             R.string.help_main_downloads_title, R.string.help_main_downloads_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.story_list_view,
-            50, storyListViewPercent,
+            50, -storyListViewPercent,  // negative percentY is a hint to point north
             R.string.help_main_story_title, R.string.help_main_story_body)
 
         mPopupHelpUtils?.showNextPopupHelp()
