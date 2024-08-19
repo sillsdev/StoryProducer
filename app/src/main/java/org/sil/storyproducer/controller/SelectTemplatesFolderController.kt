@@ -81,9 +81,8 @@ class SelectTemplatesFolderController(
         if (request == SELECT_TEMPLATES_FOLDER_AND_ADD_DEMO)
             return true
 
-        // Add demo to automatically selected worksapce when no installed stories or stories to unzip or move
-        if (isUriAutomaticallyCreated(Workspace.workdocfile.uri) &&
-                workspace.storyFilesToScanOrUnzipOrMove().isEmpty())
+        // Add demo to selected workspace when no installed stories or stories to unzip or move
+        if (workspace.storyFilesToScanOrUnzipOrMove().isEmpty())
             return true
 
         return false
