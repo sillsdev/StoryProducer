@@ -134,8 +134,6 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
 
         invalidateOptionsMenu()
 
-        addAndStartPopupTutorials()
-
     }
 
 
@@ -224,8 +222,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
 
         setSlideFromSeekbar()
 
-//        Moved to OnCreate() to fix double display on new install permissions request
-//        addAndStartPopupTutorials()
+        addAndStartPopupTutorials()
     }
 
 

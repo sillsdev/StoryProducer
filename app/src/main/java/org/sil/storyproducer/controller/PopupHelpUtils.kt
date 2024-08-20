@@ -232,6 +232,8 @@ class PopupHelpUtils(private val parent: Any,
         val view = activity?.findViewById<View>(popupItem.anchorViewId)
         if (view != null) {
             view.post {
+                if (!aboutToShowHelpPopup)
+                    return@post // return immediately if popup was closed by a onPause() call to dismissPopup()
                 // get the view again in case it has gone stale (fixes a crash/display bug)
                 val view2 = activity?.findViewById<View>(popupItem.anchorViewId)
                 if (view2 != null) {
