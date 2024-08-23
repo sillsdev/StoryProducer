@@ -164,7 +164,7 @@ class MainActivity : BaseActivity(), Serializable {
                 R.string.help_main_guidance_title, R.string.help_main_guidance_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.story_list_view,
-            50, -storyListViewPercent,  // negative percentY is a hint to point north
+            -1, -1,
             R.string.help_main_screen_title, R.string.help_main_screen_body)
         /**mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,
