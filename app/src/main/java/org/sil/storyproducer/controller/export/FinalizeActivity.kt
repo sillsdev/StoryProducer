@@ -20,8 +20,9 @@ import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.PopupHelpUtils
 import org.sil.storyproducer.controller.SlidePhaseFrag
-import org.sil.storyproducer.controller.SnackbarManager
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.model.Phase
+import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
@@ -88,8 +89,15 @@ class FinalizeActivity : PhaseBaseActivity() {
             stopExport()
             if(isSuccess && rootView != null) {
                 // Tell the user that the video was created
-                SnackbarManager.show(rootView!!, getString(R.string.title_video_created), 600 * 1000)
-                    ?.setAction("Action", null)?.show()
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.video_creation)
+                    .setMessage(R.string.title_video_created)
+                    .setPositiveButton(R.string.ok) { _, _ ->
+                        jumpToPhase(Phase(PhaseType.SHARE))
+                    }
+                    .setNegativeButton(R.string.cancel, null)
+                    .create()
+                    .show()
             }
             else
                 Toast.makeText(baseContext, R.string.error_creating_video, Toast.LENGTH_LONG).show()
