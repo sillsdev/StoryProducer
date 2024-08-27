@@ -52,7 +52,8 @@ fun Story.toJson(context: Context){
             // DKH - Updated 06/02/2021  for Issue 555: Report Story Parse Exceptions and Handle them appropriately
             // If we get here, there was an exception thrown while writing the story.json file
             // Create a suitable error string.  Use  method name, File location, story title & the error
-            val errInfo =   "Method: " + Throwable().stackTrace[0].methodName + ", " +
+            val errInfo = "Method: " + Throwable().stackTrace[0].methodName + ", " +
+                    "Workspace: " + Workspace.workdocfile.uri.toString() + ", " +
                     "File: "   + this.title + ", " +
                     "Loc: "    + filePath + ", " +
                     "Err: "    + e.toString()
@@ -101,10 +102,11 @@ fun storyFromJson(context: Context, storyPath: DocumentFile, validateOnly: Boole
         // Moshi adapter parsing the story.json file
         // Probably some kind of corruption in the story file.
         // Create a suitable error string.  Use  method name, File location, story title & the error
-        val errInfo =   "Method: " + Throwable().stackTrace[0].methodName + ", " +
-                        "File: "   + storyPath.name + ", " +
-                        "Loc: "    + filePath + ", " +
-                        "Err: "    + e.toString()
+        val errInfo = "Method: " + Throwable().stackTrace[0].methodName + ", " +
+                "Uri: " + storyPath.uri.toString() + ", " +
+                "File: "   + storyPath.name + ", " +
+                "Loc: "    + filePath + ", " +
+                "Err: "    + e.toString()
 
         // Record the error message & exception (includes stack trace) in FireBase
         FirebaseCrashlytics.getInstance().log(errInfo)
@@ -147,9 +149,9 @@ fun storyFromJson(context: Context, storyPath: DocumentFile, validateOnly: Boole
             Timber.i("SP::(%s)", "Wrote backup file contents")
         }catch(e:java.lang.Exception){
             //  Unable to write backup file
-            val errInfo =   "Method: " + Throwable().stackTrace[0].methodName + ", " +
+            val errInfo = "Method: " + Throwable().stackTrace[0].methodName + ", " +
                     "Unable to create/write story.json backup file" + ", " +
-                    "File: "   + fileContents + ", "
+                    "File: "   + fileContents + ", " +
                     "Err: "    + e.toString()
 
             // Record the error message & exception (includes stack trace) in FireBase
