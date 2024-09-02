@@ -159,9 +159,12 @@ open class RecordingToolbar : Fragment() {
             rootView?.postDelayed({
                 // change to pulsing red after initial blue to red transition
                 animationHandler.stopAnimation()
-                animationHandler = AnimationHandler(Color.rgb(255, 0, 0), Color.rgb(128, 0, 0))
-                rootView?.background = animationHandler.transitionDrawable
-                animationHandler.startAnimation()
+                if (voiceRecorder?.isRecording == true) {
+                        // only flash light/dark red if still recording (Bugfix: 844)
+                    animationHandler = AnimationHandler(Color.rgb(255, 0, 0), Color.rgb(128, 0, 0))
+                    rootView?.background = animationHandler.transitionDrawable
+                    animationHandler.startAnimation()
+                }
             }, AnimationHandler.ANIMATION_DURATION.toLong())
         }
 
