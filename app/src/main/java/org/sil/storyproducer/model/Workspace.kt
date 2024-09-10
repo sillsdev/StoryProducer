@@ -38,7 +38,7 @@ import java.util.Date
 
 
 internal const val SLIDE_NUM = "CurrentSlideNum"
-internal const val DEMO_FOLDER = "000 Unlocked demo"
+internal const val DEMO_FOLDER = "000 Storm - demo"
 internal const val AUDIO_FOLDER = "audio"
 internal const val PHASE = "Phase"
 
@@ -429,26 +429,26 @@ object Workspace {
 
     fun addDemoToWorkspace(context: Context) {
         //check if the demo folder already exists in the Workspace.  If not, add the demo
-        if (!workspaceRelPathExists(context,DEMO_FOLDER)) {
+        if (!workspaceRelPathExists(context, DEMO_FOLDER)) {
             val assetManager = context.assets
             var files: MutableList<String>
             var audiofiles: List<String>
             try {
-                files = assetManager.list(DEMO_FOLDER)!!.toMutableList()
-                files.remove(PROJECT_DIR)
-                files.remove(AUDIO_FOLDER)
-                files.add("$PROJECT_DIR/$PROJECT_FILE")
-                audiofiles = assetManager.list("$DEMO_FOLDER/$AUDIO_FOLDER")!!.toList()
-                for(filename in audiofiles)
-                    files.add("$AUDIO_FOLDER/$filename")
+                files = mutableListOf(DEMO_FOLDER + bloomSourceZipExt())    // Just need a single file to copy over
+//                files.remove(PROJECT_DIR)
+//                files.remove(AUDIO_FOLDER)
+//                files.add("$PROJECT_DIR/$PROJECT_FILE")
+//                audiofiles = assetManager.list("$DEMO_FOLDER/$AUDIO_FOLDER")!!.toList()
+//                for(filename in audiofiles)
+//                    files.add("$AUDIO_FOLDER/$filename")
             } catch (e: IOException) {
                 Log.e("workspace", "SP::Failed to get demo assets.", e)
                 return
             }
             for (filename in files) {
                 try {
-                    val instream = assetManager.open("$DEMO_FOLDER/$filename")
-                    val outstream = getChildOutputStream(context, "$DEMO_FOLDER/$filename")
+                    val instream = assetManager.open("$filename")
+                    val outstream = getChildOutputStream(context, "$filename")
                     val buffer = ByteArray(1024)
                     var read: Int
                     while (instream.read(buffer).also { read = it } != -1) {
