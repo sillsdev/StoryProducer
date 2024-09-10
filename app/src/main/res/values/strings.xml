@@ -390,6 +390,7 @@
     <!-- Preference Titles -->
     <string name="video_creation">Video Creation</string>
     <string name="bloom_import">Bloom Book Import</string>
+    <string name="tutorial">Blue Tutorial Window</string>
     <string name="general">General</string>
     <string name="accuracy_check">Accuracy Check</string>
 
@@ -406,6 +407,12 @@
     <string name="skip_accuracy_check_summary">You may turn this on if you will be translating downloaded Bloom Books that do not have any Bible story content. Keep this off if you will be translating Bible story content.</string>
     <string name="enable_story_deletion_title">Enable Story Deletion</string>
     <string name="enable_story_deletion_summary">When this feature is enabled… In the Story List, long press on a story’s thumbnail to delete that story. Story Deletion cannot be undone.</string>
+    <string name="enable_dismissal_start_x_title">Enable dismissal on series start (X)</string>
+    <string name="enable_dismissal_start_x_summary">Enable dismissal of the BTW using the (X) at the start of a series.</string>
+    <string name="enable_dismissal_end_got_it_title">Enable dismissal on series end (Got it)</string>
+    <string name="enable_dismissal_end_got_it_summary">Enable dismissal of the BTW using the (Got it) at the end of a series.</string>
+    <string name="enable_dismissal_help_menu_title">Enable dismissal on Help menu</string>
+    <string name="enable_dismissal_help_menu_summary">Enable dismissal of the BTW using the top-right Help menu.</string>
 
     <!-- Settings -->
     <string name="settings">Settings</string>
@@ -801,6 +808,7 @@
     <string name="help_menu_detailed">Show detailed help for this page</string>
     <string name="help_menu_tutor_restart">Restart Tutorial</string>
     <string name="help_menu_tutor_resume">Resume Tutorial</string>
+    <string name="help_menu_tutor_stop">Stop Tutorial</string>
     <string name="help_tutor_dismiss_message">Tap the blue help <b>[?]</b> button in the toolbar to Resume the Tutorial.</string>
     <string name="help_tutor_no_more_pages">No more tutorial pages for this section.</string>
 

@@ -23,5 +23,6 @@ interface BaseActivityView {
     fun showDetailedHelp()
     fun restartShowingPopupHelp()
     fun resumeShowingPopupHelp()
+    fun stopShowingPopupHelp()
     fun checkDownloadStoriesMessage()
 }

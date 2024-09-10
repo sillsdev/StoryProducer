@@ -180,6 +180,22 @@ class PopupHelpUtils(private val parent: Any,
             currentHelpIndex = -currentHelpIndex -1   // Stop showing popup help for the current Phase/Activity (make it negative)
     }
 
+    fun stopShowingAllHelp() {
+        dismissPopup()
+        globalCancelCount += 2 // increment global cancel count
+
+        val rootView = activity?.findViewById<View>(R.id.drawer_layout)
+        if (rootView != null) {
+            SnackbarManager.show(
+                rootView,
+                context!!.getString(R.string.help_tutor_dismiss_message),
+                4 * 1000,   // display for 4 seconds
+                3
+            )
+        }
+        stopShowingPopupHelp()
+    }
+
     fun restartShowingPopupHelp() {
         val prefString = "PopupHelpGroup_"
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -386,6 +402,8 @@ class PopupHelpUtils(private val parent: Any,
                                compassHint: CompassPoint = CompassPoint.NO_COMPASS_POINT)
             : PopupWindow {
 
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
         // local hard-coded settings
         val boxWidthFraction = 0.65f    // the screen width fraction to use for the width of a popup help message
         val sideWidthFraction = 0.04    // If closer than this width fraction to the edge then draw arrow East or West
@@ -451,12 +469,18 @@ class PopupHelpUtils(private val parent: Any,
                 textNextButton.isEnabled = false
             }
         } else {
+            val enableDismissEnd = prefs.getBoolean("help_dismissal_end", true)
+            if (enableDismissEnd) {
                 // the last popup in the series says "Got it" rather than "Next"
-            textNextButton.text = context.getString(R.string.gotIt)
-            textNextButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0) // hide the next arrow
+                textNextButton.text = context.getString(R.string.gotIt)
+                textNextButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0) // hide the next arrow
+            } else {
+                textNextButton.visibility = View.GONE
+            }
         }
+        val enableDismissStart = prefs.getBoolean("help_dismissal_start", true)
         val textCloseButton = popupView.findViewById<ImageButton>(R.id.btnClose)
-        textCloseButton.visibility = if (showClose) View.VISIBLE else View.GONE
+        textCloseButton.visibility = if (showClose && enableDismissStart) View.VISIBLE else View.GONE
 
         val usedPopupWidth = (rootDrawableBounds.width() * boxWidthFraction).toInt()
         // Set the width we are allowed to use as the width of the inflated view

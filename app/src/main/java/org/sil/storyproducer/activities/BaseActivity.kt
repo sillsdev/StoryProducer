@@ -23,6 +23,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
+import androidx.preference.PreferenceManager
 import io.reactivex.disposables.CompositeDisposable
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.BaseController
@@ -359,6 +360,14 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         val helpMenu = CustomPopupMenu(this, anchorView)
         helpMenu.inflate(R.menu.help_context_menu)
 
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        // check setting for removing dismiss help
+        val enableDismissMenu = prefs.getBoolean("help_dismissal_menu", false)
+        val menu = helpMenu.menu
+        if (!enableDismissMenu) {
+            menu.removeItem(R.id.action_popup_help_stop)
+        }
+
         helpMenu.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {    
                 R.id.action_detailed_help -> {
@@ -375,6 +384,12 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
                 R.id.action_popup_help_resume -> {
                     // Handle popup help option
                     resumeShowingPopupHelp()
+                    checkDownloadStoriesMessage()
+                    true
+                }
+                R.id.action_popup_help_stop -> {
+                    // Handle popup help option
+                    stopShowingPopupHelp()
                     checkDownloadStoriesMessage()
                     true
                 }
@@ -398,6 +413,12 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
             mPopupHelpUtils?.resumeShowingPopupHelp()
     }
 
+    override fun stopShowingPopupHelp() {
+
+        if (mPopupHelpUtils != null) {
+            mPopupHelpUtils?.stopShowingAllHelp()
+        }
+    }
     fun setBasePopupHelpUtils(popupHelp: PopupHelpUtils) {
         mPopupHelpUtils = popupHelp
     }
