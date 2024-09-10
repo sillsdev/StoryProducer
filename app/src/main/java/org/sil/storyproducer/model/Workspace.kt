@@ -80,6 +80,7 @@ object Workspace {
         }
     val Stories: MutableList<Story> = mutableListOf()   // the main list of Stories
     val asyncAddedStories: MutableList<Story> = mutableListOf() // Used for adding Stories in a background thread
+    val failedStories: MutableList<String> = mutableListOf() // Used for adding Stories in a background thread
     var registration: Registration = Registration()
     var phases: List<Phase> = ArrayList()
     var activePhaseIndex: Int = -1

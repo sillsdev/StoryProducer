@@ -2,6 +2,7 @@ package org.sil.storyproducer.model
 
 import android.content.Context
 import androidx.documentfile.provider.DocumentFile
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.jsoup.nodes.Element
 
 class NumberedPageSlideBuilder : SlideBuilder() {
@@ -22,7 +23,8 @@ class NumberedPageSlideBuilder : SlideBuilder() {
         if (!parsePage(context, false, page, slide, storyPath, storyAudioPath, storyAudioMap, lang)) {
             if (isSPAuthored) {
                 prevPageImage = slide.imageFile // no audio in this page but maybe an image file for next page
-                return null;    // SP authored templates should contain audio
+                FirebaseCrashlytics.getInstance().log("Story '${storyPath.name}' not built as this slide does not contain audio.")
+                return null  // SP authored templates should contain audio
             }
         }
         prevPageImage = ""  // this pages image was used so not available to next page
@@ -55,10 +57,12 @@ class NumberedPageSlideBuilder : SlideBuilder() {
             }
         }
 
-        if (!slide.prevPageImageFile.isNullOrEmpty() || !slide.imageFile.isNullOrEmpty() || !slide.content.trim().isNullOrEmpty())
+        if (!slide.prevPageImageFile.isNullOrEmpty() || !slide.imageFile.isNullOrEmpty() || !slide.content.trim().isNullOrEmpty()) {
             return slide
-        else
+        } else {
+            FirebaseCrashlytics.getInstance().log("Story '${storyPath.name}' not built as no matching image or text for this slide.")
             return null // no matching image or text for this slide (test on SP authored templates)!!!!!
+        }
     }
 
     private fun textOf(bloomEditable: Element?): String {

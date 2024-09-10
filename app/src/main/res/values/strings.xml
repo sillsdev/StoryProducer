@@ -440,6 +440,7 @@
     <string name="slide_type_song">Song ♫</string>
     <string name="slide_type_number">Slide</string>
     <string name="voice_studio_move_time">Now it’s time to record the final audio in the Voice Studio phase.</string>
+    <string name="build_story_failed">The following templates failed to load and are not compatible with Story Producer:</string>
 
     <!-- Strings from Bloom Library Reader Web Download pages  -->
     <string name="read_now">Read Now</string>

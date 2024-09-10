@@ -1,12 +1,13 @@
 package org.sil.storyproducer.controller
 
+import android.app.AlertDialog
 import android.content.Context
 import androidx.documentfile.provider.DocumentFile
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import org.sil.storyproducer.App
+import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.view.BaseActivityView
 import timber.log.Timber
@@ -26,6 +27,7 @@ open class BaseController(
 
     fun updateStories(migrate: Boolean = false) {
         Workspace.asyncAddedStories.clear() // used for adding stories asynchronously
+        Workspace.failedStories.clear()
 
         val storyFiles = Workspace.storyFilesToScanOrUnzipOrMove(migrate)
 
@@ -46,13 +48,16 @@ open class BaseController(
         view.updateReadingTemplatesDialog(current, total, file.name.orEmpty())
         subscriptions.add(
                 Single.fromCallable {   // this code creates a background thread for adding Stories
-                    Workspace.buildStory(context, file)?.also { // build or unzip a story in the background
-                        Workspace.asyncAddedStories.add(it) // Add a Story in this background thread
+                    val builtStory = Workspace.buildStory(context, file)
+                    if (builtStory != null) {
+                        Workspace.asyncAddedStories.add(builtStory) // Add a Story in this background thread
+                    } else {
+                        Workspace.failedStories.add(file.name!!)
                     }
                 }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ onUpdateStoryAsync(files, index, current, total) }, { onUpdateStoryAsyncError(it, files, index, current, total) })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onUpdateStoryAsync(files, index, current, total) }, { onUpdateStoryAsyncError(it, files, index, current, total) })
         )
     }
 
@@ -82,11 +87,23 @@ open class BaseController(
         Workspace.phases = Workspace.buildPhases()
         Workspace.activePhaseIndex = 0
 
-        Workspace.importWordLinks(App.appContext)   // import word links if just migrated
+        Workspace.importWordLinks(context)   // import word links if just migrated
 
         view.hideReadingTemplatesDialog()
 
-        onStoriesUpdated()
+        if (Workspace.failedStories.isNotEmpty()) {
+            // if any failed - display an alert dialog with a user friendly error message and list of failed templates
+            var failedStoryMessages = ""
+            Workspace.failedStories.forEach { failedStoryMessages += "\n${it}" }
+            val builder: AlertDialog.Builder = AlertDialog.Builder(context)
+            builder.setMessage("${context.getString(R.string.build_story_failed)}\n${failedStoryMessages}")
+                .setCancelable(false)
+                .setPositiveButton(context.getString(R.string.ok)) { _, _ -> onStoriesUpdated() }
+            val alert: AlertDialog = builder.create()
+            alert.show()
+        } else {
+            onStoriesUpdated()
+        }
     }
 
     private fun onStoriesUpdated() {

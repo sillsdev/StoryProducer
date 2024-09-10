@@ -7,6 +7,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import com.arthenica.mobileffmpeg.FFmpeg
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
@@ -33,10 +34,16 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile, defaultLang : Stri
             break
         }
     }
-    if(html_name == "") return null
-//    val htmlText = getText(context,"${storyPath.name}/$html_name") ?: return null
+    if(html_name == "") {
+        FirebaseCrashlytics.getInstance().log("Story '${storyPath.name}' not loaded as it does not contains a html file.")
+        return null
+    }
     val htmlText = storyPath.findFile(html_name)?.let {
-            htmlFile -> getDocumentText(context, htmlFile) } ?: return null
+            htmlFile -> getDocumentText(context, htmlFile) }
+    if (htmlText == null) {
+        FirebaseCrashlytics.getInstance().log("Story '${storyPath.name}' not loaded as it does not have any html text.")
+        return null
+    }
     //The file "index.html" is there, it is a Bloom project.  Parse it.
     val slides: MutableList<Slide> = ArrayList()
     val story = Story(storyPath.name!!, slides)
@@ -48,8 +55,10 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile, defaultLang : Stri
     // This is so that DocumentFile.listFiles() and DocumentFile.findFile() methods
     // are called the minimum number of times as they are quite slow to use:
     var storyAudioPath = storyPath.findFile("audio") ?: storyPath.createDirectory("audio") // create an 'audio' folder if necessary
-    if (storyAudioPath == null)
+    if (storyAudioPath == null) {
+        FirebaseCrashlytics.getInstance().log("Story '${storyPath.name}' not loaded as it does not have an 'audio' path.")
         return null;    // could not create 'audio' folder
+    }
     var storyAudioFiles = storyAudioPath.listFiles()
 
     // In addition storyAudioMap enables a faster access to individual
@@ -61,9 +70,13 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile, defaultLang : Stri
 
     //add the title slide
     val frontCoverSlideBuilder = BloomFrontCoverSlideBuilder(defaultLang.orEmpty())
-    frontCoverSlideBuilder.build(context, storyPath, storyAudioPath, storyAudioMap, soup)?.also {
+    val builtFrontCover = frontCoverSlideBuilder.build(context, storyPath, storyAudioPath, storyAudioMap, soup)?.also {
         slides.add(it)
-    } ?: return null
+    }
+    if (builtFrontCover == null) {
+        FirebaseCrashlytics.getInstance().log("Story '${storyPath.name}' not loaded as it does not contains a front cover.")
+        return null
+    }
 
     // open the story using the story's default language unless one was specified in 'defaultLang'
     var lang = frontCoverSlideBuilder.lang
@@ -80,7 +93,11 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile, defaultLang : Stri
 
     var slide: Slide
     val pages = soup.getElementsByAttributeValueContaining("class","numberedPage")
-    if(pages.size <= 2) return null
+    if (pages.size < 2) {
+        // disallow stories with less than a title page and one slide
+        FirebaseCrashlytics.getInstance().log("Story '${storyPath.name}' not loaded as it only contains ${pages.size} page.")
+        return null
+    }
     NumberedPageSlideBuilder.prevPageImage = "" // no previous images
 
     for (page in pages) {
