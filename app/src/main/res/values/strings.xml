@@ -469,7 +469,7 @@
     </string>
     <string name="help_main_help_title">Help Menu</string>
     <string name="help_main_help_body">
-        <![CDATA[You can tap on the blue <b>[?]</b> button anytime to get help for the current screen, or to restart the tutorial.
+        <![CDATA[You can tap on the blue <b>[?]</b> button anytime to get help for the current screen, or to stop or restart the tutorial.
         <br/>Right now, tap Next...]]>
     </string>
     <string name="help_main_guidance_title">Tutorial</string>

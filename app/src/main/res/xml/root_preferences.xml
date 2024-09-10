@@ -56,18 +56,19 @@
             app:key="help_dismissal_start"
             app:title="@string/enable_dismissal_start_x_title"
             app:summary="@string/enable_dismissal_start_x_summary"
-            android:defaultValue="true"/>
+            android:defaultValue="false"/>
 
         <SwitchPreferenceCompat
             app:key="help_dismissal_end"
             app:title="@string/enable_dismissal_end_got_it_title"
             app:summary="@string/enable_dismissal_end_got_it_summary"
-            android:defaultValue="true"/>
+            android:defaultValue="false"/>
 
         <SwitchPreferenceCompat
             app:key="help_dismissal_menu"
             app:title="@string/enable_dismissal_help_menu_title"
-            app:summary="@string/enable_dismissal_help_menu_summary"/>
+            app:summary="@string/enable_dismissal_help_menu_summary"
+            android:defaultValue="true"/>
 
     </PreferenceCategory>
 

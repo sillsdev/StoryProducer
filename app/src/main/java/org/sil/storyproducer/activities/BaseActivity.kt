@@ -362,7 +362,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(this);
         // check setting for removing dismiss help
-        val enableDismissMenu = prefs.getBoolean("help_dismissal_menu", false)
+        val enableDismissMenu = prefs.getBoolean("help_dismissal_menu", true)
         val menu = helpMenu.menu
         if (!enableDismissMenu) {
             menu.removeItem(R.id.action_popup_help_stop)

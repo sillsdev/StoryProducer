@@ -469,7 +469,7 @@ class PopupHelpUtils(private val parent: Any,
                 textNextButton.isEnabled = false
             }
         } else {
-            val enableDismissEnd = prefs.getBoolean("help_dismissal_end", true)
+            val enableDismissEnd = prefs.getBoolean("help_dismissal_end", false)
             if (enableDismissEnd) {
                 // the last popup in the series says "Got it" rather than "Next"
                 textNextButton.text = context.getString(R.string.gotIt)
@@ -478,7 +478,7 @@ class PopupHelpUtils(private val parent: Any,
                 textNextButton.visibility = View.GONE
             }
         }
-        val enableDismissStart = prefs.getBoolean("help_dismissal_start", true)
+        val enableDismissStart = prefs.getBoolean("help_dismissal_start", false)
         val textCloseButton = popupView.findViewById<ImageButton>(R.id.btnClose)
         textCloseButton.visibility = if (showClose && enableDismissStart) View.VISIBLE else View.GONE
 
