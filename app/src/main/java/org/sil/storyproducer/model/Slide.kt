@@ -11,10 +11,13 @@ import com.squareup.moshi.ToJson
  * This class contains metadata pertinent to a given slide from a story template.
  */
 @JsonClass(generateAdapter = true)
-class Slide{
-    // SP422 - DKH 5/6/2022 Enable images on all the slides to be swapped out via the camera tool
-    // This extension is used on a local image from the camera tool
-    val localSlideExtension = "_Local.png"
+class Slide {
+
+    companion object {
+        // SP422 - DKH 5/6/2022 Enable images on all the slides to be swapped out via the camera tool
+        // This basename postfix is used for all slides when a local image is selected by the camera tool:
+        const val localSlideExtension = "_Local."
+    }
     // template information
     var slideType: SlideType = SlideType.NUMBEREDPAGE
     var narrationFile = ""
@@ -62,8 +65,6 @@ class Slide{
     fun isFrontCover() = slideType == SlideType.FRONTCOVER
     fun isSongSlide() = slideType == SlideType.LOCALSONG
     fun isNumberedPage() = slideType == SlideType.NUMBEREDPAGE
-
-    companion object
 }
 
 enum class SlideType {

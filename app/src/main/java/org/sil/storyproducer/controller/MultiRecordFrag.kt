@@ -27,10 +27,12 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PROJECT_DIR
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SLIDE_NUM
+import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.copyToFilesDir
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
+import org.sil.storyproducer.tools.file.deleteStoryFile
 import org.sil.storyproducer.tools.toolbar.MultiRecordRecordingToolbar
 import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
@@ -59,18 +61,84 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
     /**
      * Setup camera button for updating background image
      * and edit button for renaming text and local credits
+     *
+     * 24 Sep 2024 Peter C. - Bugfix: 842 - Revert Image does not work for Bloom books
+     * -------------------------------------------------------------------------------
+     * The algorithm for selecting a new filename for images selected by the camera tool or camera roll
+     * was only working for Bible Story Templates and not for Bloom Books.  This was due to an over simplification
+     * of what was needed to create a new filename for the camera image that would also allow the original filename
+     * of a story slide image to be determined.
+     *
+     *      ORIGINAL FILENAME      CAMERA TOOL FILENAME
+     *      -------- --------      ------ ---- --------
+     *
+     * In SP 4.2.2: only the slide number was needed to restore the original slide image filename.
+     * NB: "_Local.png" was always added after the slide number of the image even if the image was really a .jpg
+     * format file and to regenerate the original image the slide number followed by ".jpg" was always used. i.e.:
+     *
+     *      "<slide_no>.jpg"  <=>  "project/<slide_no>_Local.png"
+     *
+     * In SP 4.2.3: a new filename is created that is backwards compatible with 4.2.2 in that when referencing
+     * a selected Bible Story camera image a "_Local.jpg" postfix is added to the slide number of the original
+     * Bible Story slide image name.  However, Bible Story camera selected image filenames ending with either
+     * "_Local.jpg" and "_Local.png" are both converted back to the slide number followed by ".jpg".
+     * NB: In the camera tool image selection code the image is rotated and always converted to .jpg format.
+     * Going forward this should now prevent confusion over the true image file type based on the file extension:
+     *
+     *      "<slide_no>.jpg"  <=   "project/<slide_no>_Local.png"
+     *      "<slide_no>.jpg"  <=>  "project/<slide_no>_Local.jpg"
+     *
+     * This still leaves us with how to generate camera selected filenames for Bloom Book projects.  However,
+     * this can now be done in a similar way to Bible Story new filenames in that a "_Local.jpg" is used
+     * instead of the original ".jpg" file extension if the original slide image has a ".jpg" extension:
+     *
+     *      "<basename>.jpg"  <=>  "project/<basename>_Local.jpg"
+     *
+     * However, if the original Bloom Book slide image filename is not a .jpg file then to preserve the
+     * original extension an extra file extension matching the original slide image file extension is added to
+     * the new filename before the final ".jpg" file extension.  So, for example, if the original slide image
+     * file was a .png file then the conversion would be as follows:
+     *
+     *      "<basename>.png"  <=>  "project/<basename>_Local.png.jpg"
+     *
+     * This now only leaves us with how to convert between a blank image filename indicating a background gray
+     * image to a new filename for holding camera selected background images on the title and song slides.  This still
+     * is done by using a "<slide_no>_Local.jpg" filename, but for all title and story slides the image filename
+     * is reverted back to an empty "" string which indicates to the drawing code that a gray patterned image should
+     * be used for that slide:
+     *
+     *      ""                <=>  "project/<slide_no>_Local.jpg"
+     *
+     * Finally, when reverting slide images the previously selected camera image is deleted to prevent clutter of
+     * the "project" sub-folder and to save storage space.  Should to user want to use the same picture again then
+     * they will have to re-select the image from the camera roll.
+     *
      */
     fun setupCameraAndEditButton() {
         // display the image selection button on FRONTCOVER,LOCALSONG & NUMBEREDPAGE
         // SP422 - DKH 5/6/2022 Enable images on all the slides to be swapped out via the camera tool
         // Add camera tool to numbered pages so that local images can be used in the story
         // If we have a numbered page, only show the camera on the Translate_Revise Phase
-        if(!(Workspace.activeStory.slides[slideNum].slideType == SlideType.NUMBEREDPAGE &&
-                        Workspace.activePhase.phaseType != PhaseType.TRANSLATE_REVISE)) {
-            if (Workspace.activeStory.slides[slideNum].slideType in
-                    arrayOf(SlideType.FRONTCOVER, SlideType.LOCALSONG, SlideType.NUMBEREDPAGE)) {
-                val imageFab: ImageView = rootView!!.findViewById<View>(R.id.insert_image_view) as ImageView
-                imageFab.visibility = View.VISIBLE
+        val phaseType = Workspace.activePhase.phaseType
+        val slideType = Workspace.activeStory.slides[slideNum].slideType
+        val imageFile = Workspace.activeStory.slides[slideNum].imageFile
+        // get the (single) extension of the potentially swapped out image filename
+        val imageExtension = imageFile.substringAfterLast(".", "")   // the file extension without '.'
+        // find a double file extension if there is one (e.g.: ".png.jpg") the first one being the original file extension otherwise simply use the single file extension
+        val imageDblExtFind = Regex("\\.[a-zA-Z0-9]+\\.[a-zA-Z0-9]+\$").find(imageFile)?.value?.substring(1) ?: imageExtension
+        // set a flag if an image was previously selected by the camera tool
+        val restoreImageEnabled = imageFile.startsWith("$PROJECT_DIR/") &&
+                imageFile.endsWith("${Slide.localSlideExtension}${imageDblExtFind}") // true if a slide image was replaced
+        // set a flag if it was previously a background image
+        val restoreBackgroundEnabled = slideType in arrayOf(SlideType.FRONTCOVER, SlideType.LOCALSONG)
+        // Check to see if the camera FAB should be enabled
+        if ((phaseType == PhaseType.TRANSLATE_REVISE &&
+                    slideType in arrayOf(SlideType.FRONTCOVER, SlideType.LOCALSONG, SlideType.NUMBEREDPAGE)) ||
+            (phaseType != PhaseType.TRANSLATE_REVISE &&
+                    slideType in arrayOf(SlideType.FRONTCOVER, SlideType.LOCALSONG))) {
+            val imageFab = rootView!!.findViewById<ImageView>(R.id.insert_image_view)
+            imageFab.visibility = if (restoreImageEnabled) View.INVISIBLE else View.VISIBLE  // only visible if not already replaced
+            if (!restoreImageEnabled) { // Only add a click listener to the Image button if visible/enabled
                 imageFab.setOnClickListener {
                     val chooser = Intent(Intent.ACTION_CHOOSER)
                     chooser.putExtra(Intent.EXTRA_TITLE, R.string.camera_select_from)
@@ -119,14 +187,13 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
 
         // 0R17 - DKH 05/7/2022 Allow for text editing on the song slide
         // display the Edit  button, if on the FRONTCOVER or LOCALSONG
-        val slideType : SlideType = Workspace.activeStory.slides[slideNum].slideType
-        if(slideType in arrayOf(SlideType.FRONTCOVER,SlideType.LOCALSONG)) {
+        if (slideType in arrayOf(SlideType.FRONTCOVER, SlideType.LOCALSONG)) {
             //for these, use the edit text button instead of the text in the lower half.
             //In the phases that these are not there, do nothing.
-            val editBox = rootView?.findViewById<View>(R.id.fragment_dramatization_edit_text) as EditText?
+            val editBox = rootView?.findViewById<EditText>(R.id.fragment_dramatization_edit_text)
             editBox?.visibility = View.INVISIBLE
 
-            val editFab = rootView!!.findViewById<View>(R.id.edit_text_view) as ImageView?
+            val editFab = rootView!!.findViewById<ImageView>(R.id.edit_text_view)
             editFab?.visibility = View.VISIBLE
             editFab?.setOnClickListener {
                 val editText = EditText(context)
@@ -158,23 +225,48 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
         // SP422 - DKH 5/6/2022 Enable images on all the slides to be swapped out via the camera tool
         // Allow the user to restore to the original image
         // If we have a numbered page, only show the restore on the Translate_Revise Phase
-        if(slideType == SlideType.NUMBEREDPAGE && Workspace.activePhase.phaseType == PhaseType.TRANSLATE_REVISE) {
+        // Check to see if the restore image FAB should be enabled
+        if ((phaseType == PhaseType.TRANSLATE_REVISE &&
+                    slideType in arrayOf(SlideType.FRONTCOVER, SlideType.LOCALSONG, SlideType.NUMBEREDPAGE)) ||
+            (phaseType != PhaseType.TRANSLATE_REVISE &&
+                    slideType in arrayOf(SlideType.FRONTCOVER, SlideType.LOCALSONG))) {
+            val restoreImageFab = rootView!!.findViewById<View>(R.id.restore_image_view)
+            restoreImageFab?.visibility = if (restoreImageEnabled) View.VISIBLE else View.INVISIBLE  // only visible if already replaced
+            if (restoreImageEnabled) {   // Only add a click listener to the restore button if visible/enabled
+                var restoredImageFile = ""  // the original image file names for the gray background slides are an empty string
+                if (!restoreBackgroundEnabled) {
+                    // not restoring to a (blank) background image so we need to determine the original filename from the current imageFile name
+                    // i.e. remove "project/" prefix and "_Local." suffix to base file name
+                    restoredImageFile = imageFile.replace(Regex("^project/"), "")
+                    // get the original file extension if it was added as a double image file extension (e.g.: for ".png.jpg" use ".png")
+                    var imageExtOriginal = imageDblExtFind.substringBeforeLast(".", "")
+                    if (imageExtOriginal.isEmpty()) {
+                        // However, if only a single extension was used then restore to .jpg extension
+                        if (imageExtension == "png")
+                            imageExtOriginal = "jpg"    // old code always used _Local.png for a camera tool selected file (even if it was really a .jpg)
+                        else
+                            imageExtOriginal = imageExtension   // no double file extension so use the single filename extension (which should be .jpg)
+                    }
+                    // Now finish getting the original image filename for use when restoring the image in the onClickListener below
+                    restoredImageFile = restoredImageFile
+                        .replace(Regex("${Slide.localSlideExtension.substringBeforeLast(".")}\\.${imageDblExtFind}\$"), ".${imageExtOriginal}")
+                }
+                restoreImageFab?.setOnClickListener {
+                    val dialog = AlertDialog.Builder(context)
+                            .setTitle(R.string.camera_revert_title)
+                            .setMessage(R.string.camera_revert_message)
+                            .setNegativeButton(R.string.no, null)
+                            .setPositiveButton(R.string.yes) { _, _ ->
+                                val cameraToolFile = Workspace.activeStory.slides[slideNum].imageFile
+                                Workspace.activeStory.slides[slideNum].imageFile = restoredImageFile
+                                setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
+                                setupCameraAndEditButton()  // here this will show the camera button and hide the restore image button
+                                deleteStoryFile(requireContext(), cameraToolFile)   // Delete the camera tool selected file now that it is no longer referenced
+                            }
+                            .create()
 
-            val restoreImageFab = rootView!!.findViewById<View>(R.id.restore_image_view) as ImageView?
-            restoreImageFab?.visibility = if (Workspace.activeStory.slides[slideNum].imageFile == "${slideNum}.jpg") View.INVISIBLE else View.VISIBLE
-            restoreImageFab?.setOnClickListener {
-                val dialog = AlertDialog.Builder(context)
-                        .setTitle(R.string.camera_revert_title)
-                        .setMessage(R.string.camera_revert_message)
-                        .setNegativeButton(R.string.no, null)
-                        .setPositiveButton(R.string.yes) { _, _ ->
-                            Workspace.activeStory.slides[slideNum].imageFile = "${slideNum}.jpg"    // TODO: THIS ONLY WORKS FOR CURATED BIBLE STORIES
-                            restoreImageFab?.visibility = View.INVISIBLE
-                            setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
-                        }
-                        .create()
-
-                dialog.show()
+                    dialog.show()
+                }
             }
         }
     }
@@ -252,8 +344,26 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                     rotateImageIfRequired(rotateTempFile.absolutePath)
 
                     // Task: 838: now copying from rotated image 'rotateTempFile' instead of original uri
-                    Workspace.activeStory.slides[slideNum].imageFile =
-                        "$PROJECT_DIR/${slideNum}${Workspace.activeStory.slides[slideNum].localSlideExtension}"
+                    var imageExtension = "" // the filename extension without a '.'
+                    val imageFile = Workspace.activeStory.slides[slideNum].imageFile
+                    if (imageFile.isEmpty()) {
+                        // set the new background image file name to be used for the slide as (for example): "project/1_BLocal.jpg"
+                        // this avoids slide number clashes and allows the filename to be restored to an empty string on restore button pressed
+                        imageExtension = "jpg"
+                        // Set the new imageFile path to point to the camera tool selected and rotated file
+                        Workspace.activeStory.slides[slideNum].imageFile = "$PROJECT_DIR/${slideNum}${Slide.localSlideExtension}${imageExtension}"
+                    } else {
+                        // get the file extension (without '.') from the original image filename
+                        imageExtension = imageFile.substringAfterLast(".", "")
+                        var imageDblExtension = imageExtension
+                        if (imageDblExtension != "jpg")
+                            imageDblExtension = "$imageDblExtension.jpg"
+                        // add a "project/" prefix and "_Local" postfix to the base filename
+                        // Set the new imageFile path to point to the camera tool selected and rotated file
+                        Workspace.activeStory.slides[slideNum].imageFile = "$PROJECT_DIR/${imageFile}"
+                            .replace(Regex("\\.${imageExtension}\$"), "${Slide.localSlideExtension}${imageDblExtension}")
+                    }
+                    // copy the selected and rotated file to the localtion already set in the slide's imageFile property
                     copyToWorkspacePath(
                         requireContext(), Uri.fromFile(rotateTempFile),
                         "${Workspace.activeStory.title}/${Workspace.activeStory.slides[slideNum].imageFile}"
@@ -264,8 +374,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
 
                     setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
 
-                    val restoreImageFab = rootView!!.findViewById<View>(R.id.restore_image_view) as ImageView?
-                    restoreImageFab?.visibility = View.VISIBLE
+                    setupCameraAndEditButton()  // here this will hide the camera button and show the restore image button
 
                 } while (false)
 
@@ -318,7 +427,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
 
         recordingToolbar.stopToolbarMedia()
     }
-    
+
     companion object {
         private const val ACTIVITY_SELECT_IMAGE = 53
         private var tempPicFile: File? = null

@@ -13,6 +13,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.MUSIC_CONTINUE
 import org.sil.storyproducer.model.MUSIC_NONE
+import org.sil.storyproducer.model.PROJECT_DIR
 import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Story
@@ -218,10 +219,14 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 // SP422 - DKH 5/6/2022 Enable images on all the slides to be swapped out via the camera tool
                 // Ken Burns effect is not yet implemented on local slides, ie, slides created
                 // with the camera tool
-                if(!(image.contains(curSlide.localSlideExtension)) &&
+                val imageExtension = image.substringAfterLast(".", "")  // without '.'
+                // find a double file extension if there is one (e.g.: ".png.jpg") the first one being the original file extension otherwise simply use the single file extension
+                val imageDblExtFind = Regex("\\.[a-zA-Z0-9]+\\.[a-zA-Z0-9]+\$").find(image)?.value?.substring(1) ?: imageExtension
+                // check that we don't have a "_Local." camera tool selected file
+                if (!(image.startsWith("$PROJECT_DIR/") && image.endsWith("${Slide.localSlideExtension}${imageDblExtFind}"))  &&
                         curSlide.startMotion != null &&
-                        curSlide.endMotion != null) {
-
+                        curSlide.endMotion != null)
+                {
                     val videoRect = SlideService(mContext).getVideoScreenRect(true, true)
                     kbfx = KenBurnsEffect.fromSlide(curSlide, videoRect.width(), videoRect.height())
                 }
