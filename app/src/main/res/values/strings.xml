@@ -483,7 +483,7 @@
     <string name="help_main_downloads_title">Download Stories</string>
     <string name="help_main_downloads_body">
         <![CDATA[When you are ready for more stories, you can download them using the menu.
-        <br/>Right now, the \'000 Unlocked demo\' story is good for learning to use Story Producer.
+        <br/>Right now, the \'000 Storm - demo\' story is good for learning to use Story Producer.
         <br/>Tap Next…]]>
     </string>
     <string name="help_main_story_title"></string>
@@ -601,7 +601,7 @@
     <string name="help_translate_record_song_title">Record Your Song</string>
     <string name="help_translate_record_song_body">
         <![CDATA[Creating a song is optional, though language communities are often excited to do it.
-        <br/>If you are willing to have a little fun and see what Story Producer can do, just record a few notes now.]]>
+        <br/>To have a little fun and see what Story Producer can do, just record a few notes now.]]>
     </string>
     <string name="help_translate_song_title_title">Song Title</string>
     <string name="help_translate_song_title_body">
