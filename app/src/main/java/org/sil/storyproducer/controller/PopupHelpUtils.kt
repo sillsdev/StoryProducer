@@ -210,7 +210,7 @@ class PopupHelpUtils(private val parent: Any,
         }
     }
 
-    fun showNextPopupHelp() :Boolean {
+    fun showNextPopupHelp(rootViewId: Int = 0) :Boolean {
 
         if (globalCancelCount >= 2)
             return false  // help has been cancelled twice - don't show any more by default
@@ -229,9 +229,13 @@ class PopupHelpUtils(private val parent: Any,
         if ((popupItem.isTaskAccomplished != null) && !popupItem.isTaskAccomplished.invoke())
              showNextGrayed = true
         aboutToShowHelpPopup = true
-        val view = activity?.findViewById<View>(popupItem.anchorViewId)
+        // get the view that the help item is anchored on
+        var view = activity?.findViewById<View>(popupItem.anchorViewId)
+        // if view id is not yet created/inflated then use the root view id for now (if specified) [bugfix 847]
+        if (view == null && rootViewId != 0)
+            view = activity?.findViewById(rootViewId)
         if (view != null) {
-            view.post {
+            view.post { // this lambda will run on the main thread once the view has been created
                 if (!aboutToShowHelpPopup)
                     return@post // return immediately if popup was closed by a onPause() call to dismissPopup()
                 // get the view again in case it has gone stale (fixes a crash/display bug)
