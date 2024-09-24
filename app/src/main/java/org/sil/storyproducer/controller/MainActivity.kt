@@ -180,7 +180,7 @@ class MainActivity : BaseActivity(), Serializable {
             50, -storyListViewPercent,  // negative percentY is a hint to point north
             R.string.help_main_story_title, R.string.help_main_story_body)
 
-        mPopupHelpUtils?.showNextPopupHelp()
+        mPopupHelpUtils?.showNextPopupHelp(R.id.activity_main)  // specify an anchor view id  [bugfix 847]
     }
 
     // If only one or two stories are (auto) installed then display short
