@@ -103,7 +103,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
      *
      * This now only leaves us with how to convert between a blank image filename indicating a background gray
      * image to a new filename for holding camera selected background images on the title and song slides.  This still
-     * is done by using a "<slide_no>_Local.jpg" filename, but for all title and story slides the image filename
+     * is done by using a "<slide_no>_Local.jpg" filename, but for all title and song slides the image filename
      * is reverted back to an empty "" string which indicates to the drawing code that a gray patterned image should
      * be used for that slide:
      *
@@ -347,7 +347,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                     var imageExtension = "" // the filename extension without a '.'
                     val imageFile = Workspace.activeStory.slides[slideNum].imageFile
                     if (imageFile.isEmpty()) {
-                        // set the new background image file name to be used for the slide as (for example): "project/1_BLocal.jpg"
+                        // set the new background image file name to be used for the slide as (for example): "project/1_Local.jpg"
                         // this avoids slide number clashes and allows the filename to be restored to an empty string on restore button pressed
                         imageExtension = "jpg"
                         // Set the new imageFile path to point to the camera tool selected and rotated file
@@ -357,7 +357,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                         imageExtension = imageFile.substringAfterLast(".", "")
                         var imageDblExtension = imageExtension
                         if (imageDblExtension != "jpg")
-                            imageDblExtension = "$imageDblExtension.jpg"
+                            imageDblExtension = "$imageDblExtension.jpg"  // this creates the double extension starting with the original extension
                         // add a "project/" prefix and "_Local" postfix to the base filename
                         // Set the new imageFile path to point to the camera tool selected and rotated file
                         Workspace.activeStory.slides[slideNum].imageFile = "$PROJECT_DIR/${imageFile}"

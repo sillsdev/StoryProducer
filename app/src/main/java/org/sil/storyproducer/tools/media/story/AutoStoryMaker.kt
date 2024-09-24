@@ -223,7 +223,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 // find a double file extension if there is one (e.g.: ".png.jpg") the first one being the original file extension otherwise simply use the single file extension
                 val imageDblExtFind = Regex("\\.[a-zA-Z0-9]+\\.[a-zA-Z0-9]+\$").find(image)?.value?.substring(1) ?: imageExtension
                 // check that we don't have a "_Local." camera tool selected file
-                if (!(image.startsWith("$PROJECT_DIR/") && image.endsWith("${Slide.localSlideExtension}${imageDblExtFind}"))  &&
+                if (!(image.startsWith("$PROJECT_DIR/") && image.endsWith("${Slide.localSlideExtension}${imageDblExtFind}")) &&
                         curSlide.startMotion != null &&
                         curSlide.endMotion != null)
                 {
