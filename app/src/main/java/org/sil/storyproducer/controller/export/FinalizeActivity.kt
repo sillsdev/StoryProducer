@@ -371,10 +371,10 @@ class FinalizeActivity : PhaseBaseActivity() {
         mLayoutConfiguration.visibility = visibilityPreExport
         mLayoutCancel.visibility = visibilityWhileExport
         if (mLayoutCancel.visibility == View.VISIBLE) {
-            // cancel layout is visible so dismiss any help popups
+            // 'cancel layout' is visible so dismiss any help popups
             mPopupHelpUtils?.dismissPopup()
         } else {
-            // cancel layout now visible so resume any previously showing help popups
+            // 'cancel layout' now invisible again so resume any previously showing help popups
             mPopupHelpUtils?.showNextPopupHelp()
         }
         mButtonStart.visibility = visibilityPreExport
