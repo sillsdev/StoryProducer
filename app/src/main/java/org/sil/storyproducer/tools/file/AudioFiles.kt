@@ -3,11 +3,13 @@ package org.sil.storyproducer.tools.file
 
 import android.content.Context
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import org.sil.storyproducer.R
-import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.PROJECT_DIR
+import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.Story
+import org.sil.storyproducer.model.WordLinkRecording
+import org.sil.storyproducer.model.Workspace
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 import kotlin.math.max
 
 /**
@@ -73,8 +75,8 @@ fun getRecordedAudioFiles(slideNum:Int = Workspace.activeSlideNum) : MutableList
     return filenames
 }
 
-fun assignNewAudioRelPath() : String {
-    val combName = createRecordingCombinedName()
+fun assignNewAudioRelPath(context: Context) : String {
+    val combName = createRecordingCombinedName(context)
     addCombinedName(combName)
     return Story.getFilename(combName)
 }
@@ -135,7 +137,7 @@ fun deleteAudioFileFromList(context: Context, pos: Int) {
     deleteStoryFile(context, fileLocation)
 }
 
-fun createRecordingCombinedName() : String {
+fun createRecordingCombinedName(context: Context) : String {
     //Example: project/communityCheck_3_2018-03-17T11:14;31.542.md4
     //This is the file name generator for all audio files for the app.
 
@@ -145,7 +147,7 @@ fun createRecordingCombinedName() : String {
         //just one file.  Overwrite when you re-record.
         PhaseType.LEARN,
         PhaseType.WHOLE_STORY -> {
-            "${Workspace.activePhase.getDirectorySafeName()}|$PROJECT_DIR/${Workspace.activePhase.getFileSafeName()}$AUDIO_EXT"
+            "${Workspace.activePhase.getDirectorySafeName(context)}|$PROJECT_DIR/${Workspace.activePhase.getFileSafeName()}$AUDIO_EXT"
         }
         //Make new files every time.  Don't append.
         PhaseType.TRANSLATE_REVISE,
@@ -155,7 +157,7 @@ fun createRecordingCombinedName() : String {
         PhaseType.ACCURACY_CHECK -> {
             //find the next number that is available for saving files at.
             val names = getRecordedDisplayNames()
-            val rNameNum = "${Workspace.activePhase.getDirectorySafeName()} ([0-9]+)".toRegex()
+            val rNameNum = ".* ([0-9]+)$".toRegex()
             var maxNum = 0
             for (n in names!!){
                 try {
@@ -169,8 +171,8 @@ fun createRecordingCombinedName() : String {
             }
             // 11/13/2021 - DKH, Issue 606, Wordlinks quick fix for text back translation
             // Append the generated instructional string to the display name.
-            var displayName = "${Workspace.activePhase.getDirectorySafeName()} ${maxNum+1}" +
-                    Workspace.activePhase.getDisplayNameAdditionalInfo()
+            var displayName = "${Workspace.activePhase.getDirectorySafeName(context)} ${maxNum+1}" +
+                    Workspace.activePhase.getDisplayNameAdditionalInfo(context)
 
             // create the combined string of display name and audio file location
             val currentDateTimeStr = SimpleDateFormat("yyyyMMdd-HHmmss.SSS").format(Date())

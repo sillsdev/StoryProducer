@@ -68,7 +68,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
                 return
 
             // set bold spannable
-            var lockScreenText = (lockTextView.text ?: return) as String
+            var lockScreenText = (lockTextView.text.toString() ?: return) as String
             val boldStart = lockScreenText.indexOf("<b>")
             val boldEnd = lockScreenText.indexOf("</b>") - 3
             lockScreenText = lockScreenText.replace("<b>", "")
@@ -226,7 +226,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     }
 
     override fun updateReadingTemplatesDialog(current: Int, total: Int, currentTemplate: String) {
-        readingTemplatesDialog?.setMessage("$current of $total templates\n\n$currentTemplate")
+        readingTemplatesDialog?.setMessage(baseContext.getString(R.string.update_reading_templates_dialog, current, total, currentTemplate))
     }
 
     override fun hideReadingTemplatesDialog() {

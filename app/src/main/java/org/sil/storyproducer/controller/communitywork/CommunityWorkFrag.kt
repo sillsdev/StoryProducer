@@ -98,7 +98,7 @@ class CommunityWorkFrag : MultiRecordFrag() {
             80, 90,
             R.string.help_community_play_title, R.string.help_community_play_body) {
 //                Workspace.activeStory.activityLogs.firstOrNull {
-//                    it.phase.phaseType == PhaseType.COMMUNITY_WORK && it.description.contains("Draft Playback")  // TODO: LOCALIZATION: Temp string
+//                    it.phase.phaseType == PhaseType.COMMUNITY_WORK && it.description.contains(context.getString(R.string.DRAFT_PLAYBACK))
 //                } != null
                 true    // Always show next for community play action in case there is not recorded audio for this slide
             }

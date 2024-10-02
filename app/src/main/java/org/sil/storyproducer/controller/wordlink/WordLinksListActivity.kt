@@ -97,9 +97,9 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
                 wv.loadDataWithBaseURL(null,text,"text/html",null,null)
                 // display the help text in a dialog box
                 val dialog = android.app.AlertDialog.Builder(this)
-                        .setTitle("Word Links Help")    // TODO: LOCALIZATION: Move this text to strings.xml resource
+                        .setTitle(baseContext.getString(R.string.phase_display_name_word_links) + " " + baseContext.getString(R.string.help))
                         .setView(wv)
-                        .setNegativeButton("Close") { dialog, _ ->  // TODO: LOCALIZATION: Move this text to strings.xml resource
+                        .setNegativeButton(baseContext.getString(R.string.nav_close)) { dialog, _ ->
                             dialog!!.dismiss()
                         }
                 dialog.show()
