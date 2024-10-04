@@ -518,7 +518,7 @@
     </string>
     <string name="help_learn_next_phase_title">Next Phase</string>
     <string name="help_learn_next_phase_body">
-        <![CDATA[When you finish the Learn Phase, tap above to go to the next phase, Translate + Revise.]]>
+        <![CDATA[When you finish the Learn Phase, tap above and choose the next phase, Translate + Revise.]]>
     </string>
 
     <string name="help_translate_phase_title">Translate + Revise Phase</string>
@@ -529,24 +529,6 @@
     <string name="help_translate_titleslide_body">
         <![CDATA[Every story begins with a Title Slide, followed by the Story Slides. This label identifies the slide.]]>
     </string>
-    <!--
-    <string name="help_translate_navigateslides_title">Navigating Slides</string>
-    <string name="help_translate_navigateslides_body">
-        <![CDATA[Note that you can <b>swipe left or right</b> at any time to move to a different slide. But...
-        <br/>Right now, tap Next.]]>
-    </string>
-    <string name="help_translate_skiptitle_title">Title Slide</string>
-    <string name="help_translate_skiptitle_body">
-        <![CDATA[Initially it’s best to move ahead and translate the Story Slides first.
-        <br/>To begin doing that <b><i>Swipe Left Now</b></i> which will move us to Story Slide 1.
-        <br/>&lt;&lt;&lt;&lt;&lt;&lt;
-        <br/>If you have already translated all the story slides, tap Next now.]]>
-    </string>
-    <string name="help_translate_resumetitle_title"></string>
-    <string name="help_translate_resumetitle_body">
-        <![CDATA[If you have translated the Story Slides, let\'s complete the Title slide now. Tap Next...]]>
-    </string>
-    -->
     <string name="help_translate_pick_title">Translate a Title</string>
     <string name="help_translate_pick_body">
         <![CDATA[Pick a title from the list or create your own title. Think about how you would say it in your language.]]>
@@ -582,18 +564,14 @@
         <![CDATA[Tap this button to listen to your translation.
         <br/>You may record it again if you want.]]>
     </string>
-    <!--<string name="help_translate_list_title">Recordings List</string>
-    <string name="help_translate_list_body">
-        <![CDATA[This List Play button can be used if you need to review multiple recordings. Much of the time you don’t need this.]]>
-    </string>
-    -->
     <string name="help_translate_continue_title">Complete the Story</string>
     <string name="help_translate_continue_body">
         <![CDATA[Swipe left to the next slide and repeat the Listen, Translate, Record, Review process on each Story Slide.]]>
     </string>
     <string name="help_translate_song_slide_title">Song Slide</string>
     <string name="help_translate_song_slide_body">
-        <![CDATA[Now that you have finished translating the story slides, you have the option to create a song to summarize the message of the story.]]>
+        <![CDATA[Now that you have finished translating the Story slides, this Song slide provides
+        a place where you or your community can create a song to accompany the story.]]>
     </string>
     <string name="help_translate_songlabel_title">Song Slide</string>
     <string name="help_translate_songlabel_body">
@@ -601,8 +579,9 @@
     </string>
     <string name="help_translate_record_song_title">Record Your Song</string>
     <string name="help_translate_record_song_body">
-        <![CDATA[Creating a song is optional, though language communities are often excited to do it.
-        <br/>To have a little fun and see what Story Producer can do, just record a few notes now.]]>
+        <![CDATA[Creating a song can personalize a story and make it more memorable, and language
+        communities are often excited to do it.
+        <br/>So to see what Story Producer can do, just record a few notes now.]]>
     </string>
     <string name="help_translate_song_title_title">Song Title</string>
     <string name="help_translate_song_title_body">
