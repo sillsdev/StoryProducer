@@ -44,19 +44,6 @@ class TranslateReviseFrag : MultiRecordFrag() {
                 R.id.seek_bar,
                 86, 70,
                 R.string.help_translate_titleslide_title, R.string.help_translate_titleslide_body)
-            /**mPopupHelpUtils?.addPopupHelpItem(
-                    R.id.seek_bar,
-                    -1, -1,
-                    R.string.help_translate_navigateslides_title, R.string.help_translate_navigateslides_body)
-            mPopupHelpUtils?.addPopupHelpItem(
-                    R.id.seek_bar,
-                    86, 70,
-                    R.string.help_translate_skiptitle_title, R.string.help_translate_skiptitle_body)
-            mPopupHelpUtils?.addPopupHelpItem(
-                    R.id.seek_bar,
-                    -1, -1,
-                    R.string.help_translate_resumetitle_title, R.string.help_translate_resumetitle_body)
-             **/
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.fragment_scripture_text,
                 25, 2,
@@ -102,11 +89,6 @@ class TranslateReviseFrag : MultiRecordFrag() {
                 R.id.play_recording_button,
                 50, 10,
                 R.string.help_translate_review_title, R.string.help_translate_review_body)
-            /**mPopupHelpUtils?.addPopupHelpItem(
-                    R.id.list_recordings_button,
-                    20, 10,
-                    R.string.help_translate_list_title, R.string.help_translate_list_body)
-            **/
             mPopupHelpUtils?.addPopupHelpItem(
                     R.id.seek_bar,
                     82, 70,
