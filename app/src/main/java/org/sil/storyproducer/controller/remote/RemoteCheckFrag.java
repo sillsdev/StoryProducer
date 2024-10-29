@@ -96,8 +96,7 @@ public class RemoteCheckFrag extends Fragment {
         //these lines should be put somewhere else (one time only)
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final SharedPreferences.Editor prefsEditor = prefs.edit();
-        String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
-                Settings.Secure.ANDROID_ID);
+        String phone_id = "";//Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         prefsEditor.putString("PhoneId", phone_id).apply();
 
 
@@ -250,7 +249,7 @@ public class RemoteCheckFrag extends Fragment {
     private void sendMessage(){
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final SharedPreferences.Editor prefsEditor = prefs.edit();
-        String phone_id = prefs.getString(getString(R.string.PhoneId), "");
+        String phone_id = "";//prefs.getString(getString(R.string.PhoneId), "");
         js = new HashMap<String,String>();
 
 
@@ -333,7 +332,7 @@ public class RemoteCheckFrag extends Fragment {
 
     private void getMessages(){
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
-        String phone_id = prefs.getString(getString(R.string.PhoneId), "");
+        String phone_id = "";//prefs.getString(getString(R.string.PhoneId), "");
 
         js = new HashMap<String,String>();
         js.put("Key", getString(R.string.api_token));

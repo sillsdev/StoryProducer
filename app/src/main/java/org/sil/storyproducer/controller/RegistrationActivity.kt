@@ -9,7 +9,6 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings.Secure
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -363,8 +362,7 @@ open class RegistrationActivity : AppCompatActivity() {
 
         val reg = Workspace.registration
 
-        val PhoneId = Secure.getString(myContext.contentResolver,
-                Secure.ANDROID_ID)
+        val PhoneId = ""//Secure.getString(myContext.contentResolver, Secure.ANDROID_ID)
 
         js["Key"] = getString(R.string.api_token)
         js["PhoneId"] = PhoneId
