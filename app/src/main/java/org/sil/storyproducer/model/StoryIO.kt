@@ -244,6 +244,8 @@ fun migrateStory(context: Context, story: Story): Story? {
 
 fun bloomSourceAutoDLDir() : String {return App.appContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.path!!}
 fun thumbnailsAutoDLDir() : String {return App.appContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.path!! + "/thumbnails/"}
+//fun thumbnailsAutoDLDir() : String {return "/data/user/0/org.sil.storyproducer.debug/files" + "/thumbnails/"} // For testing only
+
 
 fun bloomSourceZipExt() : String {return ".bloomSource"}
 

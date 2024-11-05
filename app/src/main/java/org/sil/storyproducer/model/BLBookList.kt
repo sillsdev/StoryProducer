@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.os.AsyncTask
 import android.util.Base64
 import android.util.Xml
+import org.sil.bloom.reader.DownloadsView
 import org.sil.storyproducer.App
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.bldownload.BLDataModel
@@ -17,6 +18,7 @@ import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.SimpleDateFormat
+import java.time.Instant.*
 import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
@@ -103,18 +105,30 @@ open class BLBookList(var dateUpdated: Date) {
             val id = extractThumbnailId(dataItem.thumbnailUri)
             if (id.isNullOrEmpty())
                 return
+            // get the version of the thumbnail which is a UTC timestamp
+            val timeVersion = DownloadsView.getParameterValue(dataItem.thumbnailUri, "version")
+            // Set up the SimpleDateFormat with ISO 8601 pattern and UTC timezone
+            val utcTimeFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+            utcTimeFormatter.timeZone = TimeZone.getTimeZone("UTC")
+            // Parse the ISO string to a Date object
+            val dateVersion = utcTimeFormatter.parse(timeVersion)
+            // Convert the Date to milliseconds since epoch in UTC
+            val latestVersionEpochMillis = dateVersion.time
             val thumbnailsDownloadDir = thumbnailsAutoDLDir()
             File(thumbnailsDownloadDir).mkdirs()    // make sure the dir exists
             val downloadedFile = File(thumbnailsDownloadDir + "${id}.png")
+            // if the thumbnail file exists and it is not out of date it can be flagged as downloaded
             if (downloadedFile.exists()) {
-                dataItem.thumbnailDownloaded = true
-                BLDownloadActivity.adapter.notifyItemChanged(filteredIndex)    // update the display of this card
-                return
+                if (downloadedFile.lastModified() >= latestVersionEpochMillis) {    // check the file time against version time
+                    dataItem.thumbnailDownloaded = true
+                    BLDownloadActivity.adapter.notifyItemChanged(filteredIndex)    // update the display of this card
+                    return
+                }
             }
             if (thumbnailDLTasks.size >= 3) // max three tasks for downloading
                 return
 
-            // launch a task for this card thumbnail
+            // launch a download task for this card thumbnail
             addThumbnailDLTask(bldlActivityIndex, dataItem.thumbnailUri, id)
         }
 
