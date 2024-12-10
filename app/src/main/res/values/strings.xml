@@ -543,7 +543,7 @@
     </string>
     <string name="help_translate_nextslide1_title">Swipe Left</string>
     <string name="help_translate_nextslide1_body">
-        <![CDATA[After you finish this Title slide, <b><i>touch the screen and swipe left</i></b> to go to Story Slide 1.
+        <![CDATA[Now, <b><i>touch the screen and swipe left</i></b> to go to Story Slide 1.
         <br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
     </string>
     <string name="help_translate_storyslide_title">Story Slide</string>
@@ -570,7 +570,7 @@
     </string>
     <string name="help_translate_song_slide_title">Song Slide</string>
     <string name="help_translate_song_slide_body">
-        <![CDATA[Now that you have finished translating the Story slides, this Song slide provides
+        <![CDATA[Now that you have finished recording the story, this Song slide provides
         a place where you or your community can create a song to accompany the story.]]>
     </string>
     <string name="help_translate_songlabel_title">Song Slide</string>
@@ -605,7 +605,7 @@
 
     <string name="help_community_phase_title">Community Work Phase</string>
     <string name="help_community_phase_body">
-        <![CDATA[In this phase, you need to gather community feedback on your translation.]]>
+        <![CDATA[In this phase, you need to go to the community to get feedback on your translation.]]>
     </string>
     <string name="help_community_swipe_title"></string>
     <string name="help_community_swipe_body">
@@ -624,17 +624,17 @@
     </string>
     <string name="help_community_continue_title">Gather Feedback</string>
     <string name="help_community_continue_body">
-        <![CDATA[Go to each slide.&ensp;&lt;&lt;&lt;&lt;&lt;&lt;<br/>Gather community feedback for every slide.]]>
+        <![CDATA[Go to each slide and get community feedback;&lt;&lt;&lt;&lt;&lt;&lt;]]>
     </string>
     <string name="help_community_revise_title">Revise</string>
     <string name="help_community_revise_body">
         <![CDATA[Use the feedback to improve the translation.
-        <br/>When needed, <b>go back to the Translate + Revise Phase to make a revision</b>.
+        <br/><b>Go back to the Translate + Revise Phase if you need to revise the translation</b>.
         <br/>Then return here to Community Work to continue getting feedback.]]>
     </string>
     <string name="help_community_nextphase_title">Next Phase</string>
     <string name="help_community_nextphase_body">
-        <![CDATA[When you are done gathering feedback and making revisions, tap above (or swipe up) to move on to the next phase, Accuracy Check.]]>
+        <![CDATA[When you are done getting feedback and making revisions, tap above (or swipe up) to move on to the next phase, Accuracy Check.]]>
     </string>
 
     <string name="help_accuracy_phase_title">Accuracy Check Phase</string>
@@ -679,7 +679,7 @@
     <string name="help_voice_record_title">Record Dramatically</string>
     <string name="help_voice_record_body">
         <![CDATA[Re-record the translation with a clear voice and dramatic expression.
-        <br/>(Then tap the pause button to pause recording, or tap the square to stop recording.)]]>
+        <br/>(Tap the pause button to pause recording, or tap the square to stop recording.)]]>
     </string>
     <string name="help_voice_replay_title">Replay Recording</string>
     <string name="help_voice_replay_body">
@@ -693,28 +693,28 @@
     </string>
     <string name="help_voice_final_title">Final Check</string>
     <string name="help_voice_final_body">
-        <![CDATA[Start at the Title slide and double check that you are satisfied with the dramatic audio volume and quality by replaying all of the slides one after the other.
+        <![CDATA[Start at the Title slide and play each slide. Check the audio volume and quality for each slide.
          <br/>Then go to the Finalize phase.]]>
     </string>
     <string name="help_voice_paused_title">Recording Paused</string>
     <string name="help_voice_paused_body">
-        <![CDATA[This special mode can be helpful if you would like to record dramatically in smaller chunks. For example, if you want a different person to speak a character’s voice, or if you need to listen again to a long translation.]]>
+        <![CDATA[This pause button allows you to record in smaller chunks. This can be helpful, if you want a different person to speak a character’s voice, or if you need to listen again to a long translation.]]>
     </string>
     <string name="help_voice_pausedreplay_title">Recording Paused</string>
     <string name="help_voice_pausedreplay_body">
-        <![CDATA[Tap to hear what has been recorded so far for this slide. Try it now.]]>
+        <![CDATA[Tap to hear what you recorded. Try it now.]]>
     </string>
     <string name="help_voice_pausedlisten_title">Recording Paused</string>
     <string name="help_voice_pausedlisten_body">
-        <![CDATA[Tap to resume listening and memorizing the next chunk of the translation.]]>
+        <![CDATA[Tap to resume listening and memorizing the next segment of the translation.]]>
     </string>
     <string name="help_voice_pausedrecord_title">Resume Recording</string>
     <string name="help_voice_pausedrecord_body">
-        <![CDATA[Tap the mic+ button to resume dramatic re-recording.]]>
+        <![CDATA[Tap the mic+ button to resume recording.]]>
     </string>
     <string name="help_voice_pausedstop_title">Finalize</string>
     <string name="help_voice_pausedstop_body">
-        <![CDATA[Or tap the square stop button to finalize the recording now.]]>
+        <![CDATA[Or tap the square stop recording.]]>
     </string>
 
     <string name="help_finalize_phase_title">Finalize Phase</string>
