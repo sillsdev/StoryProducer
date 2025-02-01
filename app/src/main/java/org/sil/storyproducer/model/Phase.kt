@@ -11,6 +11,7 @@ import org.sil.storyproducer.controller.learn.LearnActivity
 import org.sil.storyproducer.controller.pager.PagerBaseActivity
 import org.sil.storyproducer.controller.remote.WholeStoryBackTranslationActivity
 import org.sil.storyproducer.controller.wordlink.WordLinksActivity
+import java.util.Locale
 
 /**
  * PhaseType enum used to track current phase
@@ -283,12 +284,20 @@ class Phase (val phaseType: PhaseType) {
                     Phase(PhaseType.SHARE))
         }
 
+        fun getCurrentLanguageCode(): String {
+            return Locale.getDefault().language // Returns "en", "fr", "es", etc.
+        }
         /**
          * get the filename for the HTML help doc
          * @return String
          */
         fun getHelpDocFile(phase: PhaseType) : String {
-            return "${phase.name.toLowerCase()}.html"
+            var langCode = getCurrentLanguageCode()
+            langCode = when (langCode) {
+                "fr" -> "-${langCode}"
+                else -> ""
+            }
+            return "${phase.name.toLowerCase()}${langCode}.html"
         }
     }
 }
