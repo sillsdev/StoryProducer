@@ -376,10 +376,6 @@ class PopupHelpUtils(private val parent: Any,
                             0, 0                                 // Display it at (0,0) coordinates
                         )
 
-                        // Optional: Close the popup when the background is clicked
-                        popupView.setOnClickListener {
-//                            helpPopupWindow?.dismiss() // Dismiss the PopupWindow when clicked
-                        }
                     }
 
                     val popupHtml5Item = popupItems[currentHelpIndex] as? PopupHtml5Item
@@ -438,10 +434,6 @@ class PopupHelpUtils(private val parent: Any,
                             dismissPopup()  // dismiss html view popup on back key pressed
                         }
 
-                        // Optional: Close the popup when the background is clicked
-                        popupView.setOnClickListener {
-//                            helpPopupWindow?.dismiss() // Dismiss the PopupWindow when clicked
-                        }
                     }
 
                     val buttonClose: ImageButton = getHelpView()!!.findViewById(R.id.btnClose)
