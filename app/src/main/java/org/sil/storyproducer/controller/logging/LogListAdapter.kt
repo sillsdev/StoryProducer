@@ -1,19 +1,16 @@
 package org.sil.storyproducer.controller.logging
 
 import android.content.Context
-import androidx.core.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
-
+import androidx.core.content.ContextCompat
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.LogEntry
-
-import java.util.ArrayList
 
 internal class LogListAdapter(private val context: Context, slide: Int) : BaseAdapter() {
 
@@ -66,7 +63,7 @@ internal class LogListAdapter(private val context: Context, slide: Int) : BaseAd
 
         val entry = getItem(position)
         date.text = entry.dateTimeString
-        info.text = "${entry.phase.getDisplayName()} - ${entry.description}"
+        info.text = "${entry.phase.getDisplayName(context)} - ${entry.description}"
         cView.setBackgroundColor(ContextCompat.getColor(context, entry.phase.getColor()))
 
         return cView

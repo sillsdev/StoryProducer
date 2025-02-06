@@ -180,7 +180,7 @@ class WordLinksActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarM
             }
             R.id.helpButton -> {
                 val alert = AlertDialog.Builder(this)
-                alert.setTitle("${Workspace.activePhase.getDisplayName()} Help")  // TODO: LOCALIZATION: Move this text to strings.xml resource
+                alert.setTitle(Workspace.activePhase.getDisplayName(baseContext) + " " + baseContext.getString(R.string.help))
 
                 val wv = WebView(this)
                 val iStream = assets.open(Phase.getHelpDocFile(Workspace.activePhase.phaseType))
@@ -189,7 +189,7 @@ class WordLinksActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarM
                 }
                 wv.loadDataWithBaseURL(null,text,"text/html",null,null)
                 alert.setView(wv)
-                alert.setNegativeButton("Close") { dialog, _ ->
+                alert.setNegativeButton(baseContext.getString(R.string.nav_close)) { dialog, _ ->
                     dialog!!.dismiss()
                 }
                 alert.show()

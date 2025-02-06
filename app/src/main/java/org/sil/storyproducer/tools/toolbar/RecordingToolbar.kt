@@ -261,7 +261,7 @@ open class RecordingToolbar : Fragment() {
               stopToolbarMedia()
 
               if (!wasRecording) {
-                  val recordingRelPath = assignNewAudioRelPath()
+                  val recordingRelPath = assignNewAudioRelPath(view?.context!!)
                   //we may be overwriting things in other phases, but we do not care.
                   if (storyRelPathExists(activity!!, recordingRelPath) && Workspace.activePhase.phaseType == PhaseType.LEARN) {
                       val dialog = AlertDialog.Builder(activity!!)

@@ -1,4 +1,23 @@
 <resources>
+<!--    Notes on fixing [French] machine translations (google translate)
+    1. Replace: &amp;
+       With:    &
+    2. Replace: &#39;
+       With:    \'
+    3. Replace: ’
+       With:    \'
+    3. Replace: \\'
+       With:    \'
+    5. Replace: &lt;
+       With     <
+    6. Replace: &gt;
+       With     >
+    7. Replace: <<<<<<
+       With:    &lt;&lt;&lt;&lt;&lt;&lt;
+    8. Add CDATA to "lock_screen_text" named string
+    9. Add " |" to end of "lock_screen_text" named string
+    10 Remove \ from =\"...\" in tags
+-->
     <string name="app_name">Story Producer</string>
 
     <!-- General -->
@@ -6,6 +25,7 @@
     <string name="yes">Yes</string>
     <string name="ok">OK</string>
     <string name="gotIt">Got it</string>
+    <string name="letsBegin">Let’s Begin</string>
     <string name="cancel">Cancel</string>
     <string name="next">Next</string>
     <string name="help">Help</string>
@@ -76,6 +96,8 @@
 
     <!-- Dialog strings for titles, messages, and buttons -->
     <string name="welcome_to_story_producer">Welcome to Story Producer</string>
+    <string name="exit_application">Exit Application?</string>
+    <string name="exit_are_you_sure">Are you sure you want to quit?</string>
     <string name="use_internal_demo">Use internal demo</string>
     <string name="please_create_and_then_select_folder">Please create and then Select a new folder, needed for running the demo.</string>
     <string name="registration_exit_title">Exit Registration?</string>
@@ -311,8 +333,8 @@
     <string name="all_stories_tab">All Stories</string>
     <string name="in_progress_tab">In Progress</string>
     <string name="completed_tab">Completed</string>
-    <string name="more_story_templates"><b>Tip:</b>\nIf you are connected to the internet, you can add more stories!\nTap the menu in the upper left, and choose one of the <b>\'Download ...\'</b> actions.</string>
-    <string name="filter_chips_feature">Use the white buttons at the top of the Story List to filter and display types of stories.\nFor example, you can display only Old Testament (<b>OT</b>) or New Testament (<b>NT</b>) stories by selecting the appropriate buttons.\nTap the white buttons to try it out.</string>
+    <string name="more_story_templates">Tip:\nIf you are connected to the internet, you can add more stories!\nTap the menu in the upper left, and choose one of the \'Download ...\' actions.</string>
+    <string name="filter_chips_feature">Use the white buttons at the top of the Story List to filter and display types of stories.\nFor example, you can display only Old Testament (OT) or New Testament (NT) stories by selecting the appropriate buttons.\nTap the white buttons to try it out.</string>
 
     <!-- Filter Toolbar -->
     <string name="film_toolbar">Film</string>
@@ -441,6 +463,8 @@
     <string name="slide_type_number">Slide</string>
     <string name="voice_studio_move_time">Now it’s time to record the final audio in the Voice Studio phase.</string>
     <string name="build_story_failed">The following templates failed to load and are not compatible with Story Producer:</string>
+    <string name="update_reading_templates_dialog">%1$d of %2$d templates\n\n%3$s</string>
+    <string name="sp_logo">Story Producer logo</string>
 
     <!-- Strings from Bloom Library Reader Web Download pages  -->
     <string name="read_now">Read Now</string>
@@ -451,7 +475,37 @@
     <string name="downloading_books">Downloading books</string>
     <string name="book_already_downloaded">The book has already been downloaded for language \'%s\'.</string>
     <string name="del_story_title">Story Deletion</string>
-    <string name="del_story_message">Do you want to delete the story \"%1$s\" from your device? Deleting this story will delete any audio recordings you have made in this story.</string>
+    <string name="del_story_message">Do you want to delete the story \"%1$s\" from your device? Deleting this story will delete any audio recordings you have made in this story.</string>    
+
+    <!-- Logging Strings -->
+    <string name="log_entry_record">Record</string>
+    <string name="log_entry_playback">Playback</string>
+
+    <!-- Phase Strings -->
+    <string name="phase_dir_safe_name_translation_draft">Translation Draft</string>
+    <string name="phase_dir_safe_name_wordlinks">WordLinks</string>
+    <string name="phase_dir_safe_name_comment">Comment</string>
+    <string name="phase_dir_safe_name_whole">Whole</string>
+    <string name="phase_dir_safe_name_backtrans">BackTrans</string>
+    <string name="phase_dir_safe_name_remote">Remote</string>
+    <string name="phase_dir_safe_name_accuracy">Accuracy</string>
+    <string name="phase_dir_safe_name_studio_recording">Studio Recording</string>
+    <string name="phase_dir_safe_name_finalize">Finalize</string>
+
+    <string name="phase_display_name_registration">Registration</string>
+    <string name="phase_display_name_learn">Learn</string>
+    <string name="phase_display_name_translate_revise">Translate + Revise</string>
+    <string name="phase_display_name_word_links">Word Links</string>
+    <string name="phase_display_name_community_work">Community Work</string>
+    <string name="phase_display_name_whole_story">Whole Story</string>
+    <string name="phase_display_name_back_translation">Back Translation</string>
+    <string name="phase_display_name_remote_check">Remote Check</string>
+    <string name="phase_display_name_accuracy_check">Accuracy Check</string>
+    <string name="phase_display_name_voice_studio">Voice Studio</string>
+    <string name="phase_display_name_finalize">Finalize</string>
+    <string name="phase_display_name_share">Share</string>
+
+    <string name="phase_display_name_additional_info_wordlinks"> --&gt; Press and hold to back translate</string>
 
     <!-- Strings for Help Tutorial views: titles and body  -->
     <string name="help_main_welcome_body">

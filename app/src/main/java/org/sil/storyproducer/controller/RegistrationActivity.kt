@@ -134,7 +134,7 @@ open class RegistrationActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.helpButton -> {
                 val alert = AlertDialog.Builder(this)
-                alert.setTitle("${Phase(PhaseType.REGISTRATION).getDisplayName()} Help")    // TODO: LOCALIZATION: Move this text to strings.xml resource
+                alert.setTitle(Phase(PhaseType.REGISTRATION).getDisplayName(baseContext) + " " + baseContext.getString(R.string.help))
 
                 val wv = WebView(this)
                 val iStream = assets.open(Phase.getHelpDocFile(PhaseType.REGISTRATION))
@@ -143,7 +143,7 @@ open class RegistrationActivity : AppCompatActivity() {
 
                 wv.loadDataWithBaseURL(null,text,"text/html",null,null)
                 alert.setView(wv)
-                alert.setNegativeButton("Close") { dialog, _ ->
+                alert.setNegativeButton(baseContext.getString(R.string.nav_close)) { dialog, _ ->
                     dialog!!.dismiss()
                 }
                 alert.show()

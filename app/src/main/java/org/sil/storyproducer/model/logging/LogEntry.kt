@@ -28,7 +28,11 @@ class LogEntry(var dateTimeString: String,
 
 fun saveLearnLog(context: Context, startSlide: Int, endSlide: Int, duration: Long, isRecording: Boolean = false){
     val mResources = context.resources
-    var ret = if(isRecording){"Record "}else{"Playback "}   // TODO: LOCALIZATION:
+    var ret = if (isRecording)
+        {context.getString(R.string.log_entry_record)}
+    else
+        {context.getString(R.string.log_entry_playback)}
+    ret += " "
 
     ret += if (startSlide == endSlide) {
         mResources.getQuantityString(R.plurals.logging_numSlides, 1) + " " + (startSlide)

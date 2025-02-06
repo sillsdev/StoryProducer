@@ -116,7 +116,7 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
                 if (wasAppending) {
                     recordAudio(audioTempName)
                 } else {
-                    recordAudio(assignNewAudioRelPath())
+                    recordAudio(assignNewAudioRelPath(view?.context!!))
                 }
 
                 micButton.setBackgroundResource(R.drawable.ic_pause_white_48dp)

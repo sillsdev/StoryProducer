@@ -1,5 +1,6 @@
 package org.sil.storyproducer.model
 
+import android.content.Context
 import com.squareup.moshi.Json
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
@@ -10,6 +11,7 @@ import org.sil.storyproducer.controller.learn.LearnActivity
 import org.sil.storyproducer.controller.pager.PagerBaseActivity
 import org.sil.storyproducer.controller.remote.WholeStoryBackTranslationActivity
 import org.sil.storyproducer.controller.wordlink.WordLinksActivity
+import java.util.Locale
 
 /**
  * PhaseType enum used to track current phase
@@ -103,21 +105,20 @@ class Phase (val phaseType: PhaseType) {
      * Get name for phase to be displayed in UI alert dialog with help docs
      * @return String
      */
-    fun getDisplayName() : String {
+    fun getDisplayName(context: Context) : String {
         return when (phaseType) {
-            // TODO: LOCALIZATION: Move these to strings.xml resource
-            PhaseType.REGISTRATION     -> "Registration"
-            PhaseType.LEARN            -> "Learn"
-            PhaseType.TRANSLATE_REVISE -> "Translate + Revise"
-            PhaseType.WORD_LINKS       -> "Word Links"
-            PhaseType.COMMUNITY_WORK   -> "Community Work"
-            PhaseType.WHOLE_STORY      -> "Whole Story"
-            PhaseType.BACK_T           -> "Back Translation"
-            PhaseType.REMOTE_CHECK     -> "Remote Check"
-            PhaseType.ACCURACY_CHECK   -> "Accuracy Check"
-            PhaseType.VOICE_STUDIO     -> "Voice Studio"
-            PhaseType.FINALIZE         -> "Finalize"
-            PhaseType.SHARE            -> "Share"
+            PhaseType.REGISTRATION     -> context.getString(R.string.phase_display_name_registration)
+            PhaseType.LEARN            -> context.getString(R.string.phase_display_name_learn)
+            PhaseType.TRANSLATE_REVISE -> context.getString(R.string.phase_display_name_translate_revise)
+            PhaseType.WORD_LINKS       -> context.getString(R.string.phase_display_name_word_links)
+            PhaseType.COMMUNITY_WORK   -> context.getString(R.string.phase_display_name_community_work)
+            PhaseType.WHOLE_STORY      -> context.getString(R.string.phase_display_name_whole_story)
+            PhaseType.BACK_T           -> context.getString(R.string.phase_display_name_back_translation)
+            PhaseType.REMOTE_CHECK     -> context.getString(R.string.phase_display_name_remote_check)
+            PhaseType.ACCURACY_CHECK   -> context.getString(R.string.phase_display_name_accuracy_check)
+            PhaseType.VOICE_STUDIO     -> context.getString(R.string.phase_display_name_voice_studio)
+            PhaseType.FINALIZE         -> context.getString(R.string.phase_display_name_finalize)
+            PhaseType.SHARE            -> context.getString(R.string.phase_display_name_share)
             else -> phaseType.toString().toLowerCase()
         }
     }
@@ -126,17 +127,17 @@ class Phase (val phaseType: PhaseType) {
      * Get directory-safe name for phase, used to save audio files
      * @return String
      */
-    fun getDirectorySafeName() : String {
+    fun getDirectorySafeName(context: Context) : String {
         return when (phaseType) {
-            PhaseType.TRANSLATE_REVISE -> "Translation Draft"
-            PhaseType.WORD_LINKS       -> "WordLinks"
-            PhaseType.COMMUNITY_WORK   -> "Comment"
-            PhaseType.WHOLE_STORY      -> "Whole"
-            PhaseType.BACK_T           -> "BackTrans"
-            PhaseType.REMOTE_CHECK     -> "Remote"
-            PhaseType.ACCURACY_CHECK   -> "Accuracy"
-            PhaseType.VOICE_STUDIO     -> "Studio Recording"
-            PhaseType.FINALIZE         -> "Finalize"
+            PhaseType.TRANSLATE_REVISE -> context.getString(R.string.phase_dir_safe_name_translation_draft)
+            PhaseType.WORD_LINKS       -> context.getString(R.string.phase_dir_safe_name_wordlinks)
+            PhaseType.COMMUNITY_WORK   -> context.getString(R.string.phase_dir_safe_name_comment)
+            PhaseType.WHOLE_STORY      -> context.getString(R.string.phase_dir_safe_name_whole)
+            PhaseType.BACK_T           -> context.getString(R.string.phase_dir_safe_name_backtrans)
+            PhaseType.REMOTE_CHECK     -> context.getString(R.string.phase_dir_safe_name_remote)
+            PhaseType.ACCURACY_CHECK   -> context.getString(R.string.phase_dir_safe_name_accuracy)
+            PhaseType.VOICE_STUDIO     -> context.getString(R.string.phase_dir_safe_name_studio_recording)
+            PhaseType.FINALIZE         -> context.getString(R.string.phase_dir_safe_name_finalize)
             else -> phaseType.toString().toLowerCase()
         }
     }
@@ -144,9 +145,9 @@ class Phase (val phaseType: PhaseType) {
     // 11/13/2021 - DKH, Issue 606, Wordlinks quick fix for text back translation
     // This piece of software is used in multiple places in Story Producer
     // This instructional string is appended to the generated display name
-    fun getDisplayNameAdditionalInfo() : String {
+    fun getDisplayNameAdditionalInfo(context: Context) : String {
         return when (phaseType) {
-            PhaseType.WORD_LINKS       -> " --> Press and hold to back translate"   // TODO: LOCALIZATION: Move this text to strings.xml resource
+            PhaseType.WORD_LINKS       -> context.getString(R.string.phase_display_name_additional_info_wordlinks)
             else -> ""
         }
     }
@@ -283,12 +284,20 @@ class Phase (val phaseType: PhaseType) {
                     Phase(PhaseType.SHARE))
         }
 
+        fun getCurrentLanguageCode(): String {
+            return Locale.getDefault().language // Returns "en", "fr", "es", etc.
+        }
         /**
          * get the filename for the HTML help doc
          * @return String
          */
         fun getHelpDocFile(phase: PhaseType) : String {
-            return "${phase.name.toLowerCase()}.html"
+            var langCode = getCurrentLanguageCode()
+            langCode = when (langCode) {
+                "fr" -> "-${langCode}"
+                else -> ""
+            }
+            return "${phase.name.toLowerCase()}${langCode}.html"
         }
     }
 }

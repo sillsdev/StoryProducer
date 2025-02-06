@@ -8,6 +8,7 @@ import android.graphics.PixelFormat
 import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.RectF
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
@@ -18,6 +19,8 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.webkit.WebView
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
@@ -72,14 +75,29 @@ public object SnackbarManager {
     }
 }
 
+open class BasePopupItem(val anchorViewId: Int,
+                         val isTaskAccomplished: (() -> Boolean)? = null) {
 
-class PopupItem(val anchorViewId: Int,
-                val percentX: Int,
-                val percentY: Int,
-                val titleResId: Int,
-                val bodyResId: Int,
-                val isTaskAccomplished: (() -> Boolean)? = null) {
 }
+
+class PopupHelpItem(anchorViewId: Int,
+                    val percentX: Int,
+                    val percentY: Int,
+                    val titleResId: Int,
+                    val bodyResId: Int,
+                    isTaskAccomplished: (() -> Boolean)? = null) : BasePopupItem(anchorViewId, isTaskAccomplished) {
+}
+
+class PopupFullScreenItem(anchorViewId: Int,
+                          val slideImageId: Int,
+                          isTaskAccomplished: (() -> Boolean)? = null) : BasePopupItem(anchorViewId, isTaskAccomplished) {
+}
+
+class PopupHtml5Item(anchorViewId: Int,
+                          val html5Animation: String,
+                          isTaskAccomplished: (() -> Boolean)? = null) : BasePopupItem(anchorViewId, isTaskAccomplished) {
+}
+
 class PopupHelpUtils(private val parent: Any,
                      private val helpSeriesIndex: Int = 0)  // used to allow two or more help sequences for this fragment/activity
 {
@@ -87,7 +105,7 @@ class PopupHelpUtils(private val parent: Any,
 
     private var helpPopupWindow: PopupWindow? = null
     private var aboutToShowHelpPopup = false
-    private var popupItems: MutableList<PopupItem> = mutableListOf()
+    private var popupItems: MutableList<BasePopupItem> = mutableListOf()
     private var context: Context? = null
     private var activity: ComponentActivity? = null
     init {
@@ -103,9 +121,21 @@ class PopupHelpUtils(private val parent: Any,
     fun dismissPopup() {
         aboutToShowHelpPopup = false
         if (helpPopupWindow != null) {
+
+            // if we have a html5 help popup then destroy the webView to prevent it still playing audio
+            val popupView = helpPopupWindow?.contentView
+            val webView = popupView?.findViewById<WebView>(R.id.html5Animation)
+            webView?.destroy()
+
             helpPopupWindow?.dismiss()
             helpPopupWindow = null
         }
+    }
+
+    fun getHelpView(): View? {
+        if (helpPopupWindow != null)
+            return helpPopupWindow?.contentView
+        return null
     }
 
     fun isShowingPopupWindow() : Boolean {
@@ -171,8 +201,33 @@ class PopupHelpUtils(private val parent: Any,
                     bodyResId: Int,
                     isTaskAccomplished: (() -> Boolean)? = null) {
 
-        val newPopup = PopupItem(anchorViewId, percentX, percentY, titleResId, bodyResId, isTaskAccomplished)
+        val newPopup = PopupHelpItem(anchorViewId, percentX, percentY, titleResId, bodyResId, isTaskAccomplished)
         popupItems.add(newPopup)
+    }
+    fun addFullScreenHelpItem(anchorViewId: Int,
+                              slideImageId: Int) {
+
+        val newPopup = PopupFullScreenItem(anchorViewId, slideImageId)
+        popupItems.add(newPopup)
+    }
+
+    fun assetExists(context: Context, assetName: String): Boolean {
+        return try {
+            // Attempt to open the asset
+            context.assets.open(assetName).close()
+            true
+        } catch (e: Exception) {
+            // If an exception is thrown, the asset does not exist
+            false
+        }
+    }
+
+    fun addHtml5HelpItem(anchorViewId: Int,
+                         html5Animation: String) {
+        if (context != null && assetExists(context!!, html5Animation)) {
+            val newPopup = PopupHtml5Item(anchorViewId, "file:///android_asset/${html5Animation}")
+            popupItems.add(newPopup)
+        }
     }
 
     fun stopShowingPopupHelp() {
@@ -224,13 +279,15 @@ class PopupHelpUtils(private val parent: Any,
         if (context == null || activity == null)
             return false
 
-        val popupItem = popupItems[currentHelpIndex]
+        val popupBaseItem = popupItems[currentHelpIndex]// as? PopupHelpItem ?: return false
+        val nextFullPopupItem = if (currentHelpIndex+1 < popupItems.size) popupItems[currentHelpIndex+1] as? PopupFullScreenItem else null
+        val nextHtml5Item = if (currentHelpIndex+1 < popupItems.size) popupItems[currentHelpIndex+1] as? PopupHtml5Item else null
         var showNextGrayed = false
-        if ((popupItem.isTaskAccomplished != null) && !popupItem.isTaskAccomplished.invoke())
+        if ((popupBaseItem.isTaskAccomplished != null) && !popupBaseItem.isTaskAccomplished.invoke())
              showNextGrayed = true
         aboutToShowHelpPopup = true
         // get the view that the help item is anchored on
-        var view = activity?.findViewById<View>(popupItem.anchorViewId)
+        var view = activity?.findViewById<View>(popupBaseItem.anchorViewId)
         // if view id is not yet created/inflated then use the root view id for now (if specified) [bugfix 847]
         if (view == null && rootViewId != 0)
             view = activity?.findViewById(rootViewId)
@@ -239,47 +296,147 @@ class PopupHelpUtils(private val parent: Any,
                 if (!aboutToShowHelpPopup)
                     return@post // return immediately if popup was closed by a onPause() call to dismissPopup()
                 // get the view again in case it has gone stale (fixes a crash/display bug)
-                val view2 = activity?.findViewById<View>(popupItem.anchorViewId)
+                val view2 = activity?.findViewById<View>(popupBaseItem.anchorViewId)
                 if (view2 != null) {
-                    if (helpPopupWindow != null)
-                        helpPopupWindow?.dismiss()
-                    var compassHint = CompassPoint.NO_COMPASS_POINT
-                    var targetPercentX = popupItem.percentX
-                    var targetPercentY = popupItem.percentY
-                    if (popupItem.percentY < 0) {
-                        targetPercentY = -popupItem.percentY
-                        compassHint = CompassPoint.NORTH
-                    } else if (targetPercentY in 0..50)
-                        compassHint = CompassPoint.SOUTH
-                    else if (targetPercentY > 50)
-                        compassHint = CompassPoint.NORTH
-                    else
-                        compassHint = CompassPoint.NO_COMPASS_POINT   // give a hint for arrow direction based on position within the target view child item
 
-                    helpPopupWindow = showHelpPopup2(
-                        // using the class context seems to give a different style to
-                        // using view2.rootView.context which seems to be the expected style
-                        // we WERE using the context!! here as it matched the artwork in figma.com better
-                        // but unfortunately that did not work on all devices
-                        // we are now using the view2.rootView.context and a separate style in styles.xml
-                        view2.rootView.context,//context!!,
-                        view2,
-                        popupItem,
-                        if (popupItem.percentX == -1)
-                            Point(-1, -1)
+                    dismissPopup()
+
+                    val popupHelpItem = popupItems[currentHelpIndex] as? PopupHelpItem
+                    if (popupHelpItem != null) {
+                        var compassHint = CompassPoint.NO_COMPASS_POINT
+                        var targetPercentX = popupHelpItem.percentX
+                        var targetPercentY = popupHelpItem.percentY
+                        if (popupHelpItem.percentY < 0) {
+                            targetPercentY = -popupHelpItem.percentY
+                            compassHint = CompassPoint.NORTH
+                        } else if (targetPercentY in 0..50)
+                            compassHint = CompassPoint.SOUTH
+                        else if (targetPercentY > 50)
+                            compassHint = CompassPoint.NORTH
                         else
-                            Point((view2.width.toFloat()*targetPercentX/100).toInt(),
-                                    (view2.height.toFloat()*targetPercentY/100).toInt()),
-                        popupItem.titleResId,
-                        popupItem.bodyResId,
-                        currentHelpIndex != popupItems.size-1,   // show next button for all but last message
-                        showNextGrayed,
-                        currentHelpIndex == 0,  // show close (x) button for first message only
-                        currentHelpIndex == 0 && getDerivedClassName(parent) == "MainActivity",  // show logo for welcome help
-                        compassHint
-                    )
-                    val buttonClose: ImageButton =
-                        helpPopupWindow!!.getContentView().findViewById(R.id.btnClose)
+                            compassHint =
+                                CompassPoint.NO_COMPASS_POINT   // give a hint for arrow direction based on position within the target view child item
+
+                        helpPopupWindow = showHelpPopup2(
+                            // using the class context seems to give a different style to
+                            // using view2.rootView.context which seems to be the expected style
+                            // we WERE using the context!! here as it matched the artwork in figma.com better
+                            // but unfortunately that did not work on all devices
+                            // we are now using the view2.rootView.context and a separate style in styles.xml
+                            view2.rootView.context,//context!!,
+                            view2,
+                            popupHelpItem,
+                            if (popupHelpItem.percentX == -1)
+                                Point(-1, -1)
+                            else
+                                Point(
+                                    (view2.width.toFloat() * targetPercentX / 100).toInt(),
+                                    (view2.height.toFloat() * targetPercentY / 100).toInt()
+                                ),
+                            popupHelpItem.titleResId,
+                            popupHelpItem.bodyResId,
+                            currentHelpIndex != popupItems.size - 1,   // show next button for all but last message
+                            showNextGrayed,
+                            currentHelpIndex == 0,  // show close (x) button for first message only
+                            currentHelpIndex == 0 && getDerivedClassName(parent) == "MainActivity",  // show logo for welcome help
+                            compassHint
+                        )
+                    }
+                    val popupFullScreenItem = popupItems[currentHelpIndex] as? PopupFullScreenItem
+                    if (popupFullScreenItem != null) {
+
+                        val inflater = LayoutInflater.from(context)
+                        val popupView = inflater.inflate(R.layout.fullscreen_message_x, null)
+
+                        // Update the popup SP icon for visibility
+                        val helpFullPopup = popupView.findViewById<ImageView>(R.id.fullImageIcon)
+                        helpFullPopup.setImageResource(popupFullScreenItem.slideImageId)// R.drawable.intro1_welcome)
+
+                        val textNextButton = popupView.findViewById<Button>(R.id.btnNext)
+                        if (nextFullPopupItem == null) {
+                            textNextButton.text = view2.rootView.context.getString(R.string.letsBegin)
+                            textNextButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0) // hide the next arrow
+                        }
+                        val textCloseButton = popupView.findViewById<ImageButton>(R.id.btnClose)
+                        textCloseButton.visibility = if (currentHelpIndex == 0) View.VISIBLE else View.INVISIBLE
+
+                        helpPopupWindow = PopupWindow(
+                            popupView,
+                            WindowManager.LayoutParams.MATCH_PARENT,    // match parent to make it full screen
+                            WindowManager.LayoutParams.MATCH_PARENT,
+                            true) // Focusable to make it modal
+
+                        // Set a transparent background to the PopupWindow
+                        helpPopupWindow?.setBackgroundDrawable(ColorDrawable())
+
+                        // Show the PopupWindow at the root of the activity
+                        helpPopupWindow?.showAtLocation(
+                            view2,
+                            android.view.Gravity.NO_GRAVITY,     // No gravity constraint
+                            0, 0                                 // Display it at (0,0) coordinates
+                        )
+
+                    }
+
+                    val popupHtml5Item = popupItems[currentHelpIndex] as? PopupHtml5Item
+                    if (popupHtml5Item != null) {
+
+                        val inflater = LayoutInflater.from(context)
+                        val popupView = inflater.inflate(R.layout.animated_message_x, null)
+
+
+
+                        // Find the WebView from the layout
+                        val webView: WebView = popupView.findViewById(R.id.html5Animation)
+
+                        // Enable JavaScript (optional, if your HTML requires it)
+
+                        // Enable JavaScript and file access
+                        webView.settings.javaScriptEnabled = true
+                        webView.settings.allowFileAccess = true
+                        webView.settings.allowContentAccess = true
+
+                        // Enable cross-origin requests for local file URLs
+                        webView.settings.allowUniversalAccessFromFileURLs = true
+
+                        // Prevent redirection to external browsers
+//                        webView.webViewClient = WebViewClient()
+
+                        // Load the local file
+                        // Load the local HTML file from the assets folder
+                        webView.loadUrl(popupHtml5Item.html5Animation)
+
+                        val textNextButton = popupView.findViewById<Button>(R.id.btnNext)
+                        if (nextHtml5Item == null) {
+                            textNextButton.text = view2.rootView.context.getString(R.string.letsBegin)
+                            textNextButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0) // hide the next arrow
+                        }
+                        val textCloseButton = popupView.findViewById<ImageButton>(R.id.btnClose)
+                        textCloseButton.visibility = if (currentHelpIndex == 0) View.VISIBLE else View.INVISIBLE
+
+                        helpPopupWindow = PopupWindow(
+                            popupView,
+                            WindowManager.LayoutParams.MATCH_PARENT,    // match parent to make it full screen
+                            WindowManager.LayoutParams.MATCH_PARENT,
+                            true) // Focusable to make it modal
+
+                        // Set a transparent background to the PopupWindow
+                        helpPopupWindow?.setBackgroundDrawable(ColorDrawable())
+
+                        // Show the PopupWindow at the root of the activity
+                        helpPopupWindow?.showAtLocation(
+                            view2,
+                            android.view.Gravity.NO_GRAVITY,     // No gravity constraint
+                            0, 0                                 // Display it at (0,0) coordinates
+                        )
+
+                        helpPopupWindow?.setOnDismissListener {
+                            dismissPopup()  // dismiss html view popup on back key pressed
+                        }
+
+                    }
+
+                    val buttonClose: ImageButton = getHelpView()!!.findViewById(R.id.btnClose)
                     buttonClose.setOnClickListener {
 
                         dismissPopup()
@@ -294,8 +451,7 @@ class PopupHelpUtils(private val parent: Any,
 
                         stopShowingPopupHelp()
                     }
-                    val buttonNext: Button =
-                        helpPopupWindow!!.getContentView().findViewById(R.id.btnNext)
+                    val buttonNext: Button = getHelpView()!!.findViewById(R.id.btnNext)
                     buttonNext.setOnClickListener {
 
                         dismissPopup()
@@ -307,8 +463,7 @@ class PopupHelpUtils(private val parent: Any,
                             showNextPopupHelp()
                         }
                     }
-                    val buttonPrev: Button =
-                        helpPopupWindow!!.getContentView().findViewById(R.id.btnPrev)
+                    val buttonPrev: Button = getHelpView()!!.findViewById(R.id.btnPrev)
                     buttonPrev.visibility = if (currentHelpIndex > 0) View.VISIBLE else View.INVISIBLE
                     buttonPrev.setOnClickListener {
 
@@ -325,12 +480,13 @@ class PopupHelpUtils(private val parent: Any,
             }
             return true // something was shown
         }
+
         return false
     }
 
     // a PopupWindow that should enable resource deletion on destruction
     class CustomPopupWindow(
-        private val popupItem: PopupItem,
+        private val popupHelpItem: PopupHelpItem,
         private val contentView: View,
         width: Int, height: Int) :
             PopupWindow(contentView, width, height) {
@@ -360,7 +516,7 @@ class PopupHelpUtils(private val parent: Any,
 
         private fun updateUI() {
             // UI update code here to be run on the UI thread
-            if (!doneIt && popupItem.isTaskAccomplished != null && popupItem.isTaskAccomplished.invoke())
+            if (!doneIt && popupHelpItem.isTaskAccomplished != null && popupHelpItem.isTaskAccomplished.invoke())
                 doneIt = true
             if (doneIt && !allowedNext) {
                 val textNextButton = contentView.findViewById<Button>(R.id.btnNext)
@@ -379,7 +535,7 @@ class PopupHelpUtils(private val parent: Any,
     // Function to create and show a round corner polygon-shaped popup
     private fun showHelpPopup2(context: Context,
                                parentView: View,
-                               popupItem: PopupItem,
+                               popupHelpItem: PopupHelpItem,
                                arrowTarget: Point,
                                titleResId: Int,
                                bodyResId: Int,
@@ -584,7 +740,7 @@ class PopupHelpUtils(private val parent: Any,
         val shiftedView = ShiftedView(context, null, 0, popupView)
         shiftedView.setShift(shiftBoxX, shiftBoxY) // Shift the child view by given amount
 
-        val popupWindow = CustomPopupWindow(popupItem, shiftedView, popupBoxWidth, popupBoxHeight)
+        val popupWindow = CustomPopupWindow(popupHelpItem, shiftedView, popupBoxWidth, popupBoxHeight)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             popupWindow.setIsClippedToScreen(true)  // allow dragging half off screen (Android 10+ only)
         }
