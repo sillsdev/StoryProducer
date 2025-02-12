@@ -18,9 +18,15 @@
     9. Add " |" to end of "lock_screen_text" named string
     10 Remove \ from =\"...\" in tags
 -->
+
+<!-- TODO: STRINGS TO BE MACHINE TRANSLATED -->
+
     <string name="app_name">Story Producer</string>
 
     <!-- General -->
+    <string name="select_language">🌐 Select Language</string>
+    <string name="select_language_summary">Choose a UI language from the list</string>
+
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="ok">OK</string>
@@ -30,6 +36,7 @@
     <string name="next">Next</string>
     <string name="help">Help</string>
     <string name="search">Search</string>
+
 
     <string name="submit">Submit</string>
     <string name="submit_via">Submit via&#8230;</string>
@@ -430,7 +437,7 @@
     <string name="enable_story_deletion_summary">When this feature is enabled… In the Story List, long press on a story’s thumbnail to delete that story. Story Deletion cannot be undone.</string>
 
     <!-- Settings -->
-    <string name="settings">Settings</string>
+    <string name="settings">⚙ Settings</string>
     <string name="settings_title"><font color="white"><b>Settings</b></font></string>
     <string name="settings_experimental"><font color="#F6DDCC">These settings are experimental. Use with caution!</font></string>
 

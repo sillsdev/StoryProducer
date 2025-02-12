@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.webkit.WebView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
@@ -79,9 +80,13 @@ class MainActivity : BaseActivity(), Serializable {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mainActivity = this
-
+        mainActivity = this // save the main activity for global use
         setContentView(R.layout.activity_main)
+
+        // set the localized toolbar title
+        val mActionBarToolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(mActionBarToolbar)
+        supportActionBar?.setTitle(R.string.title_activity_story_templates)
 
         if (mDrawerList == null) {
             setupDrawer()             // also added to onStart()

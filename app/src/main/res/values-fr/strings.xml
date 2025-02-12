@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- TODO: STRINGS TO BE MACHINE TRANSLATED -->
+
     <string name="app_name">Producteur d\'histoire</string>
+
+    <string name="select_language">🌐 Sélectionner la langue</string>
+    <string name="select_language_summary">Choisissez une langue d\'interface utilisateur dans la liste</string>
+
     <string name="no">Non</string>
     <string name="yes">Oui</string>
     <string name="ok">D\'ACCORD</string>
@@ -292,7 +299,7 @@
     <string name="skip_accuracy_check_summary">Vous pouvez activer cette option si vous souhaitez traduire des livres Bloom téléchargés qui ne contiennent aucun contenu biblique. Ne la désactivez pas si vous souhaitez traduire du contenu biblique.</string>
     <string name="enable_story_deletion_title">Activer la suppression de l\'histoire</string>
     <string name="enable_story_deletion_summary">Lorsque cette fonctionnalité est activée… Dans la liste des histoires, appuyez longuement sur la miniature d\'une histoire pour supprimer cette histoire. La suppression d\'une histoire ne peut pas être annulée.</string>
-    <string name="settings">Paramètres</string>
+    <string name="settings">⚙ Paramètres</string>
     <string name="settings_title"><font color="white"><b>Paramètres</b></font></string>
     <string name="settings_experimental"><font color="#F6DDCC">Ces paramètres sont expérimentaux. À utiliser avec précaution !</font></string>
     <string name="edit_image">Modifier l\'image de la diapositive</string>

@@ -10,6 +10,14 @@
 
     <PreferenceCategory app:title="@string/general">
 
+        <ListPreference
+            android:key="language"
+            android:title="@string/select_language"
+            android:summary="@string/select_language_summary"
+            android:entries="@array/lang_options"
+            android:entryValues="@array/lang_values"
+            android:defaultValue="" />
+
         <SwitchPreferenceCompat
             app:key="enable_story_deletion"
             app:title="@string/enable_story_deletion_title"
