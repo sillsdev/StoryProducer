@@ -23,7 +23,9 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
+import androidx.preference.PreferenceManager
 import io.reactivex.disposables.CompositeDisposable
+import org.sil.storyproducer.App
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.BaseController
 import org.sil.storyproducer.controller.MainActivity
@@ -40,6 +42,7 @@ import org.sil.storyproducer.tools.DrawerItemClickListener
 import org.sil.storyproducer.tools.file.isUriStorageMounted
 import org.sil.storyproducer.view.BaseActivityView
 import timber.log.Timber
+import java.util.Locale
 
 open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
@@ -86,6 +89,55 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
             // replace the text with spannable bold and image
             lockTextView.text = spannableString
+        }
+    }
+
+    // A helper singleton for setting language code and persistent setting
+    object LanguageHelper {
+        fun setLocale(context: Context, languageCode: String): Context {
+
+            // create a new Locale object to use as the default language
+            val locale = Locale(languageCode)
+            Locale.setDefault(locale)
+
+            // create a new Configuration for the new Locale
+            val resources = context.resources
+            val config = resources.configuration
+            config.setLocale(locale)
+            config.setLayoutDirection(locale)
+
+            // Save selected language in preferences
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+            sharedPreferences.edit().putString("language", languageCode).apply()
+
+            // update language for resources
+            resources.updateConfiguration(config, resources.displayMetrics)
+
+            // update language for global resources
+            App.appContext.resources.updateConfiguration(config, App.appContext.resources.displayMetrics)
+
+            // store language code for early use before preferences are available
+            App.languageCode = languageCode
+
+            // return a new context that uses the new language configuration
+            return context.createConfigurationContext(config)
+        }
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        // use the global default language in case preferences are not available
+        var savedLanguage = App.languageCode
+        try {
+            // get the language from the default (setting activity) preferences
+            var sharedPreferences = PreferenceManager.getDefaultSharedPreferences(newBase)
+            savedLanguage = sharedPreferences.getString("language", "") ?: ""
+        } catch (ex: Exception) { }
+
+        if (savedLanguage.isNotEmpty()) {
+            val newContext = LanguageHelper.setLocale(newBase, savedLanguage) // Change to desired language code
+            super.attachBaseContext(newContext) // use the new language context for all activities
+        } else {
+            super.attachBaseContext(newBase)    // default behaviour
         }
     }
 

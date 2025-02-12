@@ -10,6 +10,7 @@ class App : Application() {
 
     companion object {
         lateinit  var appContext: Context
+        var languageCode: String = ""
         fun isRoboUnitTest(): Boolean {
             return "robolectric" == Build.FINGERPRINT
         }

@@ -408,8 +408,10 @@ class PopupHelpUtils(private val parent: Any,
 
                         val textNextButton = popupView.findViewById<Button>(R.id.btnNext)
                         if (nextHtml5Item == null) {
-                            textNextButton.text = view2.rootView.context.getString(R.string.letsBegin)
+                            textNextButton.text = view2.rootView.context.getString(R.string.letsBegin)  // the next item is not a html5 animation so use this prompt
                             textNextButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0) // hide the next arrow
+                        } else {
+                            textNextButton.text = view2.rootView.context.getString(R.string.next)   // set the 'Next' button's localized text
                         }
                         val textCloseButton = popupView.findViewById<ImageButton>(R.id.btnClose)
                         textCloseButton.visibility = if (currentHelpIndex == 0) View.VISIBLE else View.INVISIBLE
@@ -444,7 +446,7 @@ class PopupHelpUtils(private val parent: Any,
                         ++globalCancelCount // increment global cancel count
                         SnackbarManager.show(
                             view2,
-                            context!!.getString(R.string.help_tutor_dismiss_message),
+                            view2.rootView.context.getString(R.string.help_tutor_dismiss_message),  // use localized message
                             4 * 1000,   // display for 4 seconds
                             3
                         )

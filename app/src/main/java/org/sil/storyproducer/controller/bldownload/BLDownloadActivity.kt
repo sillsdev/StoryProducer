@@ -174,7 +174,7 @@ class BLDownloadActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
-        binding.toolbar.title = title
+        supportActionBar?.title = getString(R.string.title_activity_bldownload) // set localized title
 
         bldlActivityIndex = intent.getIntExtra(BaseActivity.BLOOM_DL_ACTIVITY_INDEX, -1)
         blBroadCastReceiver = BLBroadCastReceiver(data[bldlActivityIndex])
