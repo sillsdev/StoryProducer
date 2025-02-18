@@ -3,11 +3,14 @@
 
     <!-- TODO: STRINGS TO BE MACHINE TRANSLATED -->
 
-    <string name="app_name">Producteur d\'histoire</string>
+    <!-- TODO: END -->
 
     <string name="select_language">🌐 Sélectionner la langue</string>
     <string name="select_language_summary">Choisissez une langue d\'interface utilisateur dans la liste</string>
+    <string name="hide_learn_mic">Masquer Apprendre le microphone de phase</string>
+    <string name="hide_learn_mic_summary">Masquer le microphone d’entraînement et la barre d’outils dans la phase d’apprentissage.</string>
 
+    <string name="app_name">Producteur d\'histoire</string>
     <string name="no">Non</string>
     <string name="yes">Oui</string>
     <string name="ok">D\'ACCORD</string>

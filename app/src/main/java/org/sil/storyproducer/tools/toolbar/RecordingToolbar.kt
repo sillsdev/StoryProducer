@@ -6,8 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.TransitionDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -50,7 +48,7 @@ import java.io.File
  * this class and other classes that use it so as to limit coupling. This involves the
  * ToolbarMediaListener interface that other classes can extend.
  */
-open class RecordingToolbar : Fragment() {
+open class RecordingToolbar(val isLearnPhase : Boolean = false) : Fragment() {
 
     companion object {
         const val REQUEST_CODE_AUDIO_EDIT = 151
@@ -205,6 +203,13 @@ open class RecordingToolbar : Fragment() {
         rootView?.addView(micButton)
 
         rootView?.addView(toolbarButtonSpace())
+
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        // check setting for hiding the learn phase mic bar
+        if (isLearnPhase && prefs.getBoolean("hide_learn_mic", true))
+            rootView?.visibility = View.INVISIBLE
+        else
+            rootView?.visibility = View.VISIBLE
     }
 
     // returns true if a compatible audio editor is installed
