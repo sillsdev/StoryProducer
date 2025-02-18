@@ -23,6 +23,9 @@
 
     <string name="app_name">Story Producer</string>
 
+    <string name="hide_learn_mic">Hide Learn Phase Microphone</string>
+    <string name="hide_learn_mic_summary">Hide the practice microphone and toolbar in the Learn Phase.</string>
+
     <!-- General -->
     <string name="select_language">🌐 Select Language</string>
     <string name="select_language_summary">Choose a UI language from the list</string>

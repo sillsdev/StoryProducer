@@ -39,7 +39,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
     private var isVolumeOn = true
     private var isWatchedOnce = false
 
-    private var recordingToolbar: PlayBackRecordingToolbar = PlayBackRecordingToolbar()
+    private var recordingToolbar: PlayBackRecordingToolbar = PlayBackRecordingToolbar(true) // flag that we are the Learn Activity
 
     private var numOfSlides: Int = 0
     private var seekbarStartTime: Long = -1

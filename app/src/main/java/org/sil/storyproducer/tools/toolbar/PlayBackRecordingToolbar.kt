@@ -21,7 +21,7 @@ import org.sil.storyproducer.tools.media.AudioPlayer
  * This class extends the recording functionality of its base class. A playback button is added to
  * the UI in addition to the recording button.
  */
-open class PlayBackRecordingToolbar: RecordingToolbar() {
+open class PlayBackRecordingToolbar(isLearnPhase: Boolean = false): RecordingToolbar(isLearnPhase) {
     private lateinit var playButton: ImageButton
     private var editButton: ImageButton? = null // optional edit button if an Audio editor app is installed
 

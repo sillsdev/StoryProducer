@@ -29,6 +29,12 @@
             app:summary="@string/skip_accuracy_check_summary"/>
 
         <SwitchPreferenceCompat
+            app:key="hide_learn_mic"
+            app:defaultValue="true"
+            app:title="@string/hide_learn_mic"
+            app:summary="@string/hide_learn_mic_summary"/>
+
+        <SwitchPreferenceCompat
             app:key="show_wordlinks"
             app:title="@string/show_wordlinks"
             app:summary="@string/show_wordlinks_summary"/>
