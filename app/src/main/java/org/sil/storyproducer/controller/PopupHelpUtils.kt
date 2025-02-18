@@ -282,6 +282,7 @@ class PopupHelpUtils(private val parent: Any,
         val popupBaseItem = popupItems[currentHelpIndex]// as? PopupHelpItem ?: return false
         val nextFullPopupItem = if (currentHelpIndex+1 < popupItems.size) popupItems[currentHelpIndex+1] as? PopupFullScreenItem else null
         val nextHtml5Item = if (currentHelpIndex+1 < popupItems.size) popupItems[currentHelpIndex+1] as? PopupHtml5Item else null
+        val prevHtml5Item = if (currentHelpIndex > 0) popupItems[currentHelpIndex-1] as? PopupHtml5Item else null
         var showNextGrayed = false
         if ((popupBaseItem.isTaskAccomplished != null) && !popupBaseItem.isTaskAccomplished.invoke())
              showNextGrayed = true
@@ -465,7 +466,13 @@ class PopupHelpUtils(private val parent: Any,
                             showNextPopupHelp()
                         }
                     }
-                    val buttonPrev: Button = getHelpView()!!.findViewById(R.id.btnPrev)
+                    val buttonPrev = getHelpView()!!.findViewById<Button>(R.id.btnPrev)
+                    if (prevHtml5Item != null) {
+                        // the previous help item is a html5 video - prev button shows as a video icon
+                        buttonPrev.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_video, 0, 0, 0)
+                        val widthInPx = view2.rootView.context.resources.getDimensionPixelSize(R.dimen.help_video_button_width)
+                        buttonPrev.layoutParams = buttonPrev.layoutParams.apply { width = widthInPx }
+                    }
                     buttonPrev.visibility = if (currentHelpIndex > 0) View.VISIBLE else View.INVISIBLE
                     buttonPrev.setOnClickListener {
 
