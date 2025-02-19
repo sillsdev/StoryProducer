@@ -222,8 +222,7 @@ class Phase (val phaseType: PhaseType) {
                     SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
                     SlideType.LOCALSONG)
             else -> arrayOf(
-                    SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
-                    SlideType.LOCALSONG)
+                    SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE)//, SlideType.LOCALSONG)
         }
         for (s in Workspace.activeStory.slides)
             if(s.slideType in validSlideTypes){
@@ -252,8 +251,7 @@ class Phase (val phaseType: PhaseType) {
                         SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE,
                         SlideType.LOCALSONG)
                 else -> slideType in arrayOf(
-                        SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE,
-                        SlideType.LOCALSONG)
+                        SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE)//, SlideType.LOCALSONG)
             }
         }
         return false  // slide does not exist or is not displayable

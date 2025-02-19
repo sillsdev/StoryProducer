@@ -94,37 +94,6 @@ class TranslateReviseFrag : MultiRecordFrag() {
                     82, 70,
                     R.string.help_translate_continue_title, R.string.help_translate_continue_body)
 
-        } else if (Workspace.activeStory.slides[slideNumber].isSongSlide()) {
-            mPopupHelpUtils = PopupHelpUtils(this, 2)
-            mPopupHelpUtils?.addPopupHelpItem(
-                R.id.phase_frame,
-                -1, -1,
-                R.string.help_translate_song_slide_title, R.string.help_translate_song_slide_body)
-            mPopupHelpUtils?.addPopupHelpItem(
-                    R.id.seek_bar,
-                    81, 70,
-                    R.string.help_translate_songlabel_title, R.string.help_translate_songlabel_body)
-            mPopupHelpUtils?.addPopupHelpItem(
-                R.id.start_recording_button,
-                80, 10,
-                R.string.help_translate_record_song_title, R.string.help_translate_record_song_body)
-            mPopupHelpUtils?.addPopupHelpItem(
-                R.id.edit_text_view,
-                20, 90,
-                R.string.help_translate_song_title_title, R.string.help_translate_song_title_body)
-            mPopupHelpUtils?.addPopupHelpItem(
-                R.id.insert_image_view,
-                80, 90,
-                R.string.help_translate_song_camera_title, R.string.help_translate_song_camera_body)
-            mPopupHelpUtils?.addPopupHelpItem(
-                R.id.toolbar,
-                50, 90,
-                R.string.help_translate_nextphase_title, R.string.help_translate_nextphase_body)
-            /**mPopupHelpUtils?.addPopupHelpItem(
-                    R.id.seek_bar,
-                    81, 70,
-                    R.string.help_translate_navigatesongdone_title, R.string.help_translate_navigatesongdone_body)
-            **/
         }
 
         if (mPopupHelpUtils != null)
