@@ -70,7 +70,7 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
                     !Workspace.activeStory.isSPAuthored
             for (slide in Workspace.activeStory.slides) {
                 if (!slide.isChecked && slide.slideType in
-                    arrayOf(SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE, SlideType.LOCALSONG)
+                    arrayOf(SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE)//, SlideType.LOCALSONG)
                 ) {
                     if (confirmAll)
                         slide.isChecked = true
