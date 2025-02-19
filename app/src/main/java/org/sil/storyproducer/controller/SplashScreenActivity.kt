@@ -27,7 +27,7 @@ class SplashScreenActivity : BaseActivity() {
         "Français (French)" to "fr",
 //        "Italiano (Italian)" to "it",
 //        "Deutsch (German)" to "de",
-        "Español (Spanish)" to "es",
+//        "Español (Spanish)" to "es",
 //        "日本語 (Japanese)" to "ja",
     )
 
