@@ -197,7 +197,9 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
         if (mPopupHelpUtils != null)
             mPopupHelpUtils?.dismissPopup()
 
-        mPopupHelpUtils = PopupHelpUtils(this)
+        mPopupHelpUtils = PopupHelpUtils(this, this.javaClass)
+
+        mPopupHelpUtils?.addHtml5HelpItem(R.id.toolbar, "html5/SharePhase/The Learn Phase2.html")
 
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,

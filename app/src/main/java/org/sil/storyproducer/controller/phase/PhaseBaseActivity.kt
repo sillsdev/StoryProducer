@@ -204,7 +204,7 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
     }
 
     fun jumpToPhase(newPhase: Phase) {
-        if(newPhase.phaseType == phase.phaseType) return
+        if (newPhase.phaseType == phase.phaseType) return
         Workspace.activePhase = newPhase
         val intent = Intent(this.applicationContext, newPhase.getTheClass())
         intent.putExtra("storyname", Workspace.activeStory.title)

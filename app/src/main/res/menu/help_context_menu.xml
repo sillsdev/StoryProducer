@@ -4,14 +4,59 @@
     android:theme="@style/PopupMenuStyle">
     <item
         android:icon="@drawable/ic_help_white_24dp"
-        android:id="@+id/action_detailed_help"
+        android:id="@+id/action_help_detailed"
         android:title="@string/help_menu_detailed" />
     <item
-        android:icon="@drawable/ic_help_reset"
-        android:id="@+id/action_popup_help_restart"
+        android:icon="@drawable/ic_help_restart_btw"
+        android:id="@+id/action_help_restart_btw"
         android:title="@string/help_menu_tutor_restart" />
     <item
-        android:icon="@drawable/baseline_live_help_24"
-        android:id="@+id/action_popup_help_resume"
+        android:icon="@drawable/ic_help_hide_show_btw"
+        android:id="@+id/action_help_toggle_btw"
         android:title="@string/help_menu_tutor_resume" />
+    <!-- Parent menu item with submenu -->
+    <item
+        android:icon="@drawable/ic_action_video_white"
+        android:id="@+id/action_help_video_parent"
+        android:title="Watch a Tutorial Window">
+        <!-- Submenu -->
+        <menu>
+            <item
+                android:icon="@drawable/ic_action_video_white"
+                android:id="@+id/action_help_video_overview"
+                android:title="@string/help_context_menu_overview" />
+            <item
+                android:icon="@drawable/ic_action_video_white"
+                android:id="@+id/action_help_video_main"
+                android:title="@string/help_context_menu_main" />
+            <item
+                android:icon="@drawable/ic_action_video_white"
+                android:id="@+id/action_help_video_1_learn"
+                android:title="@string/learn_title" />
+            <item
+                android:icon="@drawable/ic_action_video_white"
+                android:id="@+id/action_help_video_2_revise"
+                android:title="@string/translate_revise_title" />
+            <item
+                android:icon="@drawable/ic_action_video_white"
+                android:id="@+id/action_help_video_3_community"
+                android:title="@string/community_work_title" />
+            <item
+                android:icon="@drawable/ic_action_video_white"
+                android:id="@+id/action_help_video_4_accuracy"
+                android:title="@string/accuracy_check_title" />
+            <item
+                android:icon="@drawable/ic_action_video_white"
+                android:id="@+id/action_help_video_5_drama"
+                android:title="@string/voice_studio_title" />
+            <item
+                android:icon="@drawable/ic_action_video_white"
+                android:id="@+id/action_help_video_6_create"
+                android:title="@string/finalize_title" />
+            <item
+                android:icon="@drawable/ic_action_video_white"
+                android:id="@+id/action_help_video_7_share"
+                android:title="@string/share_title" />
+        </menu>
+    </item>
 </menu>

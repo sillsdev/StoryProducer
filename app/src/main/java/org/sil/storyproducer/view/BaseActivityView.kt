@@ -21,7 +21,8 @@ interface BaseActivityView {
     fun hideReadingTemplatesDialog()
     fun showCancellingReadingTemplatesDialog()
     fun showDetailedHelp()
-    fun restartShowingPopupHelp()
-    fun resumeShowingPopupHelp()
+    fun toggleShowingPopupHelp()
+    fun restartShowingPopupHelp(skipVideos: Boolean = false)
+    fun resumeShowingPopupHelp(startLater: Boolean, helpIndex: Int)
     fun checkDownloadStoriesMessage()
 }

@@ -293,7 +293,9 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
         if (mPopupHelpUtils != null)
             mPopupHelpUtils?.dismissPopup()
 
-        mPopupHelpUtils = PopupHelpUtils(this)
+        mPopupHelpUtils = PopupHelpUtils(this, this.javaClass)
+
+        mPopupHelpUtils?.addHtml5HelpItem(R.id.toolbar, "html5/AccuracyPhase/The Learn Phase2.html")
 
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,

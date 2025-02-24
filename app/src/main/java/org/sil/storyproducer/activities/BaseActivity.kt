@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -35,8 +36,18 @@ import org.sil.storyproducer.controller.SelectTemplatesFolderController
 import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.SELECT_TEMPLATES_FOLDER_REQUEST_CODES
 import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.UPDATE_TEMPLATES_FOLDER
 import org.sil.storyproducer.controller.SettingsActivity
+import org.sil.storyproducer.controller.accuracycheck.AccuracyCheckFrag
 import org.sil.storyproducer.controller.bldownload.BLDownloadActivity
+import org.sil.storyproducer.controller.communitywork.CommunityWorkFrag
+import org.sil.storyproducer.controller.export.FinalizeActivity
+import org.sil.storyproducer.controller.export.ShareActivity
+import org.sil.storyproducer.controller.learn.LearnActivity
+import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.controller.translaterevise.TranslateReviseFrag
+import org.sil.storyproducer.controller.voicestudio.VoiceStudioFrag
 import org.sil.storyproducer.controller.wordlink.WordLinksListActivity
+import org.sil.storyproducer.model.Phase
+import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.DrawerItemClickListener
 import org.sil.storyproducer.tools.file.isUriStorageMounted
@@ -410,24 +421,125 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         val anchorView = findViewById<View>(R.id.helpButton) // Provide the id of the help button
         val helpMenu = CustomPopupMenu(this, anchorView)
         helpMenu.inflate(R.menu.help_context_menu)
+        val hidePhaseVideos = this is MainActivity  // can't play phase videos in main Story List activity
+        val parentMenu = helpMenu.menu.findItem(R.id.action_help_video_parent)
+        if (parentMenu.hasSubMenu()) {
+            var grayIcon: Drawable? = null
+            val subMenu = parentMenu.subMenu
+            var count = 1
+            var found = false
+            for (j in 0 until subMenu!!.size()) {
+                val subItem = subMenu!!.getItem(j)
+                if (!found && subItem.itemId == R.id.action_help_video_1_learn) {
+                    found = true    // start graying out from lean phase video
+                    if (hidePhaseVideos) {
+                        grayIcon = subItem.icon?.mutate()   // create a reusable gray icon
+                        grayIcon?.alpha = 128   //  make it grayed out on a black background
+                    }
+                }
+                if (found) {
+                    if (hidePhaseVideos && grayIcon != null) {
+                        subItem.icon = grayIcon     // use the gray icon
+                    }
+                    subItem.title = "${count}. ${subItem.title}" // Prepend phase number
+                    count++
+                }
+            }
+        }
 
         helpMenu.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {    
-                R.id.action_detailed_help -> {
+                R.id.action_help_detailed -> {
                     // Handle detailed help option
                     showDetailedHelp()
                     true
                 }
-                R.id.action_popup_help_restart -> {
-                    // Handle popup help option
-                    restartShowingPopupHelp()
-                    checkDownloadStoriesMessage()
+                R.id.action_help_restart_btw -> {
+                    // Handle restarting btw windows
+                    restartShowingPopupHelp(true)   // true = skip videos
+                    checkDownloadStoriesMessage()   // display snack bar message if needed
                     true
                 }
-                R.id.action_popup_help_resume -> {
-                    // Handle popup help option
-                    resumeShowingPopupHelp()
-                    checkDownloadStoriesMessage()
+                R.id.action_help_toggle_btw -> {
+                    // Handle hide/show btw windows
+                    toggleShowingPopupHelp()
+                    checkDownloadStoriesMessage()   // display snack bar message if needed
+                    true
+                }
+                R.id.action_help_video_overview -> {
+                    // show video overview
+                    if (this !is MainActivity) {  // if this is not the main activity then exit story
+                        val popupHelpUtils = PopupHelpUtils(this, MainActivity::class.java)
+                        popupHelpUtils.resumeShowingPopupHelp(true, 0) // clear MainActivity flags so first video help will show later
+                        finish()    // finish this story phase activity to reveal main activity
+                    }
+                    else {
+                        // already showing main Story List activity
+                        MainActivity.mainActivity?.resumeShowingPopupHelp(false, 0) // show first video now
+                    }
+                    true
+                }
+                R.id.action_help_video_main -> {
+                    // show video overview
+                    if (this !is MainActivity) {  // if this is not the main activity then
+                        val popupHelpUtils = PopupHelpUtils(this, MainActivity::class.java)
+                        popupHelpUtils.resumeShowingPopupHelp(true, 1) // clear MainActivity flags so second video help will show later
+                        finish()    // finish this story phase activity to reveal main activity
+                    }
+                    else
+                        MainActivity.mainActivity?.resumeShowingPopupHelp(false, 1) // show second video now
+                    true
+                }
+                // Switch case all phase videos
+                R.id.action_help_video_1_learn,
+                R.id.action_help_video_2_revise,
+                R.id.action_help_video_3_community,
+                R.id.action_help_video_4_accuracy,
+                R.id.action_help_video_5_drama,
+                R.id.action_help_video_6_create,
+                R.id.action_help_video_7_share -> {
+                    var cls: Class<*>? = null    // the class for the phase's persistent popup help flags
+                    var phase: PhaseType? = null    // the phase type to switch to
+                    when (menuItem.itemId) {
+                        // set cls and phase for all phase videos
+                        R.id.action_help_video_1_learn -> {cls = LearnActivity::class.java; phase = PhaseType.LEARN}
+                        R.id.action_help_video_2_revise -> {cls = TranslateReviseFrag::class.java; phase = PhaseType.TRANSLATE_REVISE}
+                        R.id.action_help_video_3_community -> {cls = CommunityWorkFrag::class.java; phase = PhaseType.COMMUNITY_WORK}
+                        R.id.action_help_video_4_accuracy -> {cls = AccuracyCheckFrag::class.java; phase = PhaseType.ACCURACY_CHECK}
+                        R.id.action_help_video_5_drama -> {cls = VoiceStudioFrag::class.java; phase = PhaseType.VOICE_STUDIO}
+                        R.id.action_help_video_6_create -> {cls = FinalizeActivity::class.java; phase = PhaseType.FINALIZE}
+                        R.id.action_help_video_7_share -> {cls = ShareActivity::class.java; phase = PhaseType.SHARE}
+                    }
+                    if (this !is MainActivity && cls != null && phase != null) {  // if this is not the main activity then show phase video help
+                        if (Workspace.activePhase.phaseType == phase) {
+                            // we are already on the selected video phase
+                            Workspace.activeSlideNum = 0    // go to title slide
+
+                            // restart the phase Intent so that the help video will reshow
+                            val intent = Intent(this.applicationContext, Phase(phase).getTheClass())
+                            intent.putExtra("storyname", Workspace.activeStory.title)
+                            startActivity(intent)   // restart the same phase as this
+                            finish()    // finish this activity
+
+                            // clear phase activity flags so video help will show later
+                            val popupHelpUtils = PopupHelpUtils(this, cls)
+                            popupHelpUtils.resumeShowingPopupHelp(true, 0)  // show the first item (video)
+
+                        } else {
+                            // we need to switch phases
+                            Workspace.activeSlideNum = 0    // go to title slide
+
+                            (this as PhaseBaseActivity).jumpToPhase(Phase(phase))   // jump to the new help video phase
+
+                            // clear new phase activity flags so video help will show later
+                            val popupHelpUtils = PopupHelpUtils(this, cls)
+                            popupHelpUtils.resumeShowingPopupHelp(true, 0)  // show the first item (video)
+                        }
+                    }
+                    if (this is MainActivity) {
+                        // if this is the main activity then show toast message to select a story
+                        Toast.makeText(baseContext, baseContext.getString(R.string.help_video_open_story_first), Toast.LENGTH_SHORT).show()
+                    }
                     true
                 }
                 else -> false
@@ -440,14 +552,19 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     override fun showDetailedHelp() {
     }
 
-    override fun restartShowingPopupHelp() {
+    override fun toggleShowingPopupHelp() {
         if (mPopupHelpUtils != null)
-            mPopupHelpUtils?.restartShowingPopupHelp()
+            mPopupHelpUtils?.toggleShowingPopupHelp()
     }
 
-    override fun resumeShowingPopupHelp() {
+    override fun restartShowingPopupHelp(skipVideos: Boolean) {
         if (mPopupHelpUtils != null)
-            mPopupHelpUtils?.resumeShowingPopupHelp()
+            mPopupHelpUtils?.restartShowingPopupHelp(skipVideos)
+    }
+
+    override fun resumeShowingPopupHelp(startLater: Boolean, helpIndex: Int) {
+        if (mPopupHelpUtils != null)
+            mPopupHelpUtils?.resumeShowingPopupHelp(startLater, helpIndex)
     }
 
     fun setBasePopupHelpUtils(popupHelp: PopupHelpUtils) {

@@ -141,7 +141,7 @@ class VoiceStudioFrag : MultiRecordFrag() {
         }
 
         if (Workspace.activeStory.slides[slideNumber].isSongSlide()) {
-            mPopupHelpUtils = PopupHelpUtils(this, 2)
+            mPopupHelpUtils = PopupHelpUtils(this, this.javaClass, 2)
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.phase_frame,
                 -1, -1,
@@ -173,7 +173,9 @@ class VoiceStudioFrag : MultiRecordFrag() {
              **/
         } else if (!recordingToolbar.isAppendingOn) {
 
-            mPopupHelpUtils = PopupHelpUtils(this, 0)    // the main help for this fragment
+            mPopupHelpUtils = PopupHelpUtils(this, this.javaClass, 0)    // the main help for this fragment
+
+            mPopupHelpUtils?.addHtml5HelpItem(R.id.toolbar, "html5/DramaPhase/The Learn Phase2.html")
 
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.toolbar,
@@ -209,7 +211,7 @@ class VoiceStudioFrag : MultiRecordFrag() {
 
         } else {
 
-            mPopupHelpUtils = PopupHelpUtils(this, 1)    // the alternate help for this fragment
+            mPopupHelpUtils = PopupHelpUtils(this, this.javaClass, 1)    // the alternate help for this fragment
 
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.phase_frame,
