@@ -19,12 +19,15 @@
     10 Remove \ from =\"...\" in tags
 -->
 
-<!-- TODO: STRINGS TO BE MACHINE TRANSLATED -->
-
-    <string name="app_name">Story Producer</string>
-
+    <!-- TODO: STRINGS TO BE MACHINE TRANSLATED -->
+    <string name="help_video_open_story_first">Open a story before selecting this video</string>
+    <string name="help_context_menu_overview">SP app Overview</string>
+    <string name="help_context_menu_main">Main Screen/Story List</string>
     <string name="hide_learn_mic">Hide Learn Phase Microphone</string>
     <string name="hide_learn_mic_summary">Hide the practice microphone and toolbar in the Learn Phase.</string>
+    <!-- TODO: END -->
+
+    <string name="app_name">Story Producer</string>
 
     <!-- General -->
     <string name="select_language">🌐 Select Language</string>
@@ -63,11 +66,11 @@
     <!-- Phases -->
     <string name="registration_title">Registration</string>
     <string name="learn_title">Learn</string>
-    <string name="translate_revise_title">Translate + Revise</string>
-    <string name="community_work_title">Community Work</string>
-    <string name="accuracy_check_title">Accuracy Check</string>
-    <string name="voice_studio_title">Voice Studio</string>
-    <string name="finalize_title">Finalize</string>
+    <string name="translate_revise_title">Revise</string>
+    <string name="community_work_title">Community</string>
+    <string name="accuracy_check_title">Accuracy</string>
+    <string name="voice_studio_title">Drama</string>
+    <string name="finalize_title">Create</string>
     <string name="share_title">Share</string>
     <string name="whole_story_title">Whole Story Back Translation</string>
     <string name="back_translation_title">Back Translation</string>
@@ -504,15 +507,15 @@
 
     <string name="phase_display_name_registration">Registration</string>
     <string name="phase_display_name_learn">Learn</string>
-    <string name="phase_display_name_translate_revise">Translate + Revise</string>
+    <string name="phase_display_name_translate_revise">Revise</string>
     <string name="phase_display_name_word_links">Word Links</string>
-    <string name="phase_display_name_community_work">Community Work</string>
+    <string name="phase_display_name_community_work">Community</string>
     <string name="phase_display_name_whole_story">Whole Story</string>
     <string name="phase_display_name_back_translation">Back Translation</string>
     <string name="phase_display_name_remote_check">Remote Check</string>
-    <string name="phase_display_name_accuracy_check">Accuracy Check</string>
-    <string name="phase_display_name_voice_studio">Voice Studio</string>
-    <string name="phase_display_name_finalize">Finalize</string>
+    <string name="phase_display_name_accuracy_check">Accuracy</string>
+    <string name="phase_display_name_voice_studio">Drama</string>
+    <string name="phase_display_name_finalize">Create</string>
     <string name="phase_display_name_share">Share</string>
 
     <string name="phase_display_name_additional_info_wordlinks"> --&gt; Press and hold to back translate</string>
@@ -842,8 +845,8 @@
     </string>
 
     <string name="help_menu_detailed">Show detailed help for this page</string>
-    <string name="help_menu_tutor_restart">Restart Tutorial</string>
-    <string name="help_menu_tutor_resume">Resume Tutorial</string>
+    <string name="help_menu_tutor_restart">Restart Tutorial Windows</string>
+    <string name="help_menu_tutor_resume">Hide/Show Tutorial Windows</string>
     <string name="help_tutor_dismiss_message">Tap the blue help <b>[?]</b> button in the toolbar to Resume the Tutorial.</string>
     <string name="help_tutor_no_more_pages">No more tutorial pages for this section.</string>
 

@@ -99,6 +99,7 @@ class PopupHtml5Item(anchorViewId: Int,
 }
 
 class PopupHelpUtils(private val parent: Any,
+                     private val cls: Class<*>,
                      private val helpSeriesIndex: Int = 0)  // used to allow two or more help sequences for this fragment/activity
 {
 
@@ -142,26 +143,30 @@ class PopupHelpUtils(private val parent: Any,
         return aboutToShowHelpPopup
     }
 
-    private fun getDerivedClassName(obj: Any): String {
-        var clazz: Class<*>? = obj::class.java
-        while (clazz?.enclosingClass != null) {
+    // gets the simple name of the most derived class for using with persistent settings for activity
+    private fun getDerivedClassName(obj: Class<*>): String {
+        var clazz = obj
+        while (clazz.enclosingClass != null) {
             clazz = clazz.enclosingClass
         }
-        return clazz?.simpleName ?: "Unknown"
+        return clazz.simpleName ?: "Unknown"
     }
 
-    private var currentHelpIndex = 0
+    // Used to index the video/btw popup currently being displayed
+    private var currentHelpIndexSet = false
+    private var currentHelpIndex = 0    // initially first BTW/Video
         get () {
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-            val activityClassName = getDerivedClassName(parent)
+            val activityClassName = getDerivedClassName(cls)
             val prefString = "PopupHelpGroup_${activityClassName}_${helpSeriesIndex}"
             field = prefs.getInt(prefString, 0)
             return field
         }
         set(value) {
-            if (field != value) {
+            if (field != value || !currentHelpIndexSet) {
+                currentHelpIndexSet = true
                 val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(context).edit()
-                val activityClassName = getDerivedClassName(parent)
+                val activityClassName = getDerivedClassName(cls)
                 val prefString = "PopupHelpGroup_${activityClassName}_${helpSeriesIndex}"
                 preferencesEditor.putInt(prefString, value)
                 preferencesEditor.commit()
@@ -169,6 +174,9 @@ class PopupHelpUtils(private val parent: Any,
             }
         }
 
+    // used to remember how many times a btw is cancelled/closed
+    // so that we can stop showing them after two dismisses
+    private var globalCancelCountSet = false
     private var globalCancelCount = 0
         get () {
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
@@ -177,7 +185,8 @@ class PopupHelpUtils(private val parent: Any,
             return field
         }
         set(value) {
-            if (field != value) {
+            if (field != value || !globalCancelCountSet) {
+                globalCancelCountSet = true
                 val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(context).edit()
                 val prefString = "PopupHelpGroup_cancelCount"
                 preferencesEditor.putInt(prefString, value)
@@ -187,12 +196,12 @@ class PopupHelpUtils(private val parent: Any,
         }
 
         enum class CompassPoint {
-        NO_COMPASS_POINT,
-        NORTH,
-        EAST,
-        SOUTH,
-        WEST
-    }
+            NO_COMPASS_POINT,
+            NORTH,
+            EAST,
+            SOUTH,
+            WEST
+        }
 
     fun addPopupHelpItem(anchorViewId: Int,
                     percentX: Int,
@@ -230,29 +239,60 @@ class PopupHelpUtils(private val parent: Any,
         }
     }
 
-    fun stopShowingPopupHelp() {
+    private fun stopShowingPopupHelp(view2: View) {
+
+        dismissPopup()  // dismiss the current video/BTW
+
+        ++globalCancelCount // increment global cancel count
+
+        // show message on how to reshow BTWs
+        SnackbarManager.show(
+            view2,
+            view2.rootView.context.getString(R.string.help_tutor_dismiss_message),  // use localized message
+            4 * 1000,   // display for 4 seconds
+            3
+        )
+
+        // Stop showing popup help for the current Phase/Activity (make it negative)
         if (currentHelpIndex >= 0)
-            currentHelpIndex = -currentHelpIndex -1   // Stop showing popup help for the current Phase/Activity (make it negative)
+            currentHelpIndex = -currentHelpIndex -1
     }
 
-    fun restartShowingPopupHelp() {
-        val prefString = "PopupHelpGroup_"
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        // Use the SharedPreferences editor to remove the preferences within the subgroup
-        val editor = sharedPreferences.edit()
-        val preferences = sharedPreferences.all
-        for ((key, _) in preferences) {
-            if (key.startsWith(prefString)) {
-                editor.remove(key)
-            }
+    fun restartShowingPopupHelp(skipVideos: Boolean = false) {
+//        val prefString = "PopupHelpGroup_"
+//        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+//        // Use the SharedPreferences editor to remove the preferences within the subgroup
+//        val editor = sharedPreferences.edit()
+//        val preferences = sharedPreferences.all
+//        for ((key, _) in preferences) {
+//            if (key.startsWith(prefString)) {
+//                editor.remove(key)
+//            }
+//        }
+//        // Apply the changes
+//        editor.apply()
+
+        globalCancelCount = 0
+        currentHelpIndex = 0
+        showNextPopupHelp(0, skipVideos)
+    }
+
+    fun toggleShowingPopupHelp() {
+        if (helpPopupWindow == null)
+            restartShowingPopupHelp(false)
+        else if (currentHelpIndex < 0 || currentHelpIndex >= popupItems.size)
+            resumeShowingPopupHelp(false, -1)
+        else {
+            val helpView = getHelpView()
+            if (helpView != null)
+                stopShowingPopupHelp(helpView)
         }
-        // Apply the changes
-        editor.apply()
-
-        showNextPopupHelp()
     }
 
-    fun resumeShowingPopupHelp() {
+    fun resumeShowingPopupHelp(startLater: Boolean, helpIndex: Int) {
+        if (helpIndex != -1)
+            currentHelpIndex = helpIndex
+
         if (currentHelpIndex < 0)
             currentHelpIndex = -(currentHelpIndex + 1)   // Resume showing where we last stopped
 
@@ -260,12 +300,12 @@ class PopupHelpUtils(private val parent: Any,
             currentHelpIndex = popupItems.size - 1  // show the last popup help in this series
 
         globalCancelCount = 0
-        if (!showNextPopupHelp()) {
+        if (!startLater && !showNextPopupHelp()) {
             Toast.makeText(activity, activity?.getString(R.string.help_tutor_no_more_pages), Toast.LENGTH_LONG).show()
         }
     }
 
-    fun showNextPopupHelp(rootViewId: Int = 0) :Boolean {
+    fun showNextPopupHelp(rootViewId: Int = 0, skipVideos: Boolean = false) :Boolean {
 
         if (globalCancelCount >= 2)
             return false  // help has been cancelled twice - don't show any more by default
@@ -278,6 +318,12 @@ class PopupHelpUtils(private val parent: Any,
 
         if (context == null || activity == null)
             return false
+
+        if (skipVideos) {
+            while (currentHelpIndex < popupItems.size && popupItems[currentHelpIndex] is PopupHtml5Item) {
+                currentHelpIndex++  // skip any initial html5 videos
+            }
+        }
 
         val popupBaseItem = popupItems[currentHelpIndex]// as? PopupHelpItem ?: return false
         val nextFullPopupItem = if (currentHelpIndex+1 < popupItems.size) popupItems[currentHelpIndex+1] as? PopupFullScreenItem else null
@@ -339,7 +385,7 @@ class PopupHelpUtils(private val parent: Any,
                             currentHelpIndex != popupItems.size - 1,   // show next button for all but last message
                             showNextGrayed,
                             currentHelpIndex == 0,  // show close (x) button for first message only
-                            currentHelpIndex == 0 && getDerivedClassName(parent) == "MainActivity",  // show logo for welcome help
+                            currentHelpIndex == 2 && getDerivedClassName(parent.javaClass) == "MainActivity",  // show logo for main welcome help BTW
                             compassHint
                         )
                     }
@@ -442,17 +488,7 @@ class PopupHelpUtils(private val parent: Any,
                     val buttonClose: ImageButton = getHelpView()!!.findViewById(R.id.btnClose)
                     buttonClose.setOnClickListener {
 
-                        dismissPopup()
-
-                        ++globalCancelCount // increment global cancel count
-                        SnackbarManager.show(
-                            view2,
-                            view2.rootView.context.getString(R.string.help_tutor_dismiss_message),  // use localized message
-                            4 * 1000,   // display for 4 seconds
-                            3
-                        )
-
-                        stopShowingPopupHelp()
+                        stopShowingPopupHelp(view2)
                     }
                     val buttonNext: Button = getHelpView()!!.findViewById(R.id.btnNext)
                     buttonNext.setOnClickListener {

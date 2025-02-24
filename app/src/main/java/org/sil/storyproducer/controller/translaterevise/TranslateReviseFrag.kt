@@ -35,7 +35,10 @@ class TranslateReviseFrag : MultiRecordFrag() {
         }
 
         if (slideNumber == 0) {
-            mPopupHelpUtils = PopupHelpUtils(this)
+            mPopupHelpUtils = PopupHelpUtils(this, this.javaClass)
+
+            mPopupHelpUtils?.addHtml5HelpItem(R.id.toolbar, "html5/RevisePhase/The Learn Phase2.html")
+
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.toolbar,
                 50, 90,
@@ -68,7 +71,7 @@ class TranslateReviseFrag : MultiRecordFrag() {
                 R.string.help_translate_nextslide1_title, R.string.help_translate_nextslide1_body)
 
         } else if (Workspace.activeStory.slides[slideNumber].isNumberedPage()) {
-            mPopupHelpUtils = PopupHelpUtils(this, 1)   // always use slide 1
+            mPopupHelpUtils = PopupHelpUtils(this, this.javaClass, 1)   // always use slide 1
             mPopupHelpUtils?.addPopupHelpItem(
                     R.id.seek_bar,
                     82, 70,

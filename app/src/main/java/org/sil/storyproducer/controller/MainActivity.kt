@@ -134,12 +134,12 @@ class MainActivity : BaseActivity(), Serializable {
         }
     }
 
-    private fun addAndStartPopupTutorials() {
+    fun addAndStartPopupTutorials() {
 
         if (mPopupHelpUtils != null)
             mPopupHelpUtils?.dismissPopup()
 
-        mPopupHelpUtils = PopupHelpUtils(this)
+        mPopupHelpUtils = PopupHelpUtils(this, this.javaClass)
 
         // assume a maximum of 9 stories can be viewed
         val totalVisibleStories = max(min(Workspace.Stories.count(), 9), 1)

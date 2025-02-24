@@ -2,7 +2,9 @@
 <resources>
 
     <!-- TODO: STRINGS TO BE MACHINE TRANSLATED -->
-
+    <string name="help_video_open_story_first">Open a story before selecting this video</string>
+    <string name="help_context_menu_overview">SP app Overview</string>
+    <string name="help_context_menu_main">Main Screen/Story List</string>
     <!-- TODO: END -->
 
     <string name="select_language">🌐 Sélectionner la langue</string>
