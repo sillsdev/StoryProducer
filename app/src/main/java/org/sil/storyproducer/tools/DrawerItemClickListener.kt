@@ -38,16 +38,16 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
                     activity.finish()   // if this is not the main activity then
                                         // finish this activity to reveal main activity
             }
+//            1 -> {
+//                // Showing registration on top of the MainActivity in the task stack
+//                // This should allow registering without finishing the main activity
+//                // and without hanging in the splash screen as previously experienced
+//                activity.showRegistration(false)
+//                if (activity !is MainActivity)
+//                    activity.finish()   // replace this activity with Registration activity on top
+//                                        // but only if the current activity is not the Main Activity
+//            }
             1 -> {
-                // Showing registration on top of the MainActivity in the task stack
-                // This should allow registering without finishing the main activity
-                // and without hanging in the splash screen as previously experienced
-                activity.showRegistration(false)
-                if (activity !is MainActivity)
-                    activity.finish()   // replace this activity with Registration activity on top
-                                        // but only if the current activity is not the Main Activity
-            }
-            2 -> {
                 activity.showBLDownloadDialog(BaseActivity.BLOOM_DL_TEMPLATES_ACTIVITY)
                 if (activity !is MainActivity)
                     activity.finish()   // replace this activity with SP Bloom Template DL activity on top
@@ -59,29 +59,29 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
 //                    activity.finish()   // replace this activity with Featured Bloom Book DL activity on top
 //                                        // but only if the current activity is not the Main Activity
 //            }
-            3 -> {
+            2 -> {
                 val intent = Intent(MainActivity.mainActivity, BloomLibraryActivity::class.java)
                 MainActivity.mainActivity?.startActivity(intent)
                 if (activity !is MainActivity)
                     activity.finish()   // replace this activity with Bloom Library WebView activity on top
                                         // but only if the current activity is not the Main Activity
             }
-            4 -> {
+            3 -> {
                 if (activity !is WordLinksListActivity) {
                     activity.showWordLinksList()
                 }
             }
-            5 -> {
+            4 -> {
                 activity.showSelectTemplatesFolderDialog()
             }
-            6 -> {
+            5 -> {
                 Workspace.addDemoToWorkspace(activity)
                 activity.controller.updateStories()  // refresh list of stories
             }
-            7 -> {
+            6 -> {
                 activity.showSettings()
             }
-            8 -> {
+            7 -> {
                 activity.showAboutDialog()
             }
         }

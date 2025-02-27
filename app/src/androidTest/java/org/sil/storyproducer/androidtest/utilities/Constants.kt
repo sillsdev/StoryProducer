@@ -39,13 +39,13 @@ object Constants {
 
     object Phase {
         const val learn = "Learn"
-        const val translate = "Translate + Revise"
-        const val communityWork = "Community Work"
-        const val accuracyCheck = "Accuracy Check"
-        const val voiceStudio = "Voice Studio"
-        const val finalize = "Finalize"
+        const val translate = "Record"
+        const val communityWork = "Community"
+        const val accuracyCheck = "Accuracy"
+        const val voiceStudio = "Drama"
+        const val finalize = "Create"
         const val share = "Share"
-        const val reviewAdjust = "Review + Adjust"
+        const val reviewAdjust = "Review + Adjust"  // Unused?
     }
 
 }

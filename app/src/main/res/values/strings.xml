@@ -25,6 +25,10 @@
     <string name="help_context_menu_main">Main Screen/Story List</string>
     <string name="hide_learn_mic">Hide Learn Phase Microphone</string>
     <string name="hide_learn_mic_summary">Hide the practice microphone and toolbar in the Learn Phase.</string>
+    <string name="bloom_templates">Download Bible Stories</string>
+    <string name="bloom_library">Download Books from Bloom Library</string>
+    <string name="select_workspace_folder">Select Folder</string>
+    <string name="copy_demo">Add Practice story</string>
     <!-- TODO: END -->
 
     <string name="app_name">Story Producer</string>
@@ -66,7 +70,7 @@
     <!-- Phases -->
     <string name="registration_title">Registration</string>
     <string name="learn_title">Learn</string>
-    <string name="translate_revise_title">Revise</string>
+    <string name="translate_revise_title">Record</string>
     <string name="community_work_title">Community</string>
     <string name="accuracy_check_title">Accuracy</string>
     <string name="voice_studio_title">Drama</string>
@@ -334,13 +338,13 @@
     <string name="menu_search">Search</string>
     <string name="update_registration">User Registration</string>
     <string name="scanning_sp_templates">Please wait for SP to scan the templates</string>
-    <string name="select_workspace_folder">Select \'SP Templates\' Folder</string>
+<!--    <string name="select_workspace_folder">Select \'SP Templates\' Folder</string>-->
     <string name="cancelling">Cancelling &#8230;</string>
-    <string name="copy_demo">Add Demo to Story List</string>
+<!--    <string name="copy_demo">Add Demo to Story List</string>-->
     <string name="more_templates">Download More Templates</string>
-    <string name="bloom_templates">Download Bible Story Templates</string>
+<!--    <string name="bloom_templates">Download Bible Story Templates</string>-->
 <!--    <string name="bloom_featured">Download Featured Bloom Books</string>-->
-    <string name="bloom_library">Download Bloom Books</string>
+<!--    <string name="bloom_library">Download Bloom Books</string>-->
 
     <!-- Main Story Page -->
     <string name="all_stories_tab">All Stories</string>
@@ -507,7 +511,7 @@
 
     <string name="phase_display_name_registration">Registration</string>
     <string name="phase_display_name_learn">Learn</string>
-    <string name="phase_display_name_translate_revise">Revise</string>
+    <string name="phase_display_name_translate_revise">Record</string>
     <string name="phase_display_name_word_links">Word Links</string>
     <string name="phase_display_name_community_work">Community</string>
     <string name="phase_display_name_whole_story">Whole Story</string>
