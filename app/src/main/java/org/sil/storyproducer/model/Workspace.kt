@@ -288,7 +288,7 @@ object Workspace {
         if (showWordLinks)
             wordLinksMenuPos = -1   // keep WordLinks menu item
         else
-            wordLinksMenuPos = 4    // WordLinks menu item position to be removed
+            wordLinksMenuPos = 3    // WordLinks menu item position to be removed - need to sync with: global_menu_array.xml
         return wordLinksMenuPos!!
     }
 
