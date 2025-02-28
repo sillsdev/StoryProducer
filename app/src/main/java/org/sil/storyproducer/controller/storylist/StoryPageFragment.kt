@@ -172,7 +172,7 @@ class ListAdapter(context: Context,
             holder.imgIcon.setOnLongClickListener {
                 val prefs = PreferenceManager.getDefaultSharedPreferences(context);
                 // check setting for long press to delete a story
-                val enableStoryDel = prefs.getBoolean("enable_story_deletion", false)
+                val enableStoryDel = prefs.getBoolean("enable_story_deletion", true)
                 if (enableStoryDel) {
                     MainActivity.mainActivity?.deleteStory(Workspace.Stories[position]);
                     true

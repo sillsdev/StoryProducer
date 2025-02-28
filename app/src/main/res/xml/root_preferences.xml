@@ -20,6 +20,7 @@
 
         <SwitchPreferenceCompat
             app:key="enable_story_deletion"
+            app:defaultValue="true"
             app:title="@string/enable_story_deletion_title"
             app:summary="@string/enable_story_deletion_summary"/>
 
