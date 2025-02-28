@@ -5,6 +5,7 @@
     <string name="help_video_open_story_first">Open a story before selecting this video</string>
     <string name="help_context_menu_overview">SP app Overview</string>
     <string name="help_context_menu_main">Main Screen/Story List</string>
+    <string name="gotIt">Fermer</string>
     <!-- TODO: END -->
 
     <string name="select_language">🌐 Sélectionner la langue</string>
@@ -16,7 +17,7 @@
     <string name="no">Non</string>
     <string name="yes">Oui</string>
     <string name="ok">D\'ACCORD</string>
-    <string name="gotIt">J\'ai compris</string>
+<!--    <string name="gotIt">J\'ai compris</string>-->
     <string name="letsBegin">Commençons</string>
     <string name="cancel">Annuler</string>
     <string name="next">Suivant</string>
