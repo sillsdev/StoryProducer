@@ -96,6 +96,10 @@ class TranslateReviseFrag : MultiRecordFrag() {
                     R.id.seek_bar,
                     82, 70,
                     R.string.help_translate_continue_title, R.string.help_translate_continue_body)
+            mPopupHelpUtils?.addPopupHelpItem(
+                    R.id.toolbar,
+                    60, 75,
+                    R.string.help_translate_finish_title, R.string.help_translate_finish_body)
 
         }
 

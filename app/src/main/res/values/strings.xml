@@ -1,22 +1,22 @@
 <resources>
 <!--    Notes on fixing [French] machine translations (google translate)
     1. Replace: &amp;
-       With:    &
-    2. Replace: &#39;
-       With:    \'
-    3. Replace: ’
-       With:    \'
-    3. Replace: \\'
-       With:    \'
-    5. Replace: &lt;
-       With     <
-    6. Replace: &gt;
-       With     >
-    7. Replace: <<<<<<
-       With:    &lt;&lt;&lt;&lt;&lt;&lt;
-    8. Add CDATA to "lock_screen_text" named string
-    9. Add " |" to end of "lock_screen_text" named string
-    10 Remove \ from =\"...\" in tags
+        With:    &
+    2.  Replace: &#39;
+        With:    \'
+    3.  Replace: ’
+        With:    \'
+    3.  Replace: \\'
+        With:    \'
+    5.  Replace: &lt;
+        With     <
+    6.  Replace: &gt;
+        With     >
+    7.  Replace: <<<<<<
+        With:    &lt;&lt;&lt;&lt;&lt;&lt;
+    8.  Add CDATA to "lock_screen_text" named string
+    9.  Add " |" to end of "lock_screen_text" named string
+    10. Remove \ from =\"...\" in tags
 -->
 
     <!-- TODO: STRINGS TO BE MACHINE TRANSLATED -->
@@ -545,7 +545,7 @@
     </string>
     <string name="help_main_screen_title">Story List</string>
     <string name="help_main_screen_body">
-        <![CDATA[This main screen shows a list of the stories currently installed.
+        <![CDATA[This screen shows a list of the stories currently installed.
         <br/>Initially, there may be only the included demo story.]]>
     </string>
     <!--<string name="help_main_menus_settings_title"></string>
@@ -590,20 +590,20 @@
     </string>
     <string name="help_learn_next_phase_title">Next Phase</string>
     <string name="help_learn_next_phase_body">
-        <![CDATA[When you finish the Learn Phase, tap above and choose the next phase, Translate.]]>
+        <![CDATA[When you finish the Learn Phase, tap above and choose the next phase, Record.]]>
     </string>
 
-    <string name="help_translate_phase_title">Translate Phase</string>
+    <string name="help_translate_phase_title">Record Phase</string>
     <string name="help_translate_phase_body">
-        <![CDATA[In this phase, you will translate each page into your language.]]>
+        <![CDATA[In this phase, you will record your translation.]]>
     </string>
     <string name="help_translate_titleslide_title">Title Slide</string>
     <string name="help_translate_titleslide_body">
         <![CDATA[Every story begins with a Title Page, followed by the Story Pages. This label identifies the page.]]>
     </string>
-    <string name="help_translate_pick_title">Translate a Title</string>
+    <string name="help_translate_pick_title">Choose a Title</string>
     <string name="help_translate_pick_body">
-        <![CDATA[Pick a title from the list or create your own title. Think about how you would say it in your language.]]>
+        <![CDATA[Choose a title from the list or create your own title. Think about how you would say it in your language.]]>
     </string>
     <string name="help_translate_enter_title">Enter the Title</string>
     <string name="help_translate_enter_body">
@@ -615,8 +615,7 @@
     </string>
     <string name="help_translate_nextslide1_title">Swipe Left</string>
     <string name="help_translate_nextslide1_body">
-        <![CDATA[Now, <b><i>touch the screen and swipe left</i></b> to go to Story Page 1.
-        <br/>&lt;&lt;&lt;&lt;&lt;&lt;]]>
+        <![CDATA[Now, <b><i>touch the screen and swipe left</i></b> to go to Story Page 1.]]>
     </string>
     <string name="help_translate_storyslide_title">Story Slide</string>
     <string name="help_translate_storyslide_body">
@@ -624,7 +623,7 @@
     </string>
     <string name="help_translate_listen_title">Listen, Think</string>
     <string name="help_translate_listen_body">
-        <![CDATA[Listen carefully to the audio for this page. Think about how you could translate it accurately into your language.
+        <![CDATA[Listen carefully to the audio for this page. Think about how you could translate it into your language.
         <br/>Do this now.]]>
     </string>
     <string name="help_translate_record_slide_title">Record Your Translation</string>
@@ -638,16 +637,20 @@
     </string>
     <string name="help_translate_continue_title">Complete the Story</string>
     <string name="help_translate_continue_body">
-        <![CDATA[Swipe left to the next page and repeat the Listen, Translate, Record, Review process on each Story Page.]]>
+        <![CDATA[Swipe left to the next page and repeat the Listen, Record, Review process on each Story Page.]]>
     </string>
-    <string name="help_translate_song_slide_title">Song Slide</string>
+    <string name="help_translate_finish_title">Next Phase</string>
+    <string name="help_translate_finish_body">
+        <![CDATA[When you have finished recording each page, tap above (or swipe up) to go to the next phase, Community.]]>
+    </string>
+    <string name="help_translate_song_slide_title">Song Page</string>
     <string name="help_translate_song_slide_body">
         <![CDATA[Now that you have finished recording the story, this Song Page provides
         a place where you or your community can create a song to accompany the story.]]>
     </string>
-    <string name="help_translate_songlabel_title">Song Slide</string>
+    <string name="help_translate_songlabel_title">Song Page</string>
     <string name="help_translate_songlabel_body">
-    <![CDATA[This label identifies the song page.]]>
+    <![CDATA[This label identifies the Song Page.]]>
     </string>
     <string name="help_translate_record_song_title">Record Your Song</string>
     <string name="help_translate_record_song_body">
@@ -675,15 +678,14 @@
     </string>
     -->
 
-    <string name="help_community_phase_title">Community Work Phase</string>
+    <string name="help_community_phase_title">Community Phase</string>
     <string name="help_community_phase_body">
         <![CDATA[In this phase, you need to go to the community to get feedback on your translation.]]>
     </string>
     <string name="help_community_swipe_title"></string>
     <string name="help_community_swipe_body">
         <![CDATA[You need to begin on the Title page. If a different page is showing,
-        swipe now left or right until the Title page is showing.
-        <br/>&lt;&lt;&lt;&lt;&lt;&lt; &gt;&gt;&gt;&gt;&gt;&gt;]]>
+        swipe now left or right until the Title page is showing.]]>
     </string>
     <string name="help_community_play_title">Play Audio</string>
     <string name="help_community_play_body">
@@ -696,20 +698,20 @@
     </string>
     <string name="help_community_continue_title">Gather Feedback</string>
     <string name="help_community_continue_body">
-        <![CDATA[Go to each page and get community feedback.;&lt;&lt;&lt;&lt;&lt;&lt;]]>
+        <![CDATA[Go to each page and get community feedback.]]>
     </string>
     <string name="help_community_revise_title">Revise</string>
     <string name="help_community_revise_body">
         <![CDATA[Use the feedback to improve the translation.
-        <br/><b>Go back to the Translate Phase if you need to revise the translation</b>.
-        <br/>Then return here to Community Work to continue getting feedback.]]>
+        <br/><b>Go back to the Record Phase if you need to revise the translation</b>.
+        <br/>Then return here to the Community Phase to continue getting feedback.]]>
     </string>
     <string name="help_community_nextphase_title">Next Phase</string>
     <string name="help_community_nextphase_body">
-        <![CDATA[When you are done getting feedback and making revisions, tap above (or swipe up) to move on to the next phase, Accuracy Check.]]>
+        <![CDATA[When you are done getting feedback and making revisions, tap above (or swipe up) to move on to the next phase, Accuracy.]]>
     </string>
 
-    <string name="help_accuracy_phase_title">Accuracy Check Phase</string>
+    <string name="help_accuracy_phase_title">Accuracy Phase</string>
     <string name="help_accuracy_phase_body">
         <![CDATA[In this phase you need to ask another person to check and approve the story for accuracy.
         <br/>If this is a Bible story, he or she should have Bible knowledge.]]>
@@ -724,8 +726,8 @@
     </string>
     <string name="help_accuracy_revise_title">Revise</string>
     <string name="help_accuracy_revise_body">
-        <![CDATA[If the accuracy checker feels that a change is best, go back to the Translate Phase to make the revisions.
-        <br/>Then return here to Accuracy Check to continue checking.]]>
+        <![CDATA[If the accuracy checker feels that a change is best, go back to the Record Phase to make the revisions.
+        <br/>Then return here to the Accuracy Phase to continue checking.]]>
     </string>
     <string name="help_accuracy_confirm_title">Confirm</string>
     <string name="help_accuracy_confirm_body">
@@ -733,10 +735,11 @@
     </string>
     <string name="help_accuracy_continue_title">Continue Checking</string>
     <string name="help_accuracy_continue_body">
-        <![CDATA[Go to each page and check for accuracy. Revise the translation if necessary.]]>
+        <![CDATA[Go to each page and check for accuracy.
+        <br/>Revise the translation in the Record phase if necessary.]]>
     </string>
 
-    <string name="help_voice_phase_title">Voice Studio Phase</string>
+    <string name="help_voice_phase_title">Drama Phase</string>
     <string name="help_voice_phase_body">
         <![CDATA[In this phase, you will record the approved translation with a person who has a good storytelling voice.
         Or, you can dramatize the story by recording it with a team.
@@ -745,7 +748,7 @@
     <string name="help_voice_listen_title">Listen, Memorize</string>
     <string name="help_voice_listen_body">
         <![CDATA[Listen to the approved translation for this page. Practice saying as much of it as you can.
-        Tap to pause or resume playback if necessary.
+        Tap to pause if needed.
         <br/>Begin now.]]>
     </string>
     <string name="help_voice_record_title">Record Dramatically</string>
@@ -765,7 +768,7 @@
     <string name="help_voice_final_title">Final Check</string>
     <string name="help_voice_final_body">
         <![CDATA[Start at the Title page and check the audio volume and quality for each page.
-         <br/>Then go to the Finalize phase.]]>
+         <br/>Then swipe left to go to the Song Page.]]>
     </string>
     <string name="help_voice_paused_title">Recording Paused</string>
     <string name="help_voice_paused_body">
@@ -783,26 +786,26 @@
     <string name="help_voice_pausedrecord_body">
         <![CDATA[Tap the mic+ button to resume recording.]]>
     </string>
-    <string name="help_voice_pausedstop_title">Finalize</string>
+    <string name="help_voice_pausedstop_title">Finish Recording</string>
     <string name="help_voice_pausedstop_body">
         <![CDATA[Or tap the square to stop recording.]]>
     </string>
 
     <string name="help_finalize_phase_title">Finalize Phase</string>
     <string name="help_finalize_phase_body">
-        <![CDATA[In this phase you will add credits and a short story name, and choose options for your video.]]>
+        <![CDATA[In this phase you will add credits and a short title, and choose options for your video.]]>
     </string>
     <string name="help_finalize_credits_title">Credits</string>
     <string name="help_finalize_credits_body">
-        <![CDATA[Tap this button to enter appropriate credits for all who participated.]]>
+        <![CDATA[Tap this button, and fill in information about local participants for this story.]]>
     </string>
     <string name="help_finalize_filename_title">Filename</string>
     <string name="help_finalize_filename_body">
-        <![CDATA[Type a short story name in your language, for use in the video filename.]]>
+        <![CDATA[Type a short title in your language, to use as the video filename.]]>
     </string>
     <string name="help_finalize_options_title">Video Options</string>
     <string name="help_finalize_options_body">
-        <![CDATA[We recommend the default options (Fx), (Px), and (Mv) for your first video.]]>
+        <![CDATA[We recommend the options (Fx), (Px), and (Mv) for your first video.]]>
     </string>
     <!--
     <string name="help_finalize_song_title">Local Song</string>
@@ -825,7 +828,7 @@
     </string>
     <string name="help_share_codes_title">Naming Codes</string>
     <string name="help_share_codes_body">
-        <![CDATA[The codes, Fx, Sg, Px, Mv, Tx in the filename represent the options you chose in the Finalize phase.]]>
+        <![CDATA[The codes, Fx, Px, Mv in the filename represent the options you chose in the Finalize phase.]]>
     </string>
     <string name="help_share_ext_title">.mp4 or .3gp?</string>
     <string name="help_share_ext_body">
@@ -833,7 +836,7 @@
     </string>
     <string name="help_share_play_video_title">Play Video</string>
     <string name="help_share_play_video_body">
-        <![CDATA[Watch your video to check it before you share it.]]>
+        <![CDATA[Play your video to check it before you share it.]]>
     </string>
     <string name="help_share_share_video_title">Share Video</string>
     <string name="help_share_share_video_body">
@@ -841,8 +844,7 @@
     </string>
     <string name="help_share_more_title">Additional Videos</string>
     <string name="help_share_more_body">
-        <![CDATA[Do you want to create additional video files with different options? Include the song?
-        Go back to the Finalize phase and create them.]]>
+        <![CDATA[You can also go back to the Create phase to create another video with different options. Like including a song!]]>
     </string>
     <string name="help_share_story_list_title">Story List</string>
     <string name="help_share_story_list_body">

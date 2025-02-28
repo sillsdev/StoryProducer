@@ -2,10 +2,15 @@
 <resources>
 
     <!-- TODO: STRINGS TO BE MACHINE TRANSLATED -->
-    <string name="help_video_open_story_first">Open a story before selecting this video</string>
-    <string name="help_context_menu_overview">SP app Overview</string>
-    <string name="help_context_menu_main">Main Screen/Story List</string>
+    <string name="help_video_open_story_first">Ouvrez une story avant de sélectionner cette vidéo</string>
+    <string name="help_context_menu_overview">Présentation de l\'application SP</string>
+    <string name="help_context_menu_main">Écran principal/Liste des histoires</string>
     <string name="gotIt">Fermer</string>
+
+    <string name="help_translate_finish_title">Phase suivante</string>
+    <string name="help_translate_finish_body">
+        <![CDATA[Lorsque vous avez fini d\'enregistrer chaque page, appuyez sur ci-dessus (ou faites glisser votre doigt vers le haut) pour passer à la phase suivante, Communauté.]]>
+    </string>
     <!-- TODO: END -->
 
     <string name="select_language">🌐 Sélectionner la langue</string>
