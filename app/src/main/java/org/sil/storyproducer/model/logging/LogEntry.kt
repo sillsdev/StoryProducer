@@ -56,11 +56,11 @@ fun saveLearnLog(context: Context, startSlide: Int, endSlide: Int, duration: Lon
     saveLog(ret,startSlide,endSlide)
 }
 
-fun saveLog(description: String,startSlideNum: Int = Workspace.activeSlideNum, endSlideNum: Int = Workspace.activeSlideNum) {
-    val dateTimeString = SimpleDateFormat("EEE MMM dd yyyy h:mm a", Locale.US).format(GregorianCalendar().time)
+fun saveLog(description: String, startSlideNum: Int = Workspace.activeSlideNum, endSlideNum: Int = Workspace.activeSlideNum) {
+    val dateTimeString = SimpleDateFormat("EEE MMM dd yyyy h:mm a", Locale.getDefault()).format(GregorianCalendar().time)
     val phase = Workspace.activePhase
 
-    val le = LogEntry(dateTimeString,
+        val le = LogEntry(dateTimeString,
             description, phase, startSlideNum,endSlideNum)
     Workspace.activeStory.activityLogs.add(le)
 }
