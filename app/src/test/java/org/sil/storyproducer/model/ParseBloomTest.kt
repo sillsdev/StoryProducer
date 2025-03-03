@@ -1,14 +1,13 @@
 package org.sil.storyproducer.model
 
+// import org.mockito.Mockito
+
+import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
-// import org.mockito.Mockito
 import org.robolectric.RobolectricTestRunner
-
-import androidx.test.core.app.ApplicationProvider
 import org.sil.storyproducer.tools.file.getChildDocuments
-
 import java.io.File
 
 // See below for some background to Roboelectric
@@ -26,7 +25,7 @@ class ParseBloomTest {
 
     @Test
     fun parsed_SPAT_Should_get_getChildDocuments() {
-        Assert.assertTrue(getChildDocuments(ApplicationProvider.getApplicationContext(), "000 Unlocked demo").size > 0)
+        Assert.assertTrue(getChildDocuments(ApplicationProvider.getApplicationContext(), "000 Storm - demo").size > 0)
     }
 
     @Test
@@ -43,7 +42,7 @@ class ParseBloomTest {
 
     @Test
     fun parsed_SPAT_Should_get_StoryTitleFromBookFrontCover() {
-        Assert.assertEquals("000 Unlocked demo", result!!.title)
+        Assert.assertEquals("000 Storm - demo", result!!.title)
     }
 
     @Test
@@ -55,7 +54,7 @@ class ParseBloomTest {
     // this test initialization code should only need to be called once
     private fun parse_SPAT_Story(): Story? {
         setupWorkspace()
-        val storyPath = Workspace.workdocfile.findFile("000 Unlocked demo")
+        val storyPath = Workspace.workdocfile.findFile("000 Storm - demo")
         return parseBloomHTML(ApplicationProvider.getApplicationContext(), storyPath!!)
     }
 

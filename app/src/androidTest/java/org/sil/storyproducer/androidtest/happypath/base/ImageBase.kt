@@ -22,8 +22,8 @@ open class ImageBase : SharedBase {
 
     // 09/02/2021 - DKH: Update for Testing Abstraction #566
     // Precisely identify story string for automated comparison during Espresso testing
-    private val nameOfTestStory = "002 Lost Coin" // this only matches stories in ALL_STORIES tab
-    private val nameOfTestStoryDirectory = "002 Lost Coin"
+    private val nameOfTestStory = "002 The Lost Coin" // this only matches stories in ALL_STORIES tab
+    private val nameOfTestStoryDirectory = "002 The Lost Coin.lang_en"
     private val nameOfSampleExportVideo = "Lost_Coin.mp4"
 
     override fun getStoryName() : String {
