@@ -1,15 +1,19 @@
 package org.sil.storyproducer.androidtest.happypath.accuracy_check
 
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers.*
-import org.hamcrest.CoreMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.containsString
 import org.junit.Assert
+import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.happypath.PlayerPhaseTestBase
 import org.sil.storyproducer.androidtest.happypath.base.SharedBase
-import org.sil.storyproducer.androidtest.utilities.*
-import org.sil.storyproducer.R
+import org.sil.storyproducer.androidtest.utilities.Constants
+import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 import org.sil.storyproducer.model.Workspace
 
 class AccuracyPhaseBase(sharedBase: SharedBase) : PlayerPhaseTestBase(sharedBase) {
@@ -76,7 +80,7 @@ class AccuracyPhaseBase(sharedBase: SharedBase) : PlayerPhaseTestBase(sharedBase
     }
 
     private fun shouldNowBeOnVoiceStudioPhase() {
-        onView(withText(containsString("Voice Studio"))).check(ViewAssertions.matches(isDisplayed()))
+        onView(withText(containsString("Drama"))).check(ViewAssertions.matches(isDisplayed()))
     }
 
 }

@@ -24,7 +24,7 @@ object Constants {
     // 09/17/2021 - DKH: Update for Testing Abstraction #566
     // numberOfTimesToSwipeWhenApprovingAllSlides is very story template specific,
     //  eg, Lost Coin only has 6 slides.  Other stories with different slide counts will not work
-    const val numberOfTimesToSwipeWhenApprovingAllSlides: Int = 6
+    const val numberOfTimesToSwipeWhenApprovingAllSlides: Int = 5
 
     // 10/23/2021 - DKH: Update for "Espresso test fail for Android 10 and 11" Issue #594
     // For Android 10 scoped storage, these were updated to relative path names from hard coded
