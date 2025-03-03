@@ -40,6 +40,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.preference.PreferenceManager
 import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.Phase
 import kotlin.concurrent.fixedRateTimer
 import kotlin.math.min
 
@@ -233,8 +234,12 @@ class PopupHelpUtils(private val parent: Any,
 
     fun addHtml5HelpItem(anchorViewId: Int,
                          html5Animation: String) {
-        if (context != null && assetExists(context!!, html5Animation)) {
-            val newPopup = PopupHtml5Item(anchorViewId, "file:///android_asset/${html5Animation}")
+        var localizedUrl = html5Animation
+        val lang = Phase.getCurrentLanguageCode()
+        if (lang.isNotEmpty() && lang != "en")
+            localizedUrl = html5Animation.replace(".html", "-${lang}.html")
+        if (context != null && assetExists(context!!, localizedUrl)) {
+            val newPopup = PopupHtml5Item(anchorViewId, "file:///android_asset/${localizedUrl}")
             popupItems.add(newPopup)
         }
     }
