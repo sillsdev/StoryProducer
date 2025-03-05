@@ -283,14 +283,14 @@ class PopupHelpUtils(private val parent: Any,
     }
 
     fun toggleShowingPopupHelp() {
-        if (helpPopupWindow == null)
-            restartShowingPopupHelp(false)
-        else if (currentHelpIndex < 0 || currentHelpIndex >= popupItems.size)
+        if (currentHelpIndex < 0 || currentHelpIndex >= popupItems.size)
             resumeShowingPopupHelp(false, -1)
         else {
             val helpView = getHelpView()
             if (helpView != null)
                 stopShowingPopupHelp(helpView)
+            else
+                restartShowingPopupHelp(false)
         }
     }
 
