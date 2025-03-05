@@ -8,6 +8,7 @@ import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.constraintlayout.widget.Guideline
 import androidx.core.content.res.ResourcesCompat
+import androidx.preference.PreferenceManager
 import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.PopupHelpUtils
@@ -163,16 +164,22 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
                 R.id.fragment_reference_audio_button,
                 80, 90,
                 R.string.help_learn_practice_title, R.string.help_learn_practice_body)
-        mPopupHelpUtils?.addPopupHelpItem(
-            R.id.start_recording_button,
-            50, 10,
-            R.string.help_learn_record_title, R.string.help_learn_record_body) {
+
+        // only show recording toolbar BTWs if the toolbar is visible (set by preferences)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(baseContext);
+        // check setting for hiding the learn phase mic bar
+        if (!prefs.getBoolean("hide_learn_mic", true)) {
+            mPopupHelpUtils?.addPopupHelpItem(
+                R.id.start_recording_button,
+                50, 10,
+                R.string.help_learn_record_title, R.string.help_learn_record_body) {
                 Workspace.activeStory.learnAudioFile.isNotEmpty() && !recordingToolbar.isRecording
+            }
+            mPopupHelpUtils?.addPopupHelpItem(
+                R.id.play_recording_button,
+                50, 10,
+                R.string.help_learn_listen2_title, R.string.help_learn_listen2_body)
         }
-        mPopupHelpUtils?.addPopupHelpItem(
-            R.id.play_recording_button,
-            50, 10,
-            R.string.help_learn_listen2_title, R.string.help_learn_listen2_body)
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,
             45, 90,
