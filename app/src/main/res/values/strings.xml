@@ -200,7 +200,7 @@
     <string name="queue_status_upload"> No Connection: File Queued for Delivery</string>
     <string name="queue_status_message_get">No Connection: Cannot Retrieve New Messages</string>
     <string name="queue_status_register">No Connection: Registration Queued for Delivery</string>
-    <string name="queue_status_approved">No Connection: Cannot Retrieve Slide Status</string>
+    <string name="queue_status_approved">No Connection: Cannot Retrieve Page Status</string>
     <string name="url_get_messages">https://storyproducer.eastus.cloudapp.azure.com/API/GetMessages.php</string>
     <string name="url_send_message">https://storyproducer.eastus.cloudapp.azure.com/API/SendMessage.php</string>
     <string name="url_request_review">https://storyproducer.eastus.cloudapp.azure.com/API/RequestRemoteReview.php</string>
@@ -220,8 +220,8 @@
     <string name="translation_edit_cancelled">Audio edit cancelled</string>
 
     <!-- Translate + Revise Phase -->
-    <string name="translate_revise_playback_no_lwc_audio">No \'%1$s\' audio for this slide in the story template.</string>
-    <string name="other_playback_no_local_audio">Slide not translated - no narration audio in the local language.</string>
+    <string name="translate_revise_playback_no_lwc_audio">No \'%1$s\' audio for this page in the story template.</string>
+    <string name="other_playback_no_local_audio">Page not translated - no narration audio in the local language.</string>
     <string name="translate_revise_playback_lwc_audio">Playing narration audio</string>
     <string name="translate_revise_play_narration_audio">Play narration audio</string>
 
@@ -254,7 +254,7 @@
 
     <!-- Whole Story Back Translation phase -->
     <string name="wsbt_alert_title">Finish Draft Phase</string>
-    <string name="wsbt_alert_text">Please record a translation for each slide.</string>
+    <string name="wsbt_alert_text">Please record a translation for each page.</string>
 
     <!-- Back Translation Phase -->
     <string name="backTranslation_draft_no_picture">Could Not Find Picture</string>
@@ -269,7 +269,7 @@
 
     <!-- Remote Check Phase -->
     <string name="remote_check_title">Remote Check</string>
-    <string name="messaging_bar_title">Messages for Slide</string>
+    <string name="messaging_bar_title">Messages for Page</string>
     <string name="message_hint">Enter Message</string>
     <string name="empty_message">RC messages will appear here&#8230;</string>
     <string name="remote_check_msg_sent">Message Sent!</string>
@@ -389,12 +389,12 @@
     <string name="lang_codes_all_languages">(all languages)</string>
 
     <!-- Logging -->
-    <string name="logging_slide_log_view_title">Logs for Slide #%1$d</string>
+    <string name="logging_slide_log_view_title">Logs for Page #%1$d</string>
     <string name="logging_item_date">Date</string>
     <string name="logging_item_type">Type</string>
     <plurals name="logging_numSlides">
-        <item quantity="one">Slide</item>
-        <item quantity="other">Slides</item>
+        <item quantity="one">Page</item>
+        <item quantity="other">Pages</item>
     </plurals>
 
     <!-- Snackbar Messages -->
@@ -423,7 +423,7 @@
     <string name="migrate_stories_title">Move current projects?</string>
     <string name="migrate_stories_message">Would you like to move your current projects to this folder? (recommended)</string>
     <string name="title_activity_settings">SettingsActivity</string>
-    <string name="lock_screen_text"><![CDATA[You cannot use this phase until you go back to the <b>Accuracy Check</b> phase and make sure each slide is approved by an accuracy checker. |]]></string>
+    <string name="lock_screen_text"><![CDATA[You cannot use this phase until you go back to the <b>Accuracy Check</b> phase and make sure each page is approved by an accuracy checker. |]]></string>
     <string name="title_video_created">Your video has been created.\nYou can play it now in the Share Phase.</string>
     <string name="error_creating_video">Error creating video!</string>
 
@@ -453,13 +453,13 @@
     <string name="settings_experimental"><font color="#F6DDCC">These settings are experimental. Use with caution!</font></string>
 
     <!-- Content Descriptions -->
-    <string name="edit_image">Edit slide image</string>
-    <string name="edit_text">Edit slide text</string>
+    <string name="edit_image">Edit page image</string>
+    <string name="edit_text">Edit page text</string>
 
     <string name="bldl_start_template_download_fab">Start template download</string>
     <string name="accuracy_check_show_log_fab">Show history log</string>
     <string name="accuracy_check_confirm_translation_fab">Confirm accurately translated</string>
-    <string name="slide_text_edit">Editing text for this slide</string>
+    <string name="slide_text_edit">Editing text for this page</string>
     <string name="story_local_credits_edit">Editing local credits for this story</string>
     <string name="community_recordings_list">Community recordings list</string>
     <string name="video_seek_bar">Video seek bar</string>
@@ -478,8 +478,8 @@
     <!-- Miscellaneous Strings -->
     <string name="slide_type_title">Title</string>
     <string name="slide_type_song">Song ♫</string>
-    <string name="slide_type_number">Slide</string>
-    <string name="voice_studio_move_time">Now it’s time to record the final audio in the Voice Studio phase.</string>
+    <string name="slide_type_number">Page</string>
+    <string name="voice_studio_move_time">Now it’s time to record the final audio in the Drama phase.</string>
     <string name="build_story_failed">The following templates failed to load and are not compatible with Story Producer:</string>
     <string name="update_reading_templates_dialog">%1$d of %2$d templates\n\n%3$s</string>
     <string name="sp_logo">Story Producer logo</string>
@@ -597,7 +597,7 @@
     <string name="help_translate_phase_body">
         <![CDATA[In this phase, you will record your translation.]]>
     </string>
-    <string name="help_translate_titleslide_title">Title Slide</string>
+    <string name="help_translate_titleslide_title">Title Page</string>
     <string name="help_translate_titleslide_body">
         <![CDATA[Every story begins with a Title Page, followed by the Story Pages. This label identifies the page.]]>
     </string>
@@ -617,7 +617,7 @@
     <string name="help_translate_nextslide1_body">
         <![CDATA[Now, <b><i>touch the screen and swipe left</i></b> to go to Story Page 1.]]>
     </string>
-    <string name="help_translate_storyslide_title">Story Slide</string>
+    <string name="help_translate_storyslide_title">Story Page</string>
     <string name="help_translate_storyslide_body">
     <![CDATA[This is a Story Page. This label identifies the page number.]]>
     </string>
@@ -791,7 +791,7 @@
         <![CDATA[Or tap the square to stop recording.]]>
     </string>
 
-    <string name="help_finalize_phase_title">Finalize Phase</string>
+    <string name="help_finalize_phase_title">Create Phase</string>
     <string name="help_finalize_phase_body">
         <![CDATA[In this phase you will add credits and a short title, and choose options for your video.]]>
     </string>
@@ -828,7 +828,7 @@
     </string>
     <string name="help_share_codes_title">Naming Codes</string>
     <string name="help_share_codes_body">
-        <![CDATA[The codes, Fx, Px, Mv in the filename represent the options you chose in the Finalize phase.]]>
+        <![CDATA[The codes, Fx, Px, Mv in the filename represent the options you chose in the Create phase.]]>
     </string>
     <string name="help_share_ext_title">.mp4 or .3gp?</string>
     <string name="help_share_ext_body">
