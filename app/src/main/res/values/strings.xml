@@ -20,16 +20,6 @@
 -->
 
     <!-- TODO: STRINGS TO BE MACHINE TRANSLATED -->
-    <string name="help_video_open_story_first">Open a story before selecting this video</string>
-    <string name="help_context_menu_overview">SP app Overview</string>
-    <string name="help_context_menu_main">Main Screen/Story List</string>
-    <string name="hide_learn_mic">Hide Learn Phase Microphone</string>
-    <string name="hide_learn_mic_summary">Hide the practice microphone and toolbar in the Learn Phase.</string>
-    <string name="bloom_templates">Download Bible Stories</string>
-    <string name="bloom_library">Download Books from Bloom Library</string>
-    <string name="select_workspace_folder">Select Folder</string>
-    <string name="copy_demo">Add Practice story</string>
-    <string name="gotIt">Close</string>
     <!-- TODO: END -->
 
     <string name="app_name">Story Producer</string>
@@ -41,7 +31,7 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="ok">OK</string>
-<!--    <string name="gotIt">Got it</string>-->
+    <string name="gotIt">Close</string>
     <string name="letsBegin">Let’s Begin</string>
     <string name="cancel">Cancel</string>
     <string name="next">Next</string>
@@ -339,13 +329,13 @@
     <string name="menu_search">Search</string>
     <string name="update_registration">User Registration</string>
     <string name="scanning_sp_templates">Please wait for SP to scan the templates</string>
-<!--    <string name="select_workspace_folder">Select \'SP Templates\' Folder</string>-->
+    <string name="select_workspace_folder">Select Folder</string>
     <string name="cancelling">Cancelling &#8230;</string>
-<!--    <string name="copy_demo">Add Demo to Story List</string>-->
+    <string name="copy_demo">Add Practice story</string>
     <string name="more_templates">Download More Templates</string>
-<!--    <string name="bloom_templates">Download Bible Story Templates</string>-->
+    <string name="bloom_templates">Download Bible Stories</string>
 <!--    <string name="bloom_featured">Download Featured Bloom Books</string>-->
-<!--    <string name="bloom_library">Download Bloom Books</string>-->
+    <string name="bloom_library">Download Books from Bloom Library</string>
 
     <!-- Main Story Page -->
     <string name="all_stories_tab">All Stories</string>
@@ -446,6 +436,8 @@
     <string name="skip_accuracy_check_summary">You may turn this on if you will be translating downloaded Bloom Books that do not have any Bible story content. Keep this off if you will be translating Bible story content.</string>
     <string name="enable_story_deletion_title">Enable Story Deletion</string>
     <string name="enable_story_deletion_summary">When this feature is enabled… In the Story List, long press on a story’s thumbnail to delete that story. Story Deletion cannot be undone.</string>
+    <string name="hide_learn_mic">Hide Learn Phase Microphone</string>
+    <string name="hide_learn_mic_summary">Hide the practice microphone and toolbar in the Learn Phase.</string>
 
     <!-- Settings -->
     <string name="settings">⚙ Settings</string>
@@ -856,5 +848,8 @@
     <string name="help_menu_tutor_resume">Hide/Show Tutorial Windows</string>
     <string name="help_tutor_dismiss_message">Tap the blue help <b>[?]</b> button in the toolbar to Resume the Tutorial.</string>
     <string name="help_tutor_no_more_pages">No more tutorial pages for this section.</string>
+    <string name="help_video_open_story_first">Open a story before selecting this video</string>
+    <string name="help_context_menu_overview">SP app Overview</string>
+    <string name="help_context_menu_main">Main Screen/Story List</string>
 
 </resources>
