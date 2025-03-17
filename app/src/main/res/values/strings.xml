@@ -193,13 +193,13 @@
     <string name="queue_status_message_get">No Connection: Cannot Retrieve New Messages</string>
     <string name="queue_status_register">No Connection: Registration Queued for Delivery</string>
     <string name="queue_status_approved">No Connection: Cannot Retrieve Page Status</string>
-    <string name="url_get_messages">https://storyproducer.eastus.cloudapp.azure.com/API/GetMessages.php</string>
-    <string name="url_send_message">https://storyproducer.eastus.cloudapp.azure.com/API/SendMessage.php</string>
-    <string name="url_request_review">https://storyproducer.eastus.cloudapp.azure.com/API/RequestRemoteReview.php</string>
-    <string name="url_get_slide_status">https://storyproducer.eastus.cloudapp.azure.com/API/GetSlideStatuses.php</string>
-    <string name="url_upload_audio"> https://storyproducer.eastus.cloudapp.azure.com/API/UploadSlideBacktranslation.php</string>
-    <string name="url_register_phone">https://storyproducer.eastus.cloudapp.azure.com/API/RegisterPhone.php</string>
-    <string name="api_token">XUKYjBHCsD6OVla8dYAt298D9zkaKSqd</string>
+    <string name="url_get_messages" translatable="false">https://storyproducer.eastus.cloudapp.azure.com/API/GetMessages.php</string>
+    <string name="url_send_message" translatable="false">https://storyproducer.eastus.cloudapp.azure.com/API/SendMessage.php</string>
+    <string name="url_request_review" translatable="false">https://storyproducer.eastus.cloudapp.azure.com/API/RequestRemoteReview.php</string>
+    <string name="url_get_slide_status" translatable="false">https://storyproducer.eastus.cloudapp.azure.com/API/GetSlideStatuses.php</string>
+    <string name="url_upload_audio" translatable="false">https://storyproducer.eastus.cloudapp.azure.com/API/UploadSlideBacktranslation.php</string>
+    <string name="url_register_phone" translatable="false">https://storyproducer.eastus.cloudapp.azure.com/API/RegisterPhone.php</string>
+    <string name="api_token" translatable="false">XUKYjBHCsD6OVla8dYAt298D9zkaKSqd</string>
 
     <string name="fill_with_audio_comment">Fill with Audio Comment</string>
 
@@ -272,7 +272,7 @@
     <string name="recording_toolbar_no_recording">No recording available!</string>
     <string name="recording_toolbar_error_start_recording">Error starting recording, record again!</string>
     <string name="recording_toolbar_error_stop_recording">The recording was stopped prematurely. Nothing was recorded. Please try again.</string>
-    <string name="recording_toolbar_disable_animation">DISABLE_ANIMATIONS_FOR_TESTING</string>
+    <string name="recording_toolbar_disable_animation" translatable="false">DISABLE_ANIMATIONS_FOR_TESTING</string>
 
     <!-- Multiple Recording Dialog -->
     <string name="delete_audio_title">Delete Audio file?</string>
@@ -347,10 +347,10 @@
     <string name="filter_chips_feature">Use the white buttons at the top of the Story List to filter and display types of stories.\nFor example, you can display only Old Testament (OT) or New Testament (NT) stories by selecting the appropriate buttons.\nTap the white buttons to try it out.</string>
 
     <!-- Filter Toolbar -->
-    <string name="film_toolbar">Film</string>
-    <string name="nt_toolbar">NT</string>
-    <string name="ot_toolbar">OT</string>
-    <string name="other_toolbar">Other</string>
+    <string name="film_toolbar" translatable="false">Film</string>
+    <string name="nt_toolbar" translatable="false">NT</string>
+    <string name="ot_toolbar" translatable="false">OT</string>
+    <string name="other_toolbar" translatable="false">Other</string>
 
     <!-- About -->
     <string name="about">About</string>
@@ -385,8 +385,8 @@
     <string name="logging_item_date">Date</string>
     <string name="logging_item_type">Type</string>
     <plurals name="logging_numSlides">
-	<item quantity="one">Page</item>
-	<item quantity="other">Pages</item>
+	    <item quantity="one">Page</item>
+	    <item quantity="other">Pages</item>
     </plurals>
 
     <!-- Snackbar Messages -->
@@ -494,15 +494,15 @@
     <string name="log_entry_playback">Playback</string>
 
     <!-- Phase Strings -->
-    <string name="phase_dir_safe_name_translation_draft">Translation Draft</string>
-    <string name="phase_dir_safe_name_wordlinks">WordLinks</string>
-    <string name="phase_dir_safe_name_comment">Comment</string>
-    <string name="phase_dir_safe_name_whole">Whole</string>
-    <string name="phase_dir_safe_name_backtrans">BackTrans</string>
-    <string name="phase_dir_safe_name_remote">Remote</string>
-    <string name="phase_dir_safe_name_accuracy">Accuracy</string>
-    <string name="phase_dir_safe_name_studio_recording">Studio Recording</string>
-    <string name="phase_dir_safe_name_finalize">Finalize</string>
+    <string name="phase_dir_safe_name_translation_draft" translatable="false">Translation Draft</string>
+    <string name="phase_dir_safe_name_wordlinks" translatable="false">WordLinks</string>
+    <string name="phase_dir_safe_name_comment" translatable="false">Comment</string>
+    <string name="phase_dir_safe_name_whole" translatable="false">Whole</string>
+    <string name="phase_dir_safe_name_backtrans" translatable="false">BackTrans</string>
+    <string name="phase_dir_safe_name_remote" translatable="false">Remote</string>
+    <string name="phase_dir_safe_name_accuracy" translatable="false">Accuracy</string>
+    <string name="phase_dir_safe_name_studio_recording" translatable="false">Studio Recording</string>
+    <string name="phase_dir_safe_name_finalize" translatable="false">Finalize</string>
 
     <string name="phase_display_name_registration">Registration</string>
     <string name="phase_display_name_learn">Learn</string>
@@ -516,7 +516,6 @@
     <string name="phase_display_name_voice_studio">Drama</string>
     <string name="phase_display_name_finalize">Create</string>
     <string name="phase_display_name_share">Share</string>
-
     <string name="phase_display_name_additional_info_wordlinks"> --&gt; Press and hold to back translate</string>
 
     <!-- Strings for Help Tutorial views: titles and body  -->
