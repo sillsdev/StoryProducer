@@ -146,8 +146,8 @@ class MainActivity : BaseActivity(), Serializable {
         // so point (roughly) to end of first story
         val storyListViewPercent = (100f / totalVisibleStories).toInt()
 
-        mPopupHelpUtils?.addHtml5HelpItem(R.id.activity_main, "html5/Introduction5/Introduction5.html")
-        mPopupHelpUtils?.addHtml5HelpItem(R.id.activity_main, "html5/MainScreen2/Main Screen.html")
+        mPopupHelpUtils?.addHtml5HelpItem(R.id.activity_main, "html5/00_Introduction_en/00_Introduction_en.html")
+        mPopupHelpUtils?.addHtml5HelpItem(R.id.activity_main, "html5/0_MainScreen_en/0_MainScreen_en.html")
 
 //        mPopupHelpUtils?.addFullScreenHelpItem(R.id.activity_main, R.drawable.intro1_welcome)
 //        mPopupHelpUtils?.addFullScreenHelpItem(R.id.activity_main, R.drawable.intro2_translate_revise)

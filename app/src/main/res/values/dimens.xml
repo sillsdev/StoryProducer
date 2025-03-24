@@ -24,4 +24,5 @@
     <dimen name="wordlink_text_margin">16dp</dimen>
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="help_video_button_width">61dp</dimen>
+    <dimen name="help_video_bottom_margin">62dp</dimen>
 </resources>
