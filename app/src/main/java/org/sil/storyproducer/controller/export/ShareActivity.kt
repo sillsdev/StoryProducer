@@ -199,7 +199,7 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
 
         mPopupHelpUtils = PopupHelpUtils(this, this.javaClass)
 
-        mPopupHelpUtils?.addHtml5HelpItem(R.id.toolbar, "html5/SharePhase/The Learn Phase2.html")
+        mPopupHelpUtils?.addHtml5HelpItem(R.id.toolbar, "html5/7_Share_en/7_Share_en.html")
 
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,

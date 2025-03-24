@@ -175,7 +175,7 @@ class VoiceStudioFrag : MultiRecordFrag() {
 
             mPopupHelpUtils = PopupHelpUtils(this, this.javaClass, 0)    // the main help for this fragment
 
-            mPopupHelpUtils?.addHtml5HelpItem(R.id.toolbar, "html5/DramaPhase/The Learn Phase2.html")
+            mPopupHelpUtils?.addHtml5HelpItem(R.id.toolbar, "html5/5_Drama_en/5_Drama_en.html")
 
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.toolbar,

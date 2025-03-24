@@ -83,7 +83,7 @@ class CommunityWorkFrag : MultiRecordFrag() {
 
         mPopupHelpUtils = PopupHelpUtils(this, this.javaClass)
 
-        mPopupHelpUtils?.addHtml5HelpItem(R.id.toolbar, "html5/CommunityPhase/The Learn Phase2.html")
+        mPopupHelpUtils?.addHtml5HelpItem(R.id.toolbar, "html5/3_Community_en/3_Community_en.html")
 
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,

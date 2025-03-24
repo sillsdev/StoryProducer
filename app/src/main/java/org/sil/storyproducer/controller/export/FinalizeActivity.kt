@@ -166,7 +166,7 @@ class FinalizeActivity : PhaseBaseActivity() {
 
         mPopupHelpUtils = PopupHelpUtils(this, this.javaClass)
 
-        mPopupHelpUtils?.addHtml5HelpItem(R.id.toolbar, "html5/CreatePhase/The Learn Phase2.html")
+        mPopupHelpUtils?.addHtml5HelpItem(R.id.toolbar, "html5/6_Create_en/6_Create_en.html")
 
         mPopupHelpUtils?.addPopupHelpItem(
             R.id.toolbar,

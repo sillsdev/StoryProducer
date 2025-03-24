@@ -37,7 +37,7 @@ class TranslateReviseFrag : MultiRecordFrag() {
         if (slideNumber == 0) {
             mPopupHelpUtils = PopupHelpUtils(this, this.javaClass)
 
-            mPopupHelpUtils?.addHtml5HelpItem(R.id.toolbar, "html5/RevisePhase/The Learn Phase2.html")
+            mPopupHelpUtils?.addHtml5HelpItem(R.id.toolbar, "html5/2_Record_en/2_Record_en.html")
 
             mPopupHelpUtils?.addPopupHelpItem(
                 R.id.toolbar,

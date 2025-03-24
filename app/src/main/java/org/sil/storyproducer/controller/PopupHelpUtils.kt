@@ -103,13 +103,12 @@ class PopupHelpUtils(private val parent: Any,
                      private val cls: Class<*>,
                      private val helpSeriesIndex: Int = 0)  // used to allow two or more help sequences for this fragment/activity
 {
-
-
     private var helpPopupWindow: PopupWindow? = null
     private var aboutToShowHelpPopup = false
     private var popupItems: MutableList<BasePopupItem> = mutableListOf()
     private var context: Context? = null
     private var activity: ComponentActivity? = null
+
     init {
         if (parent is Fragment) {
             activity = parent.requireActivity()
@@ -236,8 +235,10 @@ class PopupHelpUtils(private val parent: Any,
                          html5Animation: String) {
         var localizedUrl = html5Animation
         val lang = Phase.getCurrentLanguageCode()
-        if (lang.isNotEmpty() && lang != "en")
-            localizedUrl = html5Animation.replace(".html", "-${lang}.html")
+        if (lang.isNotEmpty() && lang != "en") {
+            localizedUrl = localizedUrl.replace("_en/", "_${lang}/")
+            localizedUrl = localizedUrl.replace("_en.html", "_${lang}.html")
+        }
         if (context != null && assetExists(context!!, localizedUrl)) {
             val newPopup = PopupHtml5Item(anchorViewId, "file:///android_asset/${localizedUrl}")
             popupItems.add(newPopup)
@@ -436,25 +437,33 @@ class PopupHelpUtils(private val parent: Any,
                         val inflater = LayoutInflater.from(context)
                         val popupView = inflater.inflate(R.layout.animated_message_x, null)
 
-
-
                         // Find the WebView from the layout
                         val webView: WebView = popupView.findViewById(R.id.html5Animation)
-
-                        // Enable JavaScript (optional, if your HTML requires it)
 
                         // Enable JavaScript and file access
                         webView.settings.javaScriptEnabled = true
                         webView.settings.allowFileAccess = true
                         webView.settings.allowContentAccess = true
 
+                        // scale the html5 video to fill area above navigate buttons
+                        val scaleWidth = view2.width.toFloat() / animationWidth
+                        val scaleHeight = view2.height.toFloat() / animationHeight
+                        val initialScale = min(scaleWidth, scaleHeight)
+                        webView.setInitialScale((initialScale * 100 * 1.00).toInt())
+                        // set the scaleX and Y to 1.0 now we are increasing bottom margin this
+                        // works because the adobe animate videos are responsive to smaller size
+                        webView.scaleX = animationScale
+                        webView.scaleY = animationScale
+                        // reduce the size of the html5 animation canvas for non-fullscreen
+                        val heightInPx = view2.context?.resources?.getDimensionPixelSize(R.dimen.help_video_bottom_margin) ?: 0
+                        val layoutParams = webView.layoutParams as? ViewGroup.MarginLayoutParams
+                        layoutParams?.bottomMargin = heightInPx
+                        layoutParams?.topMargin = heightInPx/8
+                        webView.layoutParams = layoutParams
+
                         // Enable cross-origin requests for local file URLs
                         webView.settings.allowUniversalAccessFromFileURLs = true
 
-                        // Prevent redirection to external browsers
-//                        webView.webViewClient = WebViewClient()
-
-                        // Load the local file
                         // Load the local HTML file from the assets folder
                         webView.loadUrl(popupHtml5Item.html5Animation)
 
@@ -468,11 +477,13 @@ class PopupHelpUtils(private val parent: Any,
                         val textCloseButton = popupView.findViewById<ImageButton>(R.id.btnClose)
                         textCloseButton.visibility = if (currentHelpIndex == 0) View.VISIBLE else View.INVISIBLE
 
-                        helpPopupWindow = PopupWindow(
+                        // use a custom PopupWindow for dismissing fullscreen mode
+                        helpPopupWindow = CustomPopupWindow2(
                             popupView,
                             WindowManager.LayoutParams.MATCH_PARENT,    // match parent to make it full screen
                             WindowManager.LayoutParams.MATCH_PARENT,
-                            true) // Focusable to make it modal
+                            true, // Focusable to make it modal
+                            currentHelpIndex) // used to show previous and next buttons
 
                         // Set a transparent background to the PopupWindow
                         helpPopupWindow?.setBackgroundDrawable(ColorDrawable())
@@ -488,15 +499,16 @@ class PopupHelpUtils(private val parent: Any,
                             dismissPopup()  // dismiss html view popup on back key pressed
                         }
 
-                    }
 
-                    val buttonClose: ImageButton = getHelpView()!!.findViewById(R.id.btnClose)
-                    buttonClose.setOnClickListener {
-
-                        stopShowingPopupHelp(view2)
                     }
-                    val buttonNext: Button = getHelpView()!!.findViewById(R.id.btnNext)
-                    buttonNext.setOnClickListener {
+                    // get the controls for the navigate buttons for later use
+                    val buttonNext = getHelpView()?.findViewById<Button>(R.id.btnNext)
+                    val buttonPrev = getHelpView()?.findViewById<Button>(R.id.btnPrev)
+                    val buttonClose = getHelpView()?.findViewById<ImageButton>(R.id.btnClose)
+                    val buttonFullScreen = getHelpView()?.findViewById<ImageButton>(R.id.btnFullScreen)
+
+                    // add listener for next button
+                    buttonNext?.setOnClickListener {
 
                         dismissPopup()
 
@@ -507,15 +519,17 @@ class PopupHelpUtils(private val parent: Any,
                             showNextPopupHelp()
                         }
                     }
-                    val buttonPrev = getHelpView()!!.findViewById<Button>(R.id.btnPrev)
+
                     if (prevHtml5Item != null) {
                         // the previous help item is a html5 video - prev button shows as a video icon
-                        buttonPrev.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_video, 0, 0, 0)
+                        buttonPrev?.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_video, 0, 0, 0)
                         val widthInPx = view2.rootView.context.resources.getDimensionPixelSize(R.dimen.help_video_button_width)
-                        buttonPrev.layoutParams = buttonPrev.layoutParams.apply { width = widthInPx }
+                        buttonPrev?.layoutParams = buttonPrev?.layoutParams?.apply { width = widthInPx }
                     }
-                    buttonPrev.visibility = if (currentHelpIndex > 0) View.VISIBLE else View.INVISIBLE
-                    buttonPrev.setOnClickListener {
+
+                    // hide/show previous button and add listener
+                    buttonPrev?.visibility = if (currentHelpIndex > 0) View.VISIBLE else View.INVISIBLE
+                    buttonPrev?.setOnClickListener {
 
                         dismissPopup()
 
@@ -525,6 +539,20 @@ class PopupHelpUtils(private val parent: Any,
                         if (currentHelpIndex >= 0 && currentHelpIndex < popupItems.size) {
                             showNextPopupHelp()
                         }
+                    }
+
+                    // add close/exit-fullscreen listener
+                    buttonClose?.setOnClickListener {
+                        if (buttonFullScreen == null || buttonFullScreen.visibility == View.VISIBLE) {
+                            stopShowingPopupHelp(view2)
+                        } else {
+                            exitFullScreen(getHelpView(), currentHelpIndex)
+                        }
+                    }
+
+                    // add enter full screen button listener
+                    buttonFullScreen?.setOnClickListener {
+                        enterFullScreen(getHelpView())
                     }
                 }
             }
@@ -579,6 +607,28 @@ class PopupHelpUtils(private val parent: Any,
         fun dismissPopup() {
             timer.cancel() // Stop the timer when the popup is dismissed
             dismiss()
+        }
+
+    }
+
+    // a PopupWindow derived class that has two modes:
+    // full-screen and normal - exiting full screen on back pressed
+    class CustomPopupWindow2(
+        contentView: View,
+        width: Int, height: Int,
+        focusable: Boolean,
+        private val currentHelpIndex: Int) :
+            PopupWindow(contentView, width, height, focusable) {
+
+            // override dismiss() so that we can process back pressed
+            // and exit-fullscreen OR dismiss if not fullscreen
+            override fun dismiss() {
+            val buttonFullScreen: ImageButton? = contentView.findViewById(R.id.btnFullScreen)
+            if (buttonFullScreen == null || buttonFullScreen.visibility == View.VISIBLE) {
+                super.dismiss()
+            } else {
+                exitFullScreen(contentView, currentHelpIndex)
+            }
         }
     }
 
@@ -967,6 +1017,54 @@ class PopupHelpUtils(private val parent: Any,
             layoutParams.leftMargin = x
             layoutParams.topMargin = y
             shiftedView.layoutParams = layoutParams
+        }
+    }
+
+    companion object {
+        const val animationWidth: Int = 287     // size taken from html5 animation
+        const val animationHeight: Int = 638    // "
+        const val animationScale: Float = 1.0f  // now no need to reduce the scale as canvas size is reduced
+                                                // and the adobe animate html5 video is responsive to smaller size
+
+        // remove bottom margin and scale to full screen, hiding navigate buttons and showing exit-fullscreen button
+        private fun enterFullScreen(popupRootView: View?) {
+            val webView = popupRootView?.findViewById<WebView>(R.id.html5Animation)
+            val buttonNext = popupRootView?.findViewById<Button>(R.id.btnNext)
+            val buttonPrev = popupRootView?.findViewById<Button>(R.id.btnPrev)
+            val buttonClose = popupRootView?.findViewById<ImageButton>(R.id.btnClose)
+            val buttonFullScreen = popupRootView?.findViewById<ImageButton>(R.id.btnFullScreen)
+            webView?.scaleX = 1f
+            webView?.scaleY = 1f
+            val layoutParams = webView?.layoutParams as? ViewGroup.MarginLayoutParams
+            layoutParams?.bottomMargin = 0
+            layoutParams?.topMargin = 0
+            webView?.layoutParams = layoutParams
+            buttonNext?.visibility = View.INVISIBLE
+            buttonPrev?.visibility = View.INVISIBLE
+            buttonClose?.setImageResource(R.drawable.ic_action_video_full_exit)
+            buttonClose?.visibility = View.VISIBLE
+            buttonFullScreen?.visibility = View.INVISIBLE
+        }
+
+        // Hide exit full screen button add bottom margin and reduce scale and show navigate buttons
+        private fun exitFullScreen(popupRootView: View?, currentHelpIndex: Int) {
+            val webView = popupRootView?.findViewById<WebView>(R.id.html5Animation)
+            val buttonNext = popupRootView?.findViewById<Button>(R.id.btnNext)
+            val buttonPrev = popupRootView?.findViewById<Button>(R.id.btnPrev)
+            val buttonClose = popupRootView?.findViewById<ImageButton>(R.id.btnClose)
+            val buttonFullScreen = popupRootView?.findViewById<ImageButton>(R.id.btnFullScreen)
+            webView?.scaleX = animationScale
+            webView?.scaleY = animationScale
+            val heightInPx = popupRootView?.context?.resources?.getDimensionPixelSize(R.dimen.help_video_bottom_margin) ?: 0
+            val layoutParams = webView?.layoutParams as? ViewGroup.MarginLayoutParams
+            layoutParams?.bottomMargin = heightInPx
+            layoutParams?.topMargin = heightInPx/8
+            webView?.layoutParams = layoutParams
+            buttonNext?.visibility = View.VISIBLE
+            buttonPrev?.visibility = if (currentHelpIndex > 0) View.VISIBLE else View.INVISIBLE
+            buttonClose?.visibility = if (currentHelpIndex == 0) View.VISIBLE else View.INVISIBLE
+            buttonClose?.setImageResource(R.drawable.ic_close_midgray_36dp)
+            buttonFullScreen?.visibility = View.VISIBLE
         }
     }
 }
