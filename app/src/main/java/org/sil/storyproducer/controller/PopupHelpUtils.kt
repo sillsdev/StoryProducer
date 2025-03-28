@@ -446,8 +446,8 @@ class PopupHelpUtils(private val parent: Any,
                         webView.settings.allowContentAccess = true
 
                         // scale the html5 video to fill area above navigate buttons
-                        val scaleWidth = view2.width.toFloat() / animationWidth
-                        val scaleHeight = view2.height.toFloat() / animationHeight
+                        val scaleWidth = view2.rootView.width.toFloat() / animationWidth
+                        val scaleHeight = view2.rootView.height.toFloat() / animationHeight
                         val initialScale = min(scaleWidth, scaleHeight)
                         webView.setInitialScale((initialScale * 100 * 1.00).toInt())
                         // set the scaleX and Y to 1.0 now we are increasing bottom margin this
