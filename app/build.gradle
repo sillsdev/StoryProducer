@@ -7,11 +7,11 @@ apply plugin: 'com.google.gms.google-services'
 def keystorePropertiesFile = new File(rootProject.projectDir, 'keystore.properties')
 
 android {
-    compileSdk 34 // use 33 for automated testing
+    compileSdk 35 // use 33 for automated testing
     defaultConfig {
         applicationId "org.sil.storyproducer"
         minSdkVersion 21
-        targetSdkVersion 34 // use 33 for automated testing
+        targetSdkVersion 35 // use 33 for automated testing
         versionCode 41
         versionName '4.3.0'
         vectorDrawables.useSupportLibrary = true
@@ -133,80 +133,79 @@ repositories {
     mavenCentral()
 //    maven { url 'https://jitpack.io' }
     google()
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.3.0'
-    implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.core:core-ktx:1.15.0'
+    implementation 'androidx.recyclerview:recyclerview:1.4.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.preference:preference:1.1.0'
+    implementation 'androidx.preference:preference:1.2.1'
     implementation 'com.getbase:floatingactionbutton:1.10.1'
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
     implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
     implementation 'org.apache.commons:commons-io:1.3.2'
 
-    implementation  'commons-io:commons-io:2.6'
+    implementation 'commons-io:commons-io:2.18.0'
 
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'com.arthenica:ffmpeg-kit-full:6.0-1.LTS'
-    implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'com.google.firebase:firebase-core:17.2.2'
-    implementation 'com.google.firebase:firebase-analytics:17.6.0'
-    implementation 'com.google.firebase:firebase-crashlytics:17.2.2'
+    implementation 'com.google.code.gson:gson:2.12.1'
+    implementation 'com.google.firebase:firebase-core:21.1.1'
+    implementation 'com.google.firebase:firebase-analytics:22.4.0'
+    implementation 'com.google.firebase:firebase-crashlytics:19.4.2'
     implementation 'com.squareup.moshi:moshi:1.15.2'
-    implementation 'com.opencsv:opencsv:4.3.2'
-    implementation 'org.jsoup:jsoup:1.11.3'
+    implementation 'com.opencsv:opencsv:5.10'
+    implementation 'org.jsoup:jsoup:1.19.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'androidx.webkit:webkit:1.1.0'
-    implementation 'net.lingala.zip4j:zip4j:2.3.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+    implementation 'androidx.webkit:webkit:1.13.0'
+    implementation 'net.lingala.zip4j:zip4j:2.11.5'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.4.0'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
     implementation 'com.squareup.moshi:moshi:1.15.2'
-    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.15.2'
+    implementation 'com.squareup.moshi:moshi-kotlin-codegen:1.15.2'
     implementation 'com.squareup.retrofit2:converter-moshi:2.11.0'
     implementation 'com.squareup.moshi:moshi-kotlin:1.15.2'
 
 
 // Kotlin 1.9.x compatible versions (as of late 2024):
-    implementation("com.squareup:kotlinpoet:1.15.2")
+    implementation('com.squareup:kotlinpoet:2.1.0')
     implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.9.0")
 
 
     // DKH - 08/26/2021 Added by Cedarville for Wordlinks
     // implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     // Issue 166, Cedarville pull #519
-    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.3.0'
 
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'androidx.test:core:1.5.0'
-    testImplementation 'org.robolectric:robolectric:4.10.3'
-    testImplementation 'org.mockito:mockito-core:3.11.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test:runner:1.5.2'
-    androidTestImplementation 'androidx.annotation:annotation:1.1.0'
-    androidTestImplementation 'androidx.test:rules:1.5.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.5.1'
-    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
-    implementation 'com.jakewharton.timber:timber:4.7.1'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'androidx.test:core:1.6.1'
+    testImplementation 'org.robolectric:robolectric:4.14.1'
+    testImplementation 'org.mockito:mockito-core:5.17.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test:runner:1.6.2'
+    androidTestImplementation 'androidx.annotation:annotation:1.9.1'
+    androidTestImplementation 'androidx.test:rules:1.6.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.6.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.6.1'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
+    implementation 'com.jakewharton.timber:timber:5.0.1'
 
     // Supports the WiFi module's 'server' used to receive books from Bloom desktop
     implementation  'cz.msebera.android:httpclient:4.5.8'
-    implementation 'com.segment.analytics.android:analytics:4.10.4'
+    implementation 'com.segment.analytics.android:analytics:4.11.3'
     // Needed (at least) for making tar archives to send multiple books.
     // We tried commons-io:commons-compress but it didn't work for unknown/forgotten reasons
-    implementation  'org.apache.commons:commons-compress:1.20'
-    implementation 'androidx.appcompat:appcompat:1.5.0'
+    implementation 'org.apache.commons:commons-compress:1.27.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
 }
 
 // Added the following 'configurations' exclusions to fix issue: build.gradle: Error: commons-logging defines classes that conflict with classes now provided by Android.

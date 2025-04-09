@@ -158,7 +158,7 @@ class PopupHelpUtils(private val parent: Any,
     private var currentHelpIndexSet = false
     private var currentHelpIndex = 0    // initially first BTW/Video
         get () {
-            val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+            val prefs = PreferenceManager.getDefaultSharedPreferences(context!!)
             val activityClassName = getDerivedClassName(cls)
             val prefString = "PopupHelpGroup_${activityClassName}_${helpSeriesIndex}"
             field = prefs.getInt(prefString, 0)
@@ -167,7 +167,7 @@ class PopupHelpUtils(private val parent: Any,
         set(value) {
             if (field != value || !currentHelpIndexSet) {
                 currentHelpIndexSet = true
-                val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(context).edit()
+                val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(context!!).edit()
                 val activityClassName = getDerivedClassName(cls)
                 val prefString = "PopupHelpGroup_${activityClassName}_${helpSeriesIndex}"
                 preferencesEditor.putInt(prefString, value)
@@ -181,7 +181,7 @@ class PopupHelpUtils(private val parent: Any,
     private var globalCancelCountSet = false
     private var globalCancelCount = 0
         get () {
-            val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+            val prefs = PreferenceManager.getDefaultSharedPreferences(context!!)
             val prefString = "PopupHelpGroup_cancelCount"
             field = prefs.getInt(prefString, 0)
             return field
@@ -189,7 +189,7 @@ class PopupHelpUtils(private val parent: Any,
         set(value) {
             if (field != value || !globalCancelCountSet) {
                 globalCancelCountSet = true
-                val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(context).edit()
+                val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(context!!).edit()
                 val prefString = "PopupHelpGroup_cancelCount"
                 preferencesEditor.putInt(prefString, value)
                 preferencesEditor.commit()

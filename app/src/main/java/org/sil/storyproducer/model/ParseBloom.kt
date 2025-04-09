@@ -369,7 +369,9 @@ fun getAudioAncestorLang(element: Element): String {
         var lang = e.attr("lang")
         if (lang.isNotEmpty())
             return lang
-        e = e.parent()
+        if (e.parent() == null)
+            return ""
+        e = e.parent()!!
     }
     return ""
 }
