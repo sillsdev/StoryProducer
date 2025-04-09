@@ -984,6 +984,7 @@ class PopupHelpUtils(private val parent: Any,
                 CompassPoint.WEST -> xAdjustAdd = popupArrowLength.toFloat()
                 CompassPoint.SOUTH -> yAdjustSub = popupArrowLength.toFloat()
                 CompassPoint.EAST -> xAdjustSub = popupArrowLength.toFloat()
+                else -> {}
             }
             val rect = RectF(xAdjustAdd, yAdjustAdd, bounds.right.toFloat()-xAdjustSub, bounds.bottom.toFloat()-yAdjustSub)
             val arrowBaseXShift = ((bounds.right-xAdjustSub)/2-arrowPoint.x)/2

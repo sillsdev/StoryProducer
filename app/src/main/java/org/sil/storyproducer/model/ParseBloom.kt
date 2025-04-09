@@ -6,7 +6,7 @@ import android.graphics.Rect
 import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
-import com.arthenica.mobileffmpeg.FFmpeg
+import com.arthenica.ffmpegkit.FFmpegKit
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
@@ -293,25 +293,25 @@ fun parseAndConcatenatePageAudio(context: Context, storyAudioPath: DocumentFile,
             }
         }
         if (totalInputFiles > 0) {
-            val ffmpegArgs: MutableList<String> = mutableListOf()
-            ffmpegArgs.add("-f")
-            ffmpegArgs.add("concat")
-            ffmpegArgs.add("-safe")
-            ffmpegArgs.add("0")
-            ffmpegArgs.add("-i")
-            ffmpegArgs.add(concatTempFile.absolutePath)
-            ffmpegArgs.add("-c")
-            ffmpegArgs.add("copy")
+            var ffmpegArgs: String = ""
+            ffmpegArgs += " -f"
+            ffmpegArgs += " concat"
+            ffmpegArgs += " -safe"
+            ffmpegArgs += " 0"
+            ffmpegArgs += " -i"
+            ffmpegArgs += " " + concatTempFile.absolutePath
+            ffmpegArgs += " -c"
+            ffmpegArgs += " copy"
             val concatTempOutputFileStr = "${concatTempFolder.path}/${outputAudioFileName}"
-            ffmpegArgs.add(concatTempOutputFileStr)
+            ffmpegArgs += " " + concatTempOutputFileStr
             if (App.isRoboUnitTest()) {
                 // ffmpeg is not available on roboelectric native environments
                 File(concatTempOutputFileStr).writeText("Dummy concatenated MP3 file")
             } else {
-                FFmpeg.execute(ffmpegArgs.toTypedArray())
+                FFmpegKit.execute(ffmpegArgs)
             }
-            Log.w("ParseBloom.parsePage", FFmpeg.getLastCommandOutput()
-                    ?: "No FFMPEG output")
+//            Log.w("ParseBloom.parsePage", FFmpegKit.getLastCommandOutput()
+//                    ?: "No FFMPEG output")
 
             // search for the output file for all the concatenated files
             val audioStoryConcatDocFind = storyAudioMap[outputAudioFileName]
