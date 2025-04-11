@@ -110,7 +110,14 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    defaultConfig {
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments.clearPackageData = "false"
+    }
+
     testOptions {
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
         unitTests {
             includeAndroidResources = true
         }
@@ -190,8 +197,9 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:4.14.1'
     testImplementation 'org.mockito:mockito-core:5.17.0'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
-    androidTestImplementation 'androidx.test:runner:1.6.2'
-    androidTestImplementation 'androidx.annotation:annotation:1.9.1'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestUtil "androidx.test:orchestrator:1.4.2"
+    androidTestImplementation 'androidx.annotation:annotation:1.1.0'
     androidTestImplementation 'androidx.test:rules:1.6.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.6.1'
@@ -218,4 +226,3 @@ configurations {
         exclude module: 'commons-logging'
     }
 }
-

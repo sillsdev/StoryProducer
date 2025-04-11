@@ -1,0 +1,19 @@
+Espresso Tests
+==============
+
+* Build and test SP normally.
+* Then uninstall and Run SP on your test device from AS.
+* First in SP dismiss using the x all BTWs and Videos.
+* Then in SP change the settings to turn off hiding the microphone to allow recording in the 'Learn Phase'.
+* Then in the Main Phase select the '000 Storm - demo' project and confirm all Pages in the Accuracy Phase.
+* Then download the '000 The Lost Coin' story using the 'Download Bible Stories' menu command.
+* Then run the Espresso tests in AS by Navigating to 'app -> src -> androidTest' in the Project view and then right mouse clocking the androidTest folder and selecting: "Run 'All Tests'".
+
+
+
+
+Robo Electric Tests
+===================
+
+* In a file browser Navigate to app/src/main/assets and copy the file '000 Storm - demo.bloomSource' to a .zip file with the same base name then right mouse click the .zip file and select: 'unzip to here' to create a story with the same base name.
+* Then run the Robo Electric tests in AS by Navigating to 'app -> src -> test' in the Project view and then right mouse clicking the androidTest folder and selecting: "Run 'Tests in 'Story Producer''".
