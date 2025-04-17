@@ -40,6 +40,7 @@ class MainActivity : BaseActivity(), Serializable {
 
     companion object {
         var mainActivity : MainActivity ? = null
+        const val SHOW_FIRST_HELP_VIDEO = "show_first_help_video"
     }
 
     lateinit var storyPageViewPager : ViewPager2
@@ -227,6 +228,15 @@ class MainActivity : BaseActivity(), Serializable {
         super.onResume()
 
         addAndStartPopupTutorials()
+
+        // automatically show the intro video but on first startup only
+        if (PopupHelpUtils.enableIndependentVideos) {
+            val showFirstVideoPrefs = PreferenceManager.getDefaultSharedPreferences(baseContext)
+            if (showFirstVideoPrefs.getBoolean(SHOW_FIRST_HELP_VIDEO, true)) {
+                PopupHelpUtils.showIndependentHelpVideo(this, "html5/00_Introduction_en/00_Introduction_en.html")
+                showFirstVideoPrefs.edit().putBoolean(SHOW_FIRST_HELP_VIDEO, false).apply() // flag video now shown automatically once
+            }
+        }
 
         checkDownloadStoriesMessage()
     }

@@ -109,6 +109,8 @@ class PopupHelpUtils(private val parent: Any,
     private var context: Context? = null
     private var activity: ComponentActivity? = null
 
+    var independentVideo: Boolean = false   // if set (later) always fullscreen
+
     init {
         if (parent is Fragment) {
             activity = parent.requireActivity()
@@ -233,6 +235,14 @@ class PopupHelpUtils(private val parent: Any,
 
     fun addHtml5HelpItem(anchorViewId: Int,
                          html5Animation: String) {
+
+        // check if already a localized file: URL
+        if (html5Animation.startsWith("file://")) {
+            val newPopup = PopupHtml5Item(anchorViewId, html5Animation)
+            popupItems.add(newPopup)
+            return
+        }
+
         var localizedUrl = html5Animation
         val lang = Phase.getCurrentLanguageCode()
         if (lang.isNotEmpty() && lang != "en") {
@@ -249,7 +259,8 @@ class PopupHelpUtils(private val parent: Any,
 
         dismissPopup()  // dismiss the current video/BTW
 
-        ++globalCancelCount // increment global cancel count
+        if (!independentVideo)
+            ++globalCancelCount // increment global cancel count (but not for videos)
 
         // show message on how to reshow BTWs
         SnackbarManager.show(
@@ -325,12 +336,18 @@ class PopupHelpUtils(private val parent: Any,
         if (context == null || activity == null)
             return false
 
-        if (skipVideos) {
-            while (currentHelpIndex < popupItems.size && popupItems[currentHelpIndex] is PopupHtml5Item) {
-                currentHelpIndex++  // skip any initial html5 videos
+        var showClose = currentHelpIndex == 0
+        var checkFirstNonVideoIndex = 0;
+
+        if (skipVideos || (!independentVideo && enableIndependentVideos)) {
+            while (checkFirstNonVideoIndex < popupItems.size && popupItems[checkFirstNonVideoIndex] is PopupHtml5Item) {
+                checkFirstNonVideoIndex++  // skip any initial html5 videos
+                if (currentHelpIndex <= checkFirstNonVideoIndex) {
+                    currentHelpIndex = checkFirstNonVideoIndex
+                    showClose = true    // show x on first non video
+                }
             }
         }
-
         val popupBaseItem = popupItems[currentHelpIndex]// as? PopupHelpItem ?: return false
         val nextFullPopupItem = if (currentHelpIndex+1 < popupItems.size) popupItems[currentHelpIndex+1] as? PopupFullScreenItem else null
         val nextHtml5Item = if (currentHelpIndex+1 < popupItems.size) popupItems[currentHelpIndex+1] as? PopupHtml5Item else null
@@ -369,7 +386,6 @@ class PopupHelpUtils(private val parent: Any,
                         else
                             compassHint =
                                 CompassPoint.NO_COMPASS_POINT   // give a hint for arrow direction based on position within the target view child item
-
                         helpPopupWindow = showHelpPopup2(
                             // using the class context seems to give a different style to
                             // using view2.rootView.context which seems to be the expected style
@@ -390,7 +406,7 @@ class PopupHelpUtils(private val parent: Any,
                             popupHelpItem.bodyResId,
                             currentHelpIndex != popupItems.size - 1,   // show next button for all but last message
                             showNextGrayed,
-                            currentHelpIndex == 0,  // show close (x) button for first message only
+                            showClose,  // show close (x) button for first message only
                             currentHelpIndex == 2 && getDerivedClassName(parent.javaClass) == "MainActivity",  // show logo for main welcome help BTW
                             compassHint
                         )
@@ -483,7 +499,8 @@ class PopupHelpUtils(private val parent: Any,
                             WindowManager.LayoutParams.MATCH_PARENT,    // match parent to make it full screen
                             WindowManager.LayoutParams.MATCH_PARENT,
                             true, // Focusable to make it modal
-                            currentHelpIndex) // used to show previous and next buttons
+                            currentHelpIndex, // used to show previous and next buttons
+                            independentVideo) // used if fullscreen always
 
                         // Set a transparent background to the PopupWindow
                         helpPopupWindow?.setBackgroundDrawable(ColorDrawable())
@@ -531,19 +548,29 @@ class PopupHelpUtils(private val parent: Any,
                     buttonPrev?.visibility = if (currentHelpIndex > 0) View.VISIBLE else View.INVISIBLE
                     buttonPrev?.setOnClickListener {
 
-                        dismissPopup()
+                        if (enableIndependentVideos && prevHtml5Item != null) {
+                            // The phase intro video button was pressed so show that video
+                            showIndependentHelpVideo(parent, prevHtml5Item.html5Animation)
+                        } else {
+                            // back button was pressed (video or not) so show previous BTW/video
+                            dismissPopup()
 
-                        currentHelpIndex--  // show previous help popup next time (backed by preferences)
-                        globalCancelCount = 0 // reset cancelled count (backed by preferences)
+                            currentHelpIndex--  // show previous help popup next time (backed by preferences)
+                            globalCancelCount = 0 // reset cancelled count (backed by preferences)
 
-                        if (currentHelpIndex >= 0 && currentHelpIndex < popupItems.size) {
-                            showNextPopupHelp()
+                            if (currentHelpIndex >= 0 && currentHelpIndex < popupItems.size) {
+                                showNextPopupHelp()
+                            }
                         }
                     }
 
+                    // A quick way to always show videos full screen
+                    if (independentVideo)
+                        enterFullScreen(getHelpView(), independentVideo)
+
                     // add close/exit-fullscreen listener
                     buttonClose?.setOnClickListener {
-                        if (buttonFullScreen == null || buttonFullScreen.visibility == View.VISIBLE) {
+                        if (independentVideo || buttonFullScreen == null || buttonFullScreen.visibility == View.VISIBLE) {
                             stopShowingPopupHelp(view2)
                         } else {
                             exitFullScreen(getHelpView(), currentHelpIndex)
@@ -617,14 +644,15 @@ class PopupHelpUtils(private val parent: Any,
         contentView: View,
         width: Int, height: Int,
         focusable: Boolean,
-        private val currentHelpIndex: Int) :
+        private val currentHelpIndex: Int,
+        val independentVideo: Boolean) :
             PopupWindow(contentView, width, height, focusable) {
 
             // override dismiss() so that we can process back pressed
             // and exit-fullscreen OR dismiss if not fullscreen
             override fun dismiss() {
             val buttonFullScreen: ImageButton? = contentView.findViewById(R.id.btnFullScreen)
-            if (buttonFullScreen == null || buttonFullScreen.visibility == View.VISIBLE) {
+            if (independentVideo || buttonFullScreen == null || buttonFullScreen.visibility == View.VISIBLE) {
                 super.dismiss()
             } else {
                 exitFullScreen(contentView, currentHelpIndex)
@@ -924,6 +952,13 @@ class PopupHelpUtils(private val parent: Any,
         return popupWindow
     }
 
+    // shows a single video help popup
+    fun showIndependentVideoHelpPopup() {
+        globalCancelCount = 0   // automatically show BTWs again (until cancelled)
+        currentHelpIndex = 0    // Always only one video in popupItems[]
+        showNextPopupHelp()
+    }
+
     class CustomBackgroundDrawable(private val context: Context,
                                    private val compassPoint: CompassPoint,
                                    private val popupArrowLength: Int,
@@ -1025,9 +1060,10 @@ class PopupHelpUtils(private val parent: Any,
         const val animationHeight: Int = 638    // "
         const val animationScale: Float = 1.0f  // now no need to reduce the scale as canvas size is reduced
                                                 // and the adobe animate html5 video is responsive to smaller size
+        const val enableIndependentVideos = false    // true if using Greg's recommended fullscreen help videos
 
         // remove bottom margin and scale to full screen, hiding navigate buttons and showing exit-fullscreen button
-        private fun enterFullScreen(popupRootView: View?) {
+        private fun enterFullScreen(popupRootView: View?, independentVideo: Boolean = false) {
             val webView = popupRootView?.findViewById<WebView>(R.id.html5Animation)
             val buttonNext = popupRootView?.findViewById<Button>(R.id.btnNext)
             val buttonPrev = popupRootView?.findViewById<Button>(R.id.btnPrev)
@@ -1041,7 +1077,8 @@ class PopupHelpUtils(private val parent: Any,
             webView?.layoutParams = layoutParams
             buttonNext?.visibility = View.INVISIBLE
             buttonPrev?.visibility = View.INVISIBLE
-            buttonClose?.setImageResource(R.drawable.ic_action_video_full_exit)
+            if (!independentVideo)
+                buttonClose?.setImageResource(R.drawable.ic_action_video_full_exit)
             buttonClose?.visibility = View.VISIBLE
             buttonFullScreen?.visibility = View.INVISIBLE
         }
@@ -1065,6 +1102,14 @@ class PopupHelpUtils(private val parent: Any,
             buttonClose?.visibility = if (currentHelpIndex == 0) View.VISIBLE else View.INVISIBLE
             buttonClose?.setImageResource(R.drawable.ic_close_midgray_36dp)
             buttonFullScreen?.visibility = View.VISIBLE
+        }
+
+        // shows a single HTML5 Help Video using current class but independent from the list of BTWs
+        fun showIndependentHelpVideo(parent: Any, partialUrl: String) {
+            val mPopupHelpUtils = PopupHelpUtils(parent, this.javaClass, 99)  // 99 is an unused page number
+            mPopupHelpUtils.independentVideo = true // this flag changes the behaviour to always show fullscreen videos
+            mPopupHelpUtils.addHtml5HelpItem(R.id.toolbar, partialUrl)
+            mPopupHelpUtils.showIndependentVideoHelpPopup()
         }
     }
 }
