@@ -475,6 +475,7 @@
     <string name="help_menu_detailed">Afficher l\'aide détaillée pour cette page</string>
     <string name="help_menu_tutor_restart">Tutoriel de redémarrage de Windows</string>
     <string name="help_menu_tutor_resume">Masquer/Afficher les fenêtres du didacticiel</string>
+    <string name="help_menu_tutor_video">Regardez un didacticiel vidéo</string>
     <string name="help_tutor_dismiss_message">Appuyez sur le bouton d\'aide bleu <b>[?]</b> dans la barre d\'outils pour reprendre le didacticiel.</string>
     <string name="help_tutor_no_more_pages">Plus de pages de tutoriel pour cette section.</string>
     <string name="help_video_open_story_first">Ouvrez une histoire avant de sélectionner cette vidéo</string>

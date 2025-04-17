@@ -18,7 +18,7 @@
     <item
         android:icon="@drawable/ic_action_video_white"
         android:id="@+id/action_help_video_parent"
-        android:title="Watch a Tutorial Window">
+        android:title="@string/help_menu_tutor_video">
         <!-- Submenu -->
         <menu>
             <item
