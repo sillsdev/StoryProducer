@@ -847,6 +847,7 @@
     <string name="help_menu_detailed">Show detailed help for this page</string>
     <string name="help_menu_tutor_restart">Restart Tutorial Windows</string>
     <string name="help_menu_tutor_resume">Hide/Show Tutorial Windows</string>
+    <string name="help_menu_tutor_video">Watch a Tutorial Video</string>
     <string name="help_tutor_dismiss_message">Tap the blue help <b>[?]</b> button in the toolbar to Resume the Tutorial.</string>
     <string name="help_tutor_no_more_pages">No more tutorial pages for this section.</string>
     <string name="help_video_open_story_first">Open a story before selecting this video</string>
