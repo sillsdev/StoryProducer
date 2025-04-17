@@ -62,13 +62,13 @@
 
     <!-- Phases -->
     <string name="registration_title">Registration</string>
-    <string name="learn_title">Learn</string>
-    <string name="translate_revise_title">Record</string>
-    <string name="community_work_title">Community</string>
-    <string name="accuracy_check_title">Accuracy</string>
-    <string name="voice_studio_title">Drama</string>
-    <string name="finalize_title">Create</string>
-    <string name="share_title">Share</string>
+    <string name="learn_title">1. Learn</string>
+    <string name="translate_revise_title">2. Record</string>
+    <string name="community_work_title">3. Community</string>
+    <string name="accuracy_check_title">4. Accuracy</string>
+    <string name="voice_studio_title">5. Drama</string>
+    <string name="finalize_title">6. Create</string>
+    <string name="share_title">7. Share</string>
     <string name="whole_story_title">Whole Story Back Translation</string>
     <string name="back_translation_title">Back Translation</string>
     <string name="title_activity_story_templates">Story List</string>

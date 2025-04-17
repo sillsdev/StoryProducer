@@ -441,7 +441,8 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
                     if (grayOutPhaseVideos && grayIcon != null) {
                         subItem.icon = grayIcon     // use the gray icon
                     }
-                    subItem.title = "${count}. ${subItem.title}" // Prepend phase number
+                        // No longer needed as number is in phase title
+//                    subItem.title = "${count}. ${subItem.title}" // Prepend phase number
                     count++
                 }
             }

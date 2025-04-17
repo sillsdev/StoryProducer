@@ -1060,7 +1060,7 @@ class PopupHelpUtils(private val parent: Any,
         const val animationHeight: Int = 638    // "
         const val animationScale: Float = 1.0f  // now no need to reduce the scale as canvas size is reduced
                                                 // and the adobe animate html5 video is responsive to smaller size
-        const val enableIndependentVideos = false    // true if using Greg's recommended fullscreen help videos
+        const val enableIndependentVideos = true    // true if using Greg's recommended fullscreen help videos
 
         // remove bottom margin and scale to full screen, hiding navigate buttons and showing exit-fullscreen button
         private fun enterFullScreen(popupRootView: View?, independentVideo: Boolean = false) {
