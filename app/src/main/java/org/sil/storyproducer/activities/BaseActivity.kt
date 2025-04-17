@@ -421,7 +421,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         val anchorView = findViewById<View>(R.id.helpButton) // Provide the id of the help button
         val helpMenu = CustomPopupMenu(this, anchorView)
         helpMenu.inflate(R.menu.help_context_menu)
-        val hidePhaseVideos = this is MainActivity  // can't play phase videos in main Story List activity
+        val grayOutPhaseVideos = !PopupHelpUtils.enableIndependentVideos && this is MainActivity  // can't play phase videos in main Story List if old way
         val parentMenu = helpMenu.menu.findItem(R.id.action_help_video_parent)
         if (parentMenu.hasSubMenu()) {
             var grayIcon: Drawable? = null
@@ -432,13 +432,13 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
                 val subItem = subMenu!!.getItem(j)
                 if (!found && subItem.itemId == R.id.action_help_video_1_learn) {
                     found = true    // start graying out from lean phase video
-                    if (hidePhaseVideos) {
+                    if (grayOutPhaseVideos) {
                         grayIcon = subItem.icon?.mutate()   // create a reusable gray icon
                         grayIcon?.alpha = 128   //  make it grayed out on a black background
                     }
                 }
                 if (found) {
-                    if (hidePhaseVideos && grayIcon != null) {
+                    if (grayOutPhaseVideos && grayIcon != null) {
                         subItem.icon = grayIcon     // use the gray icon
                     }
                     subItem.title = "${count}. ${subItem.title}" // Prepend phase number
@@ -468,7 +468,9 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
                 }
                 R.id.action_help_video_overview -> {
                     // show video overview
-                    if (this !is MainActivity) {  // if this is not the main activity then exit story
+                    if (PopupHelpUtils.enableIndependentVideos)
+                        PopupHelpUtils.showIndependentHelpVideo(this, "html5/00_Introduction_en/00_Introduction_en.html")
+                    else if (this !is MainActivity) {  // if this is not the main activity then exit story
                         val popupHelpUtils = PopupHelpUtils(this, MainActivity::class.java)
                         popupHelpUtils.resumeShowingPopupHelp(true, 0) // clear MainActivity flags so first video help will show later
                         finish()    // finish this story phase activity to reveal main activity
@@ -481,7 +483,9 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
                 }
                 R.id.action_help_video_main -> {
                     // show video overview
-                    if (this !is MainActivity) {  // if this is not the main activity then
+                    if (PopupHelpUtils.enableIndependentVideos)
+                        PopupHelpUtils.showIndependentHelpVideo(this, "html5/0_MainScreen_en/0_MainScreen_en.html")
+                    else if (this !is MainActivity) {  // if this is not the main activity then
                         val popupHelpUtils = PopupHelpUtils(this, MainActivity::class.java)
                         popupHelpUtils.resumeShowingPopupHelp(true, 1) // clear MainActivity flags so second video help will show later
                         finish()    // finish this story phase activity to reveal main activity
@@ -500,17 +504,20 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
                 R.id.action_help_video_7_share -> {
                     var cls: Class<*>? = null    // the class for the phase's persistent popup help flags
                     var phase: PhaseType? = null    // the phase type to switch to
+                    var partialUrl: String? = null
                     when (menuItem.itemId) {
                         // set cls and phase for all phase videos
-                        R.id.action_help_video_1_learn -> {cls = LearnActivity::class.java; phase = PhaseType.LEARN}
-                        R.id.action_help_video_2_revise -> {cls = TranslateReviseFrag::class.java; phase = PhaseType.TRANSLATE_REVISE}
-                        R.id.action_help_video_3_community -> {cls = CommunityWorkFrag::class.java; phase = PhaseType.COMMUNITY_WORK}
-                        R.id.action_help_video_4_accuracy -> {cls = AccuracyCheckFrag::class.java; phase = PhaseType.ACCURACY_CHECK}
-                        R.id.action_help_video_5_drama -> {cls = VoiceStudioFrag::class.java; phase = PhaseType.VOICE_STUDIO}
-                        R.id.action_help_video_6_create -> {cls = FinalizeActivity::class.java; phase = PhaseType.FINALIZE}
-                        R.id.action_help_video_7_share -> {cls = ShareActivity::class.java; phase = PhaseType.SHARE}
+                        R.id.action_help_video_1_learn -> {cls = LearnActivity::class.java; phase = PhaseType.LEARN; partialUrl = "html5/1_Learn_en/1_Learn_en.html"}
+                        R.id.action_help_video_2_revise -> {cls = TranslateReviseFrag::class.java; phase = PhaseType.TRANSLATE_REVISE; partialUrl = "html5/2_Record_en/2_Record_en.html"}
+                        R.id.action_help_video_3_community -> {cls = CommunityWorkFrag::class.java; phase = PhaseType.COMMUNITY_WORK; partialUrl = "html5/3_Community_en/3_Community_en.html"}
+                        R.id.action_help_video_4_accuracy -> {cls = AccuracyCheckFrag::class.java; phase = PhaseType.ACCURACY_CHECK; partialUrl = "html5/4_Accuracy_en/4_Accuracy_en.html"}
+                        R.id.action_help_video_5_drama -> {cls = VoiceStudioFrag::class.java; phase = PhaseType.VOICE_STUDIO; partialUrl = "html5/5_Drama_en/5_Drama_en.html"}
+                        R.id.action_help_video_6_create -> {cls = FinalizeActivity::class.java; phase = PhaseType.FINALIZE; partialUrl = "html5/6_Create_en/6_Create_en.html"}
+                        R.id.action_help_video_7_share -> {cls = ShareActivity::class.java; phase = PhaseType.SHARE; partialUrl = "html5/7_Share_en/7_Share_en.html"}
                     }
-                    if (this !is MainActivity && cls != null && phase != null) {  // if this is not the main activity then show phase video help
+                    if (PopupHelpUtils.enableIndependentVideos && partialUrl != null)
+                        PopupHelpUtils.showIndependentHelpVideo(this, partialUrl)
+                    else if (this !is MainActivity && cls != null && phase != null && partialUrl != null) {  // if this is not the main activity then show phase video help
                         if (Workspace.activePhase.phaseType == phase) {
                             // we are already on the selected video phase
                             Workspace.activeSlideNum = 0    // go to title slide
@@ -536,7 +543,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
                             popupHelpUtils.resumeShowingPopupHelp(true, 0)  // show the first item (video)
                         }
                     }
-                    if (this is MainActivity) {
+                    if (!PopupHelpUtils.enableIndependentVideos && this is MainActivity) {
                         // if this is the main activity then show toast message to select a story
                         Toast.makeText(baseContext, baseContext.getString(R.string.help_video_open_story_first), Toast.LENGTH_SHORT).show()
                     }
