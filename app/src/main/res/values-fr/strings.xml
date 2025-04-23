@@ -98,7 +98,12 @@
     <string name="stories_not_found_in_progress">Il n\'y a aucune histoire en cours.</string>
     <string name="stories_not_found_completed">Il n\'y a pas d\'histoires terminées.</string>
     <string name="welcome_screen_msg">Sur l\'écran suivant, <b>créez un dossier</b> et nommez-le <font color="green">Modèles SP</font>.<br/> Appuyez ensuite sur <b>SÉLECTIONNER</b> en bas de cet écran.<br/><br/> Voici des <a href="https://docs.google.com/document/d/10mPxRtR_JsMFhboCauecOSe_ScY5_j59jJfMOF2AYko/edit">instructions détaillées</a>.</string>
-    <string name="select_workspace_help_msg"><font color="gray">L\'objectif de ce qui suit est d\'indiquer à Story Producer où trouver les modèles d\'histoire.</font><br/><br/> L\'écran suivant vous permet de choisir un dossier.<br/> Dans cet écran, vous devrez naviguer jusqu\'au dossier <font color="green">Modèles SP</font>.<br/> Appuyez ensuite sur <b>SÉLECTIONNER</b> en bas de cet écran.</string>
+    <string name="select_workspace_help_msg">
+        &lt;font color=\"gray\">L\'objectif de ce qui suit est d\'indiquer à Story Producer où trouver les modèles d\'histoire.&lt;/font>&lt;br/>&lt;br/>
+        L\'écran suivant vous permet de choisir un dossier.&lt;br/>
+        Dans cet écran, vous devrez naviguer jusqu\'au dossier &lt;font color=\"green\">SP Templates&lt;/font>.&lt;br/>
+        Appuyez ensuite sur &lt;b>SÉLECTIONNER&lt;/b> en bas de cet écran.
+    </string>
     <string name="welcome_screen_demo_error">Fonctionnalité de démonstration à venir !</string>
     <string-array name="orthography_list">
         <item>Aucun</item>
