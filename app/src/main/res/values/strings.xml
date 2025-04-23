@@ -675,7 +675,7 @@
     <string name="help_community_phase_body">
 	<![CDATA[In this phase, you need to go to the community to get feedback on your translation.]]>
     </string>
-    <string name="help_community_swipe_title"></string>
+    <string name="help_community_swipe_title">Title Page</string>
     <string name="help_community_swipe_body">
 	<![CDATA[You need to begin on the Title page. If a different page is showing,
 	swipe now left or right until the Title page is showing.]]>

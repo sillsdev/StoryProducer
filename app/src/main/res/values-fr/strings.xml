@@ -400,7 +400,7 @@
     <string name="help_translate_nextphase_body">Lorsque vous avez terminé sur cette page de chanson, appuyez ci-dessus (ou faites glisser vers le haut) pour passer à la phase suivante, Créer.</string>
     <string name="help_community_phase_title">Phase communautaire</string>
     <string name="help_community_phase_body">Dans cette phase, vous devez vous adresser à la communauté pour obtenir des commentaires sur votre traduction.</string>
-    <string name="help_community_swipe_title"></string>
+    <string name="help_community_swipe_title">Page de titre</string>
     <string name="help_community_swipe_body">Commencez par la page de titre. Si une autre page s\'affiche, balayez vers la gauche ou la droite jusqu\'à ce que la page de titre apparaisse.</string>
     <string name="help_community_play_title">Lire l\'audio</string>
     <string name="help_community_play_body">Permettez aux personnes de votre communauté de lire la traduction de cette page. <br/>Est-ce significatif ?<br/>Les mots sont-ils clairs et naturels ?</string>
