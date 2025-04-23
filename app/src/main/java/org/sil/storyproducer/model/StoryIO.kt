@@ -325,12 +325,18 @@ fun copySubFolder(context: Context, subFolder: String, newDocumentFolder: Docume
     return allCopiedOk  // only successful if all files copied ok
 }
 
+fun isWordlinksOrVideo(name: String?) : Boolean {
+    if (name == null)
+        return false
+    val non_story_folders = arrayOf(VIDEO_DIR, WORD_LINKS_DIR)
+    return non_story_folders.contains(name)
+}
+
 // Copy a Story/videos/wordlinks sub-folder from the source templates folder and if ok return for further processing
 fun copyOldStory(context: Context, file: DocumentFile, newWorkspaceFolder: DocumentFile, oldWorkspaceFolder: DocumentFile): DocumentFile? {
 
     do {
         // NB: This list may also contains Stories and zipped Stories already found in the new SP Templates folder
-
         if (newWorkspaceFolder.uri == oldWorkspaceFolder.uri)
             return file // same folder so no need to copy
 
@@ -343,9 +349,8 @@ fun copyOldStory(context: Context, file: DocumentFile, newWorkspaceFolder: Docum
         if (file.name?.isEmpty() ?: break)
             break;  // no Story name so can't copy TODO: report error?
 
-        val non_story_folders = arrayOf(VIDEO_DIR, WORD_LINKS_DIR)
-        val isWordlinksOrVideo = non_story_folders.contains(file.name!!)
-        if (!isWordlinksOrVideo) {
+        val isWLOrVid = isWordlinksOrVideo(file.name)
+        if (!isWLOrVid) {
             // if this is not a video or worklinks folder AND
             if (workspaceRelPathExists(context, file.name!!)) {
                 // folder already exists in new workspace
@@ -370,7 +375,7 @@ fun copyOldStory(context: Context, file: DocumentFile, newWorkspaceFolder: Docum
             break   // old stories are are always folders TODO: report error?
 
         // Here we check that this sub-folder is a valid Story before copying it
-        if (!isWordlinksOrVideo) {
+        if (!isWLOrVid) {
             // but only validate if not a video or wordlinks folder
             // get the newly copied subfolder as a DocumentFile
             if (!isValidStory(context, oldSubFolder))
@@ -378,14 +383,14 @@ fun copyOldStory(context: Context, file: DocumentFile, newWorkspaceFolder: Docum
         }
 
         // here is the main action - copy this subfolder now
-        if (!copySubFolder(context, file.name!!, newWorkspaceFolder, oldWorkspaceFolder, isWordlinksOrVideo))
+        if (!copySubFolder(context, file.name!!, newWorkspaceFolder, oldWorkspaceFolder, isWLOrVid))
             break   // copying story failed so no more processing TODO: report error (if not wordlinks or videos folder)?
 
         // get the newly copied subfolder as a DocumentFile
         val newSubFolder = newWorkspaceFolder.findFile(file.name!!) ?: break    // TODO: report error?
 
         // Story folder copied ok - so check new folder parses before deleting the old story folder
-        if (!isWordlinksOrVideo) {
+        if (!isWLOrVid) {
             // but only validate if not a video or wordlinks folder
             if (!isValidStory(context, newSubFolder))
                 break   // don't process it further TODO: report error?
@@ -396,7 +401,7 @@ fun copyOldStory(context: Context, file: DocumentFile, newWorkspaceFolder: Docum
             break   // failed to delete so don't process further TODO: report error?
 
         // if a video or wordlinks folder copied ok then no need to process further
-        if (isWordlinksOrVideo)
+        if (isWLOrVid)
             break   // don't process non story folders any more
 
         return newSubFolder // continue processing this copied Story folder
