@@ -9,6 +9,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.model.isWordlinksOrVideo
 import org.sil.storyproducer.view.BaseActivityView
 import timber.log.Timber
 
@@ -51,8 +52,10 @@ open class BaseController(
                     val builtStory = Workspace.buildStory(context, file)
                     if (builtStory != null) {
                         Workspace.asyncAddedStories.add(builtStory) // Add a Story in this background thread
-                    } else {
+                    } else if (!isWordlinksOrVideo(file.name)) {
                         Workspace.failedStories.add(file.name!!)
+                    } else {
+                        false
                     }
                 }
                 .subscribeOn(Schedulers.io())
