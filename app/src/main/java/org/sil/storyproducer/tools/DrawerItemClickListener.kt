@@ -72,7 +72,13 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
                 }
             }
             4 -> {
-                activity.showSelectTemplatesFolderDialog()
+                if (activity !is MainActivity) {
+                    activity.finish()   // if this is not the main activity then
+                                        // finish this activity to reveal main activity
+                    MainActivity.mainActivity?.showSelectTemplatesFolderDialog()
+                } else {
+                    activity.showSelectTemplatesFolderDialog()
+                }
             }
             5 -> {
                 Workspace.addDemoToWorkspace(activity)
