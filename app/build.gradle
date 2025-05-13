@@ -13,7 +13,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 34 // use 33 for automated testing
         versionCode 40
-        versionName '4.2.4'
+        versionName '4.3.0'
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
