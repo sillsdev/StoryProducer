@@ -40,7 +40,7 @@ android {
         }
     }
     applicationVariants.all { variant ->
-        variant.outputs.all {
+        variant.outputs.all { output ->
             def versionPart = variant.name;
             if (variant.name != "debug") {
                 if (keystorePropertiesFile.isFile()) {
@@ -49,7 +49,22 @@ android {
                     versionPart = versionPart + "-not-signed";
                 }
             }
-            outputFileName = "SP-${versionPart}.apk"
+            // ABI-aware naming
+            def abi = null
+            if (output.getFilter(com.android.build.OutputFile.ABI)) {
+                abi = output.getFilter(com.android.build.OutputFile.ABI)
+            } else {
+                abi = "universal"
+            }
+            def baseVersionCode = defaultConfig.versionCode
+            def abiCode = 0
+            if (abi == "armeabi-v7a") abiCode = 1
+            else if (abi == "arm64-v8a") abiCode = 2
+            else if (abi == "x86") abiCode = 3
+            else if (abi == "x86_64") abiCode = 4
+            else abiCode = 0 // fallback for universal
+            output.versionCodeOverride = baseVersionCode * 10 + abiCode
+            output.outputFileName = "SP-${versionPart}-${abi}.apk"
         }
     }
     buildTypes {
@@ -99,6 +114,15 @@ android {
     }
     buildFeatures {
         viewBinding true
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+            universalApk false // If true, also builds an all-in-one APK
+        }
     }
 }
 
