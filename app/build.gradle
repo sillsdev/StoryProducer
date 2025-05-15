@@ -121,7 +121,7 @@ android {
             enable true
             reset()
             include 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
-            universalApk true // If true, also builds an all-in-one APK
+            universalApk false // If true, also builds an all-in-one APK
         }
     }
 }
