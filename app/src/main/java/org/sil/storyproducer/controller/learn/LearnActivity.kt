@@ -22,6 +22,7 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLearnLog
 import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.file.storyRelPathExists
+import org.sil.storyproducer.tools.getUsableAppWindowSize
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
@@ -130,8 +131,12 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         scriptureTextView.visibility = View.INVISIBLE
 
         // Adjust the Guideline control to scale the video view for 4:3 videos (also used for 16:9 videos)
+        val appWinSize = getUsableAppWindowSize(this)
+        var imageViewHeight = (appWinSize.width.toFloat() / 4f * 3f).toInt()
+        if (imageViewHeight > appWinSize.height/2)
+            imageViewHeight = appWinSize.height/2   // limit to half usable screen height - bugfix 862
         findViewById<Guideline>(R.id.guideline)
-            ?.setGuidelineBegin((resources.displayMetrics.widthPixels.toFloat() / 4f * 3f).toInt())
+            ?.setGuidelineBegin(imageViewHeight)
 
         invalidateOptionsMenu()
 

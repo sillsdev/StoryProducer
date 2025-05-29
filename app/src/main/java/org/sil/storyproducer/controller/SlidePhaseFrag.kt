@@ -5,6 +5,7 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.method.LinkMovementMethod
+import android.util.Size
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -29,6 +30,7 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.model.stringToWordLink
 import org.sil.storyproducer.tools.file.storyRelPathExists
+import org.sil.storyproducer.tools.getUsableAppWindowSize
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.viewmodel.SlideViewModel
 import org.sil.storyproducer.viewmodel.SlideViewModelBuilder
@@ -211,8 +213,12 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
     protected fun setPic(slideImage: ImageView) {
 
         // Adjust the Guideline control to scale the video view for 4:3 videos (also used for 16:9 videos)
+        val appWinSize = getUsableAppWindowSize(requireActivity())
+        var imageViewHeight = (appWinSize.width.toFloat() / 4f * 3f).toInt()
+        if (imageViewHeight > appWinSize.height/2)
+            imageViewHeight = appWinSize.height/2   // limit to half usable screen height - bugfix 862
         rootView?.findViewById<Guideline>(R.id.guideline)
-            ?.setGuidelineBegin((resources.displayMetrics.widthPixels.toFloat() / 4f * 3f).toInt())
+            ?.setGuidelineBegin(imageViewHeight)
 
         (activity as PhaseBaseActivity).setPic(slideImage, slideNum)
         //Set up the reference audio and slide number overlays

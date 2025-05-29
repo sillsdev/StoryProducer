@@ -25,4 +25,5 @@
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="help_video_button_width">61dp</dimen>
     <dimen name="help_video_bottom_margin">62dp</dimen>
+    <dimen name="help_popup_round_corners">20dp</dimen>
 </resources>
