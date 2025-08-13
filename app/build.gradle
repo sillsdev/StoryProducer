@@ -100,15 +100,14 @@ android {
 
     productFlavors {
     }
-
     packagingOptions {
-        pickFirst("META-INF/atomicfu.kotlin_module")
+        resources {
+            pickFirsts += ['META-INF/atomicfu.kotlin_module']
+        }
     }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
-    }
-    lintOptions {
-        abortOnError false
     }
 
     defaultConfig {
@@ -134,6 +133,9 @@ android {
         }
     }
     namespace 'org.sil.storyproducer'
+    lint {
+        abortOnError false
+    }
 }
 
 repositories {
@@ -160,7 +162,8 @@ dependencies {
     implementation 'commons-io:commons-io:2.18.0'
 
     implementation 'com.android.volley:volley:1.2.1'
-    implementation 'com.arthenica:ffmpeg-kit-full:6.0-1.LTS'
+    //implementation 'com.arthenica:mobile-ffmpeg-full:4.2.LTS'
+    implementation (files('libs/mobile-ffmpeg-full-4.2.LTS.aar'))
     implementation 'com.google.code.gson:gson:2.12.1'
     implementation 'com.google.firebase:firebase-core:21.1.1'
     implementation 'com.google.firebase:firebase-analytics:22.4.0'
@@ -172,6 +175,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
     implementation 'androidx.webkit:webkit:1.13.0'
+    //implementation "androidx.window:window:1.4.0"
     implementation 'net.lingala.zip4j:zip4j:2.11.5'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.4.0'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
