@@ -52,7 +52,7 @@ abstract class SwipablePhaseTestBase(sharedBase: SharedBase) : PhaseTestBase() {
 
     private fun expectToBeOnSlide(originalSlideNumber: Int) {
         Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(base.getSlideNumberId()), ViewMatchers.withText(
-            if (originalSlideNumber == 0) "Title" else "Slide $originalSlideNumber"
+            if (originalSlideNumber == 0) "Title" else "Page $originalSlideNumber"
         ))).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
 

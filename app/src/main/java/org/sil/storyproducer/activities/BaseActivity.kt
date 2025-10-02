@@ -1,7 +1,9 @@
 package org.sil.storyproducer.activities
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
@@ -270,12 +272,11 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
     override fun showReadingTemplatesDialog(controller: BaseController) {
         readingTemplatesDialog = AlertDialog.Builder(this)
-                .setTitle(R.string.scanning_sp_templates)
-                .setMessage("")
-                .setNegativeButton(R.string.cancel) { _, _ -> controller.cancelUpdate() }
-                .setCancelable(false)
-                .create()
-
+            .setTitle(R.string.scanning_sp_templates)
+            .setMessage("")
+            .setNegativeButton(R.string.cancel) { _, _ -> controller.cancelUpdate() }
+            .setCancelable(false)
+            .create()
         readingTemplatesDialog?.show()
     }
 
@@ -293,12 +294,12 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     }
 
     override fun hideReadingTemplatesDialog() {
-        if (readingTemplatesDialog != null ) {
-            if (readingTemplatesDialog?.isShowing!!)
-                readingTemplatesDialog?.dismiss()
-            readingTemplatesDialog = null
-        }
-        cancellingReadingTemplatesDialog?.dismiss()
+        if (readingTemplatesDialog?.isShowing == true)
+            readingTemplatesDialog?.dismiss()
+        readingTemplatesDialog = null
+
+        if (cancellingReadingTemplatesDialog?.isShowing == true)
+            cancellingReadingTemplatesDialog?.dismiss()
         cancellingReadingTemplatesDialog = null
     }
 
@@ -580,6 +581,8 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     }
 
     fun stopAndDeletePopupMenus() {
+
+        hideReadingTemplatesDialog()
 
         if (mPopupHelpUtils != null) {
             mPopupHelpUtils?.dismissPopup()

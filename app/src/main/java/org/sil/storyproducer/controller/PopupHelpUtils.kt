@@ -158,7 +158,7 @@ class PopupHelpUtils(private val parent: Any,
     private var currentHelpIndexSet = false
     private var currentHelpIndex = 0    // initially first BTW/Video
         get () {
-            val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+            val prefs = PreferenceManager.getDefaultSharedPreferences(context!!)
             val activityClassName = getDerivedClassName(cls)
             val prefString = "PopupHelpGroup_${activityClassName}_${helpSeriesIndex}"
             field = prefs.getInt(prefString, 0)
@@ -167,7 +167,7 @@ class PopupHelpUtils(private val parent: Any,
         set(value) {
             if (field != value || !currentHelpIndexSet) {
                 currentHelpIndexSet = true
-                val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(context).edit()
+                val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(context!!).edit()
                 val activityClassName = getDerivedClassName(cls)
                 val prefString = "PopupHelpGroup_${activityClassName}_${helpSeriesIndex}"
                 preferencesEditor.putInt(prefString, value)
@@ -181,7 +181,7 @@ class PopupHelpUtils(private val parent: Any,
     private var globalCancelCountSet = false
     private var globalCancelCount = 0
         get () {
-            val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+            val prefs = PreferenceManager.getDefaultSharedPreferences(context!!)
             val prefString = "PopupHelpGroup_cancelCount"
             field = prefs.getInt(prefString, 0)
             return field
@@ -189,7 +189,7 @@ class PopupHelpUtils(private val parent: Any,
         set(value) {
             if (field != value || !globalCancelCountSet) {
                 globalCancelCountSet = true
-                val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(context).edit()
+                val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(context!!).edit()
                 val prefString = "PopupHelpGroup_cancelCount"
                 preferencesEditor.putInt(prefString, value)
                 preferencesEditor.commit()
@@ -680,23 +680,25 @@ class PopupHelpUtils(private val parent: Any,
         var popupArrowLength: Int      // The length of the popup pointing arrow
 
         val rootView = parentView.rootView
-        val rootDrawableBounds = Rect()
-        rootView.getWindowVisibleDisplayFrame(rootDrawableBounds)
+        var rootDrawableBounds = Rect()
+        rootView.getWindowVisibleDisplayFrame(rootDrawableBounds)   // get root window bounds
+        // normalize rectangle to top left 0,0
+        rootDrawableBounds = Rect(0, 0, rootDrawableBounds.right-rootDrawableBounds.left, rootDrawableBounds.bottom-rootDrawableBounds.top)
 
 // Assuming childView is the view whose coordinates you want to convert
         val childCoordinates = IntArray(2)
-        parentView.getLocationOnScreen(childCoordinates)
+        parentView.getLocationInWindow(childCoordinates)    // bugfix 860
 
 // Assuming rootView is the root view of your layout
         val rootViewCoordinates = IntArray(2)
-        rootView.getLocationOnScreen(rootViewCoordinates)
+        rootView.getLocationInWindow(rootViewCoordinates)   // bugfix 860
 
 // Calculate the offset
         var offsetX = childCoordinates[0] - rootViewCoordinates[0]
-        while (offsetX >= parentView.rootView.width)
-            offsetX -= parentView.rootView.width    // fix x offset if found on a different slide
+        while (offsetX >= rootView.width)
+            offsetX -= rootView.width    // fix x offset if found on a different slide
         while (offsetX < 0)
-            offsetX += parentView.rootView.width    // fix x offset if found on a different slide
+            offsetX += rootView.width    // fix x offset if found on a different slide
         var offsetY = childCoordinates[1] - rootViewCoordinates[1]
 //        if (BuildConfig.DEBUG)
 //            Timber.d("COORD LOG EVENT: offsetX=$offsetX OffsetY=$offsetY") // log to console in debug mode
@@ -974,12 +976,15 @@ class PopupHelpUtils(private val parent: Any,
             var yAdjustAdd = 0.0f
             var xAdjustSub = 0.0f
             var yAdjustSub = 0.0f
-            val cornerRadius = 30.0f
+            // get corner radius in dp to convert to pixels - bugfix 861
+            val cornerRadiusPx = context.resources.getDimensionPixelSize(R.dimen.help_popup_round_corners)
+
             when (compassPoint) {
                 CompassPoint.NORTH -> yAdjustAdd = popupArrowLength.toFloat()
                 CompassPoint.WEST -> xAdjustAdd = popupArrowLength.toFloat()
                 CompassPoint.SOUTH -> yAdjustSub = popupArrowLength.toFloat()
                 CompassPoint.EAST -> xAdjustSub = popupArrowLength.toFloat()
+                else -> {}
             }
             val rect = RectF(xAdjustAdd, yAdjustAdd, bounds.right.toFloat()-xAdjustSub, bounds.bottom.toFloat()-yAdjustSub)
             val arrowBaseXShift = ((bounds.right-xAdjustSub)/2-arrowPoint.x)/2
@@ -987,29 +992,29 @@ class PopupHelpUtils(private val parent: Any,
 
             // Define a path for the polygon shape
             val path = Path().apply {
-                moveTo(rect.left, rect.top + cornerRadius) // top-left (before clockwise arc)
-                arcTo(RectF(rect.left, rect.top, rect.left + 2 * cornerRadius, rect.top + 2 * cornerRadius), 180f, 90f)
+                moveTo(rect.left, rect.top + cornerRadiusPx) // top-left (before clockwise arc)
+                arcTo(RectF(rect.left, rect.top, rect.left + 2 * cornerRadiusPx, rect.top + 2 * cornerRadiusPx), 180f, 90f)
                 if (compassPoint == CompassPoint.NORTH) {
                     lineTo(bounds.right.toFloat()*9/16-arrowBaseXShift, yAdjustAdd) // arrow-base-right
                     lineTo(arrowPoint.x.toFloat(), arrowPoint.y.toFloat()) // arrow-tip
                     lineTo(bounds.right.toFloat()*7/16-arrowBaseXShift, yAdjustAdd) // arrow-base-left
                 }
-                lineTo(rect.right - cornerRadius, rect.top) // top-right
-                arcTo(RectF(rect.right - 2 * cornerRadius, rect.top, rect.right, rect.top + 2 * cornerRadius), 270f, 90f)
+                lineTo(rect.right - cornerRadiusPx, rect.top) // top-right
+                arcTo(RectF(rect.right - 2 * cornerRadiusPx, rect.top, rect.right, rect.top + 2 * cornerRadiusPx), 270f, 90f)
                 if (compassPoint == CompassPoint.EAST) {
                     lineTo(bounds.right.toFloat()-xAdjustSub,bounds.bottom.toFloat()*9/16-arrowBaseYShift) // arrow-base-left-bottom
                     lineTo(arrowPoint.x.toFloat(), arrowPoint.y.toFloat()) // arrow-tip
                     lineTo(bounds.right.toFloat()-xAdjustSub,bounds.bottom.toFloat()*7/16-arrowBaseYShift) // arrow-base-left-top
                 }
-                lineTo(rect.right, rect.bottom - cornerRadius) // bottom-right
-                arcTo(RectF(rect.right - 2 * cornerRadius, rect.bottom - 2 * cornerRadius, rect.right, rect.bottom), 0f, 90f)
+                lineTo(rect.right, rect.bottom - cornerRadiusPx) // bottom-right
+                arcTo(RectF(rect.right - 2 * cornerRadiusPx, rect.bottom - 2 * cornerRadiusPx, rect.right, rect.bottom), 0f, 90f)
                 if (compassPoint == CompassPoint.SOUTH) {
                     lineTo(bounds.right.toFloat()*9/16-arrowBaseXShift, bounds.bottom.toFloat()-yAdjustSub) // arrow-base-right
                     lineTo(arrowPoint.x.toFloat(), arrowPoint.y.toFloat()) // arrow-tip
                     lineTo(bounds.right.toFloat()*7/16-arrowBaseXShift, bounds.bottom.toFloat()-yAdjustSub) // arrow-base-left
                 }
-                lineTo(rect.left + cornerRadius, rect.bottom) // Bottom-left
-                arcTo(RectF(rect.left, rect.bottom - 2 * cornerRadius, rect.left + 2 * cornerRadius, rect.bottom), 90f, 90f)
+                lineTo(rect.left + cornerRadiusPx, rect.bottom) // Bottom-left
+                arcTo(RectF(rect.left, rect.bottom - 2 * cornerRadiusPx, rect.left + 2 * cornerRadiusPx, rect.bottom), 90f, 90f)
                 if (compassPoint == CompassPoint.WEST) {
                     lineTo(xAdjustAdd, bounds.bottom.toFloat()*9/16-arrowBaseYShift) // arrow-base-left-bottom
                     lineTo(arrowPoint.x.toFloat(), arrowPoint.y.toFloat()) // arrow-tip

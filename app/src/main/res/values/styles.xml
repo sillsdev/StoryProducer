@@ -13,6 +13,9 @@
 
         <item name="android:popupMenuStyle">@style/PopupMenuStyle</item>
 
+        <!-- Opt out of edge-to-edge enforcement -->
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
+
     </style>
 
     <style name="ActionButtonPadded" parent="@android:style/Widget.ActionButton">

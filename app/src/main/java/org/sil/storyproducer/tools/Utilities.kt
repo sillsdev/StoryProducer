@@ -2,13 +2,17 @@ package org.sil.storyproducer.tools
 
 import android.app.Activity
 import android.content.Context
-import android.util.DisplayMetrics
-import android.view.View
-import android.view.inputmethod.InputMethodManager
-import android.media.MediaCodecList
+import android.graphics.Rect
 import android.media.MediaCodecInfo
+import android.media.MediaCodecList
 import android.os.Build
 import android.os.Environment
+import android.util.DisplayMetrics
+import android.util.Size
+import android.view.View
+import android.view.WindowInsets
+import android.view.WindowMetrics
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import org.sil.storyproducer.App
 import java.io.File
@@ -133,3 +137,27 @@ fun getMaxFreeExtMemoryFile(): File? {
     return maxFreeDir
 }
 
+// Will get the usable screen size for use when setting the slide picture dimensions
+fun getUsableAppWindowSize(activity: Activity): Size {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        // API 30+ (Android 11+)
+        // Get the usable application window size
+        val windowMetrics: WindowMetrics = activity.windowManager.currentWindowMetrics
+        val insets = windowMetrics.windowInsets // get ignored system decorations
+            .getInsetsIgnoringVisibility(
+                WindowInsets.Type.navigationBars() or WindowInsets.Type.statusBars()
+            )
+        val bounds = windowMetrics.bounds
+        // subtract inserts from bounds
+        val width = bounds.width() - insets.left - insets.right
+        val height = bounds.height() - insets.top - insets.bottom
+        Size(width, height)
+    } else {
+        // API 21–29
+        // Gets the usable application window size for older systems
+        val rect = Rect()
+        val view = activity.window.decorView    // get top level window decor view
+        view.getWindowVisibleDisplayFrame(rect) // get usable/visible display size
+        Size(rect.width(), rect.height())
+    }
+}

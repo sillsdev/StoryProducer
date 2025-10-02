@@ -204,7 +204,7 @@ open class RecordingToolbar(val isLearnPhase : Boolean = false) : Fragment() {
 
         rootView?.addView(toolbarButtonSpace())
 
-        val prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context!!);
         // check setting for hiding the learn phase mic bar
         if (isLearnPhase && prefs.getBoolean("hide_learn_mic", true))
             rootView?.visibility = View.INVISIBLE
@@ -380,7 +380,7 @@ open class RecordingToolbar(val isLearnPhase : Boolean = false) : Fragment() {
      * UI testing more difficult.
      */
     private fun isAnimationEnabled(): Boolean {
-        return !PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(activity?.resources?.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation), false)
+        return !PreferenceManager.getDefaultSharedPreferences(requireContext()).getBoolean(activity?.resources?.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation), false)
     }
 
     override fun onActivityResult(request: Int, result: Int, data: Intent?) {

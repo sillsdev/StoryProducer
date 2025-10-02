@@ -119,7 +119,7 @@ class Phase (val phaseType: PhaseType) {
             PhaseType.VOICE_STUDIO     -> context.getString(R.string.phase_display_name_voice_studio)
             PhaseType.FINALIZE         -> context.getString(R.string.phase_display_name_finalize)
             PhaseType.SHARE            -> context.getString(R.string.phase_display_name_share)
-            else -> phaseType.toString().toLowerCase()
+            else -> phaseType.toString().lowercase()
         }
     }
 
@@ -138,7 +138,7 @@ class Phase (val phaseType: PhaseType) {
             PhaseType.ACCURACY_CHECK   -> context.getString(R.string.phase_dir_safe_name_accuracy)
             PhaseType.VOICE_STUDIO     -> context.getString(R.string.phase_dir_safe_name_studio_recording)
             PhaseType.FINALIZE         -> context.getString(R.string.phase_dir_safe_name_finalize)
-            else -> phaseType.toString().toLowerCase()
+            else -> phaseType.toString().lowercase()
         }
     }
 
@@ -167,7 +167,7 @@ class Phase (val phaseType: PhaseType) {
             PhaseType.ACCURACY_CHECK   -> "Accuracy"
             PhaseType.VOICE_STUDIO     -> "VStudio"
             PhaseType.FINALIZE         -> "Finalize"
-            else -> phaseType.toString().toLowerCase()
+            else -> phaseType.toString().lowercase()
         }
     }
 
@@ -295,7 +295,7 @@ class Phase (val phaseType: PhaseType) {
                 "fr" -> "-${langCode}"
                 else -> ""
             }
-            return "${phase.name.toLowerCase()}${langCode}.html"
+            return "${phase.name.lowercase()}${langCode}.html"
         }
     }
 }

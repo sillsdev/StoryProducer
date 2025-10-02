@@ -115,7 +115,7 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
     override fun onQueryTextChange(p0: String?): Boolean {
         val newList = ArrayList<String>()
         for (wl in termToWordLinkMap.keys) {
-            if (wl.toLowerCase().contains(p0?.toLowerCase() ?: "")) {
+            if (wl.lowercase().contains(p0?.lowercase() ?: "")) {
                 newList.add(wl)
             }
         }
