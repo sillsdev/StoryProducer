@@ -27,8 +27,8 @@ class WordLinkSearchTree {
         var currentNode = root
 
         for (w in words) {
-            val nextNode = currentNode.childWords[w.toLowerCase()] ?: WordNode()
-            currentNode.childWords[w.toLowerCase()] = nextNode
+            val nextNode = currentNode.childWords[w.lowercase()] ?: WordNode()
+            currentNode.childWords[w.lowercase()] = nextNode
             currentNode = nextNode
         }
         currentNode.isWordLink = true
@@ -84,8 +84,8 @@ class WordLinkSearchTree {
         if(words.isNotEmpty()){
             val word = words.removeAt(0)
 
-            if(currentNode.childWords.containsKey(word.toLowerCase())){
-                val nextNode = currentNode.childWords[word.toLowerCase()]!!
+            if(currentNode.childWords.containsKey(word.lowercase())){
+                val nextNode = currentNode.childWords[word.lowercase()]!!
                 val wordLink = getIfWordLink(words, nextNode)
 
                 if(nextNode.isWordLink || wordLink != ""){

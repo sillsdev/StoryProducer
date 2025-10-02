@@ -533,7 +533,7 @@ class BLDownloadActivity : AppCompatActivity() {
                 startThumbnailDownloadTimer()
 
                     // persist the language filter code for next time
-                val prefs = PreferenceManager.getDefaultSharedPreferences(view?.context)
+                val prefs = PreferenceManager.getDefaultSharedPreferences(view?.context!!)
                 val editor = prefs.edit()
                 editor.putString("bldl_filter_lang", selectedLangFilter)
                 editor.apply()

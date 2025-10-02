@@ -49,7 +49,7 @@ data class WordLink (
  **/
 fun stringToWordLink (string: String, fragmentActivity: FragmentActivity?) : SpannableString {
     val spannableString = SpannableString(string)
-    if (Workspace.termFormToTermMap.containsKey(string.toLowerCase())) {
+    if (Workspace.termFormToTermMap.containsKey(string.lowercase())) {
         val clickableSpan = createWordLinkClickableSpan(string, fragmentActivity)
         spannableString.setSpan(clickableSpan, 0, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
@@ -79,7 +79,7 @@ private fun createWordLinkClickableSpan(term: String, fragmentActivity: Fragment
         }
 
         override fun updateDrawState(drawState: TextPaint) {
-            val wordLink = Workspace.termToWordLinkMap[Workspace.termFormToTermMap[term.toLowerCase()]]
+            val wordLink = Workspace.termToWordLinkMap[Workspace.termFormToTermMap[term.lowercase()]]
             val hasRecording = wordLink?.wordLinkRecordings?.isNotEmpty()
 
             if(hasRecording != null && hasRecording){

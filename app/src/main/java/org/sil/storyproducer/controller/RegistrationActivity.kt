@@ -685,7 +685,7 @@ open class RegistrationActivity : AppCompatActivity() {
                     // Find key and value and print in clean format
                 } else {
                     formattedKey = aKeyListOrder.replace("_", " ")
-                    formattedKey = formattedKey.toUpperCase()
+                    formattedKey = formattedKey.uppercase()
                     message.append(formattedKey)
                     message.append(": ")
                     message.append(Workspace.registration.getString(aKeyListOrder, "NA"))

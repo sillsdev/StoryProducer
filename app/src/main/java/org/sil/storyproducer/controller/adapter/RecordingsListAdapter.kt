@@ -133,6 +133,8 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
                 PhaseType.WORD_LINKS -> {
                     title = itemView.context.getString(R.string.rename_title_wordlinks)
                 }
+
+                else -> {}
             }
 
             val dialog = AlertDialog.Builder(itemView.context)

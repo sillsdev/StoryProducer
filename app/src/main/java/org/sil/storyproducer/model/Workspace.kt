@@ -415,9 +415,9 @@ object Workspace {
     private fun mapTermFormsToTerms() {
         for (wl in termToWordLinkMap.values) {
             val term = wl.term
-            termFormToTermMap[term.toLowerCase()] = term
+            termFormToTermMap[term.lowercase()] = term
             for (termForm in wl.termForms) {
-                termFormToTermMap[termForm.toLowerCase()] = term
+                termFormToTermMap[termForm.lowercase()] = term
             }
         }
     }

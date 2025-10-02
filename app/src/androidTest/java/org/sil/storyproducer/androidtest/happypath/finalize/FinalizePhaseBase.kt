@@ -79,6 +79,12 @@ class FinalizePhaseBase(sharedBase: SharedBase) : SwipablePhaseTestBase(sharedBa
         onView(allOf(withId(R.id.editText_export_title), isDisplayed())).perform(clearText()).perform((typeText(videoTitle)))
         Espresso.closeSoftKeyboard()
 
+        // Added code to edit credits and enable creating video button
+        onView(allOf(withId(R.id.button_local_credits), isDisplayed())).perform(click())
+        onView(allOf(withId(R.id.edit_text_input), isDisplayed())).perform(clearText()).perform((typeText("My Credits")))
+        val saveButton = onView(Matchers.allOf(withId(android.R.id.button1), isDisplayed()))
+        saveButton.perform(click())
+
         val videoCreationIdling = VideoCreationIdlingResource()
         IdlingRegistry.getInstance().register(videoCreationIdling)
 
