@@ -144,6 +144,7 @@ fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Elemen
     bmOptions.inJustDecodeBounds = true
 
     val audios = page.getElementsByAttributeValueContaining("class", "audio-sentence")
+    val image = findPageImageElement(page)
 
     //narration
     if (slide.narrationFile.isEmpty()) {
@@ -152,8 +153,7 @@ fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Elemen
             slide.narrationFile = parseAndConcatenatePageAudio(context, storyAudioPath, storyAudioMap, lang, audios)
         } else {
             // no audio in this page but maybe an image file for next page
-            val images = page.getElementsByAttributeValueContaining("class", "bloom-imageContainer")
-            var imageFile = parseImageFromElement(slide, frontCoverGraphicProvided, images)
+            var imageFile = parseImageFromElement(slide, frontCoverGraphicProvided, image)
             slide.imageFile = imageFile // save this page's image file in case it is needed for the next page
             return false
         }
@@ -192,11 +192,10 @@ fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Elemen
     }
 
     //image
-    val images = page.getElementsByAttributeValueContaining("class", "bloom-imageContainer")
-    if (images.size >= 1 || slide.prevPageImageFile.isNotEmpty()) {
+    if (image != null || slide.prevPageImageFile.isNotEmpty()) {
         var imageFile = ""
-        if (images.size >= 1) {
-            imageFile = parseImageFromElement(slide, frontCoverGraphicProvided, images)
+        if (image != null) {
+            imageFile = parseImageFromElement(slide, frontCoverGraphicProvided, image)
         }
         if (imageFile.isEmpty())
             imageFile = slide.prevPageImageFile
@@ -212,9 +211,9 @@ fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Elemen
             // Now keeping default start and end Ken Burns motion settings null for enhanced default behaviour
 //        slide.startMotion = Rect(0, 0, slide.width, slide.height)
 //        slide.endMotion = Rect(0, 0, slide.width, slide.height)
-            if (images.size >= 1) {
-                val image = images[0]
-                val mSR = reRect.find(image.attr("data-initialrect"))
+            if (image != null) {
+                val motionElement = findMotionRectElement(image)
+                val mSR = reRect.find(motionElement.attr("data-initialrect"))
                 if (mSR != null) {
                     val x = mSR.groupValues[1].toDouble() * slide.width
                     val y = mSR.groupValues[2].toDouble() * slide.height
@@ -225,7 +224,7 @@ fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Elemen
                             (x + w).toInt(),   //right
                             (y + h).toInt())  //bottom
                 }
-                val mER = reRect.find(image.attr("data-finalrect"))
+                val mER = reRect.find(motionElement.attr("data-finalrect"))
                 if (mER != null) {
                     val x = mER.groupValues[1].toDouble() * slide.width
                     val y = mER.groupValues[2].toDouble() * slide.height
@@ -340,14 +339,40 @@ fun parseAndConcatenatePageAudio(context: Context, storyAudioPath: DocumentFile,
     return narrationFile
 }
 
-fun parseImageFromElement(slide: Slide, frontCoverGraphicProvided: Boolean, images: Elements) : String {
-    if (images.size == 0)
+internal fun findPageImageElement(page: Element): Element? {
+    // Bloom 6.2 moved page images to live directly under bloom-canvas.
+    // Front covers may also tag the intended image explicitly as data-book=coverImage.
+    // BloomPub exports can flatten the image into a background-image style on bloom-canvas.
+    // Older books still use bloom-imageContainer and keep motion metadata there,
+    // so we prefer the newer structure first and fall back to the legacy one.
+    return page.selectFirst(".bloom-canvas img[data-book=coverImage][src]")
+            ?: page.selectFirst(".bloom-canvas[data-book=coverImage][style*=background-image]")
+            ?: page.selectFirst("img[data-book=coverImage][src]")
+            ?: page.selectFirst("[data-book=coverImage][style*=background-image]")
+            ?: page.selectFirst(".bloom-canvas > img[src]")
+            ?: page.selectFirst(".bloom-canvas img[src]")
+            ?: page.selectFirst(".bloom-canvas[style*=background-image]")
+            ?: page.getElementsByAttributeValueContaining("class", "bloom-imageContainer").firstOrNull()
+}
+
+internal fun findMotionRectElement(image: Element): Element {
+    var current: Element? = image
+    while (current != null) {
+        if (current.hasAttr("data-initialrect") || current.hasAttr("data-finalrect")) {
+            return current
+        }
+        current = current.parent()
+    }
+    return image
+}
+
+fun parseImageFromElement(slide: Slide, frontCoverGraphicProvided: Boolean, image: Element?) : String {
+    if (image == null)
         return ""
-    val image = images[0]
     if (!slide.isFrontCover() || frontCoverGraphicProvided) {
         var imageFile = image.attr("src")
         if (imageFile == "") {
-            //bloomd books store the image in a different location
+            // BloomPub exports can store the image path in a CSS background-image.
             imageFile = image.attr("style")
             //typical format: background-image:url('1.jpg')
             imageFile = Uri.decode(imageFile.substringAfter("'").substringBeforeLast("'"))
